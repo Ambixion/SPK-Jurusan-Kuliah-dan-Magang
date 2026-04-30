@@ -11,6 +11,10 @@ use App\Http\Controllers\Guru\SiswaController;
 use App\Http\Controllers\Siswa\KuisonerController;
 use Illuminate\Support\Facades\Route;
 
+Route::get("/", function () {
+    return view('welcome');
+});
+
 //---------- AUTH ROUTES ----------
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
