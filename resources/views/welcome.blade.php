@@ -8,15 +8,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
  body {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Poppins', sans-serif;
     margin: 0;
     /* Gradasi linear dari atas ke bawah sesuai data Figma */
     background: linear-gradient(
         180deg, 
         #242562 0%, 
-        #323388 23%, 
-        #5859B8 59%, 
-        #494BC8 100%
+        #242562 23%, 
+        #242562 59%, 
+        #242562 100%
     );
     background-attachment: fixed; /* Membuat gradasi tetap saat di-scroll */
     min-height: 100vh;
@@ -26,6 +26,20 @@
     position: relative;
     width: 100%;
 }
+
+.glass-card {
+    background-image: url('{{ asset("images/landing page/Rectangle 74.png") }}');
+    background-size: cover;
+    background-position: center;
+    border-radius: 20px; /* Opsional: agar sudutnya membulat sesuai desain */
+    overflow: hidden;
+    position: relative;
+    transition: transform 0.3s ease;
+}
+
+.glass-card:hover {
+    transform: translateY(-5px); /* Efek melayang saat kursor di atasnya */
+}
     </style>
 </head>
 <body class="bg-gradient-custom text-white selection:bg-purple-500">
@@ -34,7 +48,7 @@
      <!-- Navbar -->
 <nav class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-10 py-4 transition-all duration-300" style="background-color: #242562;">
     <div class="flex items-center gap-3">
-        <img src="{{ asset('images/logo.png') }}" alt="Logo SMK Negeri 5 Jember" class="w-12 h-12 object-contain">
+        <img src="{{ asset('images/landing page/logo.png') }}" alt="Logo SMK Negeri 5 Jember" class="w-12 h-12 object-contain">
         <span class="font-bold tracking-wider text-sm uppercase leading-tight text-white">
             SMK NEGERI 5<br>JEMBER
         </span>
@@ -57,12 +71,12 @@
     
     <!-- Layer 1: Background Dasar (bg1.jpeg) -->
     <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" 
-         style="background-image: url('{{ asset('images/bg1.jpeg') }}');"></div>
+         style="background-image: url('{{ asset('images/landing page/bg1.jpeg') }}');"></div>
 
     <!-- Layer 2: Overlay Gradient (Rectangle 72.png) -->
     <!-- Menimpa bg1 untuk transisi ke section bawahnya -->
     <div class="absolute inset-0 bg-cover bg-bottom bg-no-repeat z-[1]" 
-         style="background-image: url('{{ asset('images/Rectangle 72.png') }}');"></div>
+         style="background-image: url('{{ asset('images/landing page/Rectangle 72.png') }}');"></div>
 
     <!-- Spacer agar konten tidak tertutup navbar fixed -->
     <div class="h-24 relative z-10"></div>
@@ -83,7 +97,7 @@
 
             <!-- Sisi Kanan: Gambar Sekolah -->
             <div class="flex-1 flex justify-end">
-                <img src="{{ asset('images/sekolah.png') }}" 
+                <img src="{{ asset('images/landing page/sekolah.png') }}" 
                      alt="Gedung SMK Negeri 5 Jember" 
                      class="w-full max-w-sm drop-shadow-2xl"> 
             </div>
