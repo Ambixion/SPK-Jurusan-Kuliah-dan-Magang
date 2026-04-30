@@ -27,6 +27,10 @@ Route::get('/', function (): RedirectResponse {
     return redirect('/login');
 })->name('root');
 
+Route::get("/", function () {
+    return view('welcome');
+});
+
 //---------- AUTH ROUTES ----------
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
