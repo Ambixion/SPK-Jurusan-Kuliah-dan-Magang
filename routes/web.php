@@ -1,6 +1,7 @@
 <?php
-
-use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
+use App\Http\Controllers\Guru\DashboardController as GuruDashboard;
+use App\Http\Controllers\Siswa\DashboardController as SiswaDashboard;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\JurusanController;
 use App\Http\Controllers\Admin\TempatMagangController;
@@ -10,6 +11,21 @@ use App\Http\Controllers\Guru\NilaiController;
 use App\Http\Controllers\Guru\SiswaController;
 use App\Http\Controllers\Siswa\KuisonerController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\RedirectResponse;
+
+//---------- ROOT ROUTE ----------
+Route::get('/', function (): RedirectResponse {
+    if (Auth::check()) {
+        return match (Auth::user()->role) {
+            'admin' => redirect()->route('admin.dashboard'),
+            'guru' => redirect()->route('guru.dashboard'),
+            'siswa' => redirect()->route('siswa.dashboard'),
+            default => redirect('/login'),
+        };
+    }
+    return redirect('/login');
+})->name('root');
 
 Route::get("/", function () {
     return view('welcome');
@@ -26,7 +42,7 @@ Route::middleware(['auth', 'role:admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
-        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard', [AdminDashboard::class, 'index'])->name('dashboard');
         Route::resource('users', UserController::class);
         Route::resource('jurusan', JurusanController::class);
         Route::resource('tempat_magang', TempatMagangController::class);
@@ -37,7 +53,7 @@ Route::middleware(['auth', 'role:guru'])
     ->prefix('guru')
     ->name('guru.')
     ->group(function () {
-        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard', [GuruDashboard::class, 'index'])->name('dashboard');
         Route::resource('siswa', SiswaController::class);
         Route::resource('nilai', NilaiController::class);
     });
@@ -46,7 +62,7 @@ Route::middleware(['auth', 'role:guru'])
     ->prefix('siswa')
     ->name('siswa.')
     ->group(function () {
-        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard', [SiswaDashboard::class, 'index'])->name('dashboard');
         Route::get('/kuisoner', [KuisonerController::class, 'index'])->name('kuisoner');
         Route::post('/kuisoner', [KuisonerController::class, 'store']);
         Route::get('/hasil', [KuisonerController::class, 'index'])->name('hasil');
