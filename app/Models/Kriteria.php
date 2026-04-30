@@ -10,7 +10,7 @@ class Kriteria extends Model
 {
     protected  $table = 'kriteria';
 
-    protected $fillable = ['name', 'weight', 'type', 'jenis'];
+    protected $fillable = ['nama', 'weight', 'type', 'jenis'];
 
     public function skorSiswa() {
         return $this->hasMany(SkorSiswa::class, 'kriteria_id');

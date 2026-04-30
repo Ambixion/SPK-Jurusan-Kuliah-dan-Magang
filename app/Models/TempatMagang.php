@@ -8,7 +8,7 @@ class TempatMagang extends Model
 {
     protected $table = 'tempat_magang';
 
-    protected $fillable = ['nama', 'deskripsi', 'lokasi', 'kouta', 'kontak'];
+    protected $fillable = ['nama', 'deskripsi', 'lokasi', 'kuota', 'kontak'];
 
     public function skorMagang() {
         return $this->hasMany(SkorMagang::class, 'tempat_magang_id');

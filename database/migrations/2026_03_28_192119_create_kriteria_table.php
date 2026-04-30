@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('kriteria', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('nama');
             $table->decimal('weight', 5, 3);
             $table->enum('type', ['benefit','cost']);
             $table->enum('jenis',['jurusan','magang']);
