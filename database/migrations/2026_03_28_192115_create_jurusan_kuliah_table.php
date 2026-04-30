@@ -15,8 +15,6 @@ return new class extends Migration
             $table->id();
             $table->string('nama');
             $table->string('deskripsi')->nullable();
-            $table->string('universitas');
-            $table->string('akreditasi');
             $table->string('bidang_studi');
             $table->timestamps();
         });
