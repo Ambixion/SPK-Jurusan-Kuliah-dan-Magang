@@ -11,26 +11,26 @@ class KriteriaSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('kriteria')->insert([
-            ['name' => 'Minat',
-            'weight' => 0.4,
-            'type' => 'benefit',
-            'created_at' => now(),
-            'updated_at' => now(),
-            ],
-            ['name' => 'Nilai Rapor',
-            'weight' => 0.3,
-            'type' => 'benefit',
-            'created_at' => now(),
-            'updated_at' => now(),
-            ],
-            [
-            'name' => 'jarak',
-            'weight' => 0.2,
-            'type' => 'benefit',
-            'created_at' => now(),
-            'updated_at' => now(),
-            ]
-        ]);
+        // DB::table('kriteria')->insert([
+        //     ['name' => 'Minat',
+        //     'weight' => 0.4,
+        //     'type' => 'benefit',
+        //     'created_at' => now(),
+        //     'updated_at' => now(),
+        //     ],
+        //     ['name' => 'Nilai Rapor',
+        //     'weight' => 0.3,
+        //     'type' => 'benefit',
+        //     'created_at' => now(),
+        //     'updated_at' => now(),
+        //     ],
+        //     [
+        //     'name' => 'jarak',
+        //     'weight' => 0.2,
+        //     'type' => 'benefit',
+        //     'created_at' => now(),
+        //     'updated_at' => now(),
+        //     ]
+        // ]);
     }
 }

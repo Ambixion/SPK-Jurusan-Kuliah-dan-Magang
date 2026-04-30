@@ -4,11 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-<<<<<<< HEAD
-=======
 use App\Models\Siswa;
 use App\Models\Guru;
->>>>>>> 10b9d9ef1c922cab32de5a45e3f7005c2ccef2b9
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -30,49 +27,6 @@ class UserController extends Controller
         $request->validate([
             'nama'     => 'required|string|max:255',
             'email'    => 'required|email|unique:users,email',
-<<<<<<< HEAD
-            'password' => 'required|min:6',
-            'role'     => 'required|in:admin,guru,siswa',
-        ]);
-
-        User::create([
-            'nama'     => $request->nama,
-            'email'    => $request->email,
-            'password' => bcrypt($request->password),
-            'role'     => $request->role,
-        ]);
-
-        return redirect()->route('admin.users.index')->with('success', 'User berhasil ditambahkan.');
-    }
-
-    public function edit(User $user)
-    {
-        return view('admin.users.edit', compact('user'));
-    }
-
-    public function update(Request $request, User $user)
-    {
-        $request->validate([
-            'nama'  => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id_user . ',id_user',
-            'role'  => 'required|in:admin,guru,siswa',
-        ]);
-
-        $user->update([
-            'nama'  => $request->nama,
-            'email' => $request->email,
-            'role'  => $request->role,
-            'password' => $request->password ? bcrypt($request->password) : $user->password,
-        ]);
-
-        return redirect()->route('admin.users.index')->with('success', 'User berhasil diupdate.');
-    }
-
-    public function destroy(User $user)
-    {
-        $user->delete();
-        return redirect()->route('admin.users.index')->with('success', 'User berhasil dihapus.');
-=======
             'password' => 'required|min:6|confirmed',
             'role'     => 'required|in:admin,guru,siswa',
             // field tambahan siswa
@@ -153,6 +107,5 @@ class UserController extends Controller
 
         return redirect()->route('admin.users.index')
             ->with('success', 'User berhasil dihapus.');
->>>>>>> 10b9d9ef1c922cab32de5a45e3f7005c2ccef2b9
     }
 }

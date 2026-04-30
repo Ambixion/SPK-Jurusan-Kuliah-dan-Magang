@@ -87,19 +87,10 @@ class JurusanController extends Controller
         return redirect()->route('admin.jurusan.index')->with('success', 'Jurusan berhasil diperbarui.');
     }
 
-<<<<<<< HEAD
-    public function destroy($id)
-    {
-        // Hapus jurusan dari database
-        // Jurusan::destroy($id);
-
-        return redirect()->route('admin.jurusan.index')->with('success', 'Jurusan berhasil dihapus.');
-=======
     public function destroy(string $id) {
         JurusanKuliah::findOrFail($id)->delete();
 
         return redirect()->route('admin.jurusan.index')
             ->with('success', 'Jurusan berhasil dihapus.');
->>>>>>> 10b9d9ef1c922cab32de5a45e3f7005c2ccef2b9
     }
 }

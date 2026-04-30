@@ -13,27 +13,13 @@ class SiswaSeeder extends Seeder
      */
     public function run(): void
     {
-        $users = DB::table('users')->where('role', 'siswa')->get();
+        $user = DB::table('users')->where('role', 'siswa')->first();
 
         DB::table('siswa')->insert([
-            [
-                'users_id' => $users[0]->id,
-                'jurusan_siswa' => 'IPA',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'users_id' => $users[1]->id,
-                'jurusan_siswa' => 'IPS',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'users_id' => $users[2]->id,
-                'jurusan_siswa' => 'Teknik Komputer dan Jaringan',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]
+            'users_id' => $user->id,
+            'jurusan_siswa' => 'IPA',
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
     }
 }

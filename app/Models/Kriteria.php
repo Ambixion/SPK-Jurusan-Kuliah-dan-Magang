@@ -12,15 +12,18 @@ class Kriteria extends Model
 
     protected $fillable = ['nama', 'weight', 'type', 'jenis'];
 
-    public function skorSiswa() {
+    public function skorSiswa()
+    {
         return $this->hasMany(SkorSiswa::class, 'kriteria_id');
     }
 
-    public function skorJurusan() {
+    public function skorJurusan()
+    {
         return $this->hasMany(SkorJurusan::class, 'kriteria_id');
     }
 
-    public function skorMagang() {
+    public function skorMagang()
+    {
         return $this->hasMany(SkorMagang::class, 'kriteria_id');
     }
 }

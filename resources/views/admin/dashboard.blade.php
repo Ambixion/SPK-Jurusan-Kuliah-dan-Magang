@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+{{-- @extends('layouts.admin')
 
 @section('title', 'Dashboard Admin')
 
@@ -111,4 +111,9 @@
         </div>
     </div>
 </div>
-@endsection
+@endsection --}}
+ini dashboard admin
+<form method="POST" action="{{ route('logout') }}">
+    @csrf
+    <button type="submit">Logout</button>
+</form>
