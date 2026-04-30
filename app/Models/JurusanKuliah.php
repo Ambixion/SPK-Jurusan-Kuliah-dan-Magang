@@ -9,7 +9,7 @@ class JurusanKuliah extends Model
 {
     protected $table = 'jurusan_kuliah';
 
-    protected $fillable = ['nama', 'deskripsi', 'universitas', 'akreditasi', 'bidang_studi'];
+    protected $fillable = ['nama', 'deskripsi', 'bidang_studi'];
 
     public function skorJurusan() {
         return $this->hasMany(SkorJurusan::class, 'jurusan_kuliah_id');

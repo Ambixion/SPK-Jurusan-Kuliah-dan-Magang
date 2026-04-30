@@ -24,15 +24,13 @@ class JurusanController extends Controller
         $request->validate([
             'nama'        => 'required|string|max:255',
             'deskripsi'   => 'nullable|string',
-            'universitas' => 'required|string|max:255',
-            'akreditasi'  => 'required|string|max:10',
             'bidang_studi'=> 'required|string|max:255',
             'skor'        => 'nullable|array',
             'skor.*'      => 'nullable|integer|min:0|max:100',
         ]);
 
         $jurusan = JurusanKuliah::create($request->only([
-            'nama', 'deskripsi', 'universitas', 'akreditasi', 'bidang_studi'
+            'nama', 'deskripsi', 'bidang_studi'
         ]));
 
         //simpan skor pre kriteria
@@ -68,15 +66,13 @@ class JurusanController extends Controller
         $request->validate([
             'nama'        => 'required|string|max:255',
             'deskripsi'   => 'nullable|string',
-            'universitas' => 'required|string|max:255',
-            'akreditasi'  => 'required|string|max:10',
             'bidang_studi'=> 'required|string|max:255',
             'skor'        => 'nullable|array',
             'skor.*'      => 'nullable|integer|min:0|max:100',
         ]);
 
         $jurusan->update($request->only([
-            'nama', 'deskripsi', 'universitas', 'akreditasi', 'bidang_studi'
+            'nama', 'deskripsi', 'bidang_studi'
         ]));
 
         if ($request->filled('skor')) {
@@ -93,7 +89,7 @@ class JurusanController extends Controller
 
     public function destroy(string $id) {
         JurusanKuliah::findOrFail($id)->delete();
-        
+
         return redirect()->route('admin.jurusan.index')
             ->with('success', 'Jurusan berhasil dihapus.');
     }
