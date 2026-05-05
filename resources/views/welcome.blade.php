@@ -104,25 +104,29 @@
         </div>
 
         <!-- Bagian Bawah: Kartu Pilihan -->
-        <div class="max-w-5xl mx-auto mt-16 grid grid-cols-1 md:grid-cols-2 gap-8 text-white">
-            <div class="glass-card p-8 flex flex-col items-center justify-center gap-4 group hover:bg-white/20 transition border border-white/10 shadow-xl">
-                <div class="w-20 h-20 bg-blue-500/30 rounded-2xl flex items-center justify-center text-4xl">
-                    🏢
-                </div>
-                <h3 class="font-bold text-lg uppercase tracking-wider text-center leading-tight">
-                    SPK Pemilihan<br>Tempat Praktek Kerja Lapangan
-                </h3>
-            </div>
+<div class="max-w-5xl mx-auto mt-16 grid grid-cols-1 md:grid-cols-2 gap-8 text-white">
 
-            <div class="glass-card p-8 flex flex-col items-center justify-center gap-4 group hover:bg-white/20 transition border border-white/10 shadow-xl">
-                <div class="w-20 h-20 bg-purple-500/30 rounded-2xl flex items-center justify-center text-4xl">
-                    🎓
-                </div>
-                <h3 class="font-bold text-lg uppercase tracking-wider text-center leading-tight">
-                    SPK Pemilihan<br>Program Studi Kuliah
-                </h3>
-            </div>
-        </div>
+    <div class="glass-card p-8 flex items-center justify-start gap-6 group hover:bg-white/20 transition border border-white/10 shadow-xl">
+        <img src="{{ asset('images/landing page/image 11.png') }}" 
+             alt="SPK PKL"
+             class="w-20 h-20 object-contain">
+
+        <h3 class="font-bold text-lg uppercase tracking-wider text-left leading-tight">
+            SPK Pemilihan<br>Tempat Praktek Kerja Lapangan
+        </h3>
+    </div>
+
+    <div class="glass-card p-8 flex items-center justify-start gap-6 group hover:bg-white/20 transition border border-white/10 shadow-xl">
+        <img src="{{ asset('images/landing page/image 10.png') }}" 
+             alt="SPK Program Studi"
+             class="w-20 h-20 object-contain">
+
+        <h3 class="font-bold text-lg uppercase tracking-wider text-left leading-tight">
+            SPK Pemilihan<br>Program Studi Kuliah
+        </h3>
+    </div>
+
+</div>
     </header>
 </div>
 
@@ -132,7 +136,7 @@
             
             <div class="flex flex-col md:flex-row items-center gap-16 mb-20">
                 <div class="flex-1 flex justify-center">
-                    <img src="https://illustrations.popsy.co/white/location.svg" alt="About" class="w-64">
+                    <img src="{{ asset('images/landing page/image 12.png') }}" alt="About" class="w-64">
                 </div>
                 <div class="flex-1 text-left">
                     <p class="text-gray-300 leading-relaxed">
@@ -143,7 +147,7 @@
 
             <div class="flex flex-col md:flex-row-reverse items-center gap-16">
                 <div class="flex-1 flex justify-center">
-                    <img src="https://illustrations.popsy.co/white/balance-scale.svg" alt="Scale" class="w-64">
+                    <img src="{{ asset('images/landing page/image 13.png') }}" alt="Scale" class="w-64">
                 </div>
                 <div class="flex-1 text-left">
                     <p class="text-gray-300 leading-relaxed">
@@ -153,84 +157,193 @@
             </div>
         </section>
 
-        <!-- Features -->
-        <section id="features" class="container mx-auto px-10 py-24">
-            <h2 class="text-3xl font-bold uppercase text-center mb-16 tracking-widest">Features</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <!-- PKL -->
-                <div class="glass-card p-8 flex gap-6">
-                    <div class="text-4xl">🏭</div>
-                    <div>
-                        <h4 class="font-bold uppercase mb-2">SPK Pemilihan Tempat Praktek Kerja Lapangan</h4>
-                        <p class="text-xs text-gray-400">Sistem membantu siswa menentukan tempat PKL terbaik berdasarkan kriteria seperti minat, kemampuan, dan preferensi lalu menghasilkan rekomendasi melalui perhitungan metode SAW secara otomatis.</p>
-                    </div>
-                </div>
-                <!-- Jurusan -->
-                <div class="glass-card p-8 flex gap-6">
-                    <div class="text-4xl">👨‍🎓</div>
-                    <div>
-                        <h4 class="font-bold uppercase mb-2">SPK Pemilihan Jurusan Kuliah</h4>
-                        <p class="text-xs text-gray-400">Sistem memberikan rekomendasi jurusan kuliah yang paling sesuai dengan potensi siswa melalui analisis data kuesioner dan perankingan berbasis metode SAW.</p>
-                    </div>
-                </div>
-                <!-- Guru -->
-                <div class="glass-card p-8 flex gap-6">
-                    <div class="text-4xl">👨‍🏫</div>
-                    <div>
-                        <h4 class="font-bold uppercase mb-2">Dashboard Guru</h4>
-                        <p class="text-xs text-gray-400">Guru dapat memantau data siswa, melihat hasil rekomendasi, serta mengevaluasi kecocokan pilihan siswa secara terpusat dalam satu tampilan.</p>
-                    </div>
-                </div>
-                <!-- Admin -->
-                <div class="glass-card p-8 flex gap-6">
-                    <div class="text-4xl">⚙️</div>
-                    <div>
-                        <h4 class="font-bold uppercase mb-2">Dashboard Admin</h4>
-                        <p class="text-xs text-gray-400">Admin mengelola seluruh data sistem, termasuk data kriteria, jurusan, dan tempat PKL, serta memastikan sistem berjalan dengan baik melalui fitur CRUD yang tersedia.</p>
-                    </div>
+      <!-- Features -->
+<div class="relative w-full overflow-hidden">
+
+    <!-- Layer 1: Background utama -->
+    <div class="absolute inset-0 bg-cover bg-center bg-no-repeat z-0"
+         style="background-image: url('{{ asset('images/landing page/bg1.jpeg') }}');">
+    </div>
+
+    <!-- Layer 2: Overlay ATAS (Rectangle 72) -->
+    <div class="absolute inset-0 bg-cover bg-top bg-no-repeat z-[1]"
+         style="background-image: url('{{ asset('images/landing page/Rectangle 72.png') }}');">
+    </div>
+
+    <!-- Layer 3: Overlay BAWAH (Rectangle 73) -->
+    <div class="absolute inset-0 bg-cover bg-bottom bg-no-repeat z-[1]"
+         style="background-image: url('{{ asset('images/landing page/Rectangle 73.png') }}');">
+    </div>
+
+    <!-- Content -->
+    <section id="features" class="relative z-10 container mx-auto px-10 py-24">
+
+        <h2 class="text-3xl font-bold uppercase text-center mb-16 tracking-widest">
+            FEATURES
+        </h2>
+
+        <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+
+            <!-- SPK PKL -->
+            <div class="glass-card px-8 py-6 flex items-center gap-6">
+                <img src="{{ asset('images/landing page/image 15.png') }}"
+                     alt="SPK Pemilihan Tempat Praktek Kerja Lapangan"
+                     class="w-28 h-28 object-contain">
+
+                <div>
+                    <h4 class="font-bold uppercase mb-2 text-base leading-tight">
+                        SPK Pemilihan Tempat<br>
+                        Praktek Kerja Lapangan
+                    </h4>
+                    <p class="text-xs text-white leading-relaxed">
+                        Sistem membantu siswa menentukan tempat PKL terbaik berdasarkan kriteria seperti minat, kemampuan, dan preferensi lalu menghasilkan rekomendasi melalui perhitungan metode SAW secara otomatis.
+                    </p>
                 </div>
             </div>
-        </section>
 
+            <!-- SPK Jurusan Kuliah -->
+            <div class="glass-card px-8 py-6 flex items-center gap-6">
+                <img src="{{ asset('images/landing page/image 14.png') }}"
+                     alt="SPK Pemilihan Jurusan Kuliah"
+                     class="w-28 h-28 object-contain">
+
+                <div>
+                    <h4 class="font-bold uppercase mb-2 text-base leading-tight">
+                        SPK Pemilihan Jurusan<br>
+                        Kuliah
+                    </h4>
+                    <p class="text-xs text-white leading-relaxed">
+                        Sistem memberikan rekomendasi jurusan kuliah yang paling sesuai dengan potensi siswa melalui analisis data kuesioner dan perankingan berbasis metode SAW.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Dashboard Guru -->
+            <div class="glass-card px-8 py-6 flex items-center gap-6">
+                <img src="{{ asset('images/landing page/image 17.png') }}"
+                     alt="Dashboard Guru"
+                     class="w-28 h-28 object-contain">
+
+                <div>
+                    <h4 class="font-bold uppercase mb-2 text-base leading-tight">
+                        Dashboard<br>
+                        Guru
+                    </h4>
+                    <p class="text-xs text-white leading-relaxed">
+                        Guru dapat memantau data siswa, melihat hasil rekomendasi, serta mengevaluasi kecocokan pilihan siswa secara terpusat dalam satu tampilan.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Dashboard Admin -->
+            <div class="glass-card px-8 py-6 flex items-center gap-6">
+                <img src="{{ asset('images/landing page/image 18.png') }}"
+                     alt="Dashboard Admin"
+                     class="w-28 h-28 object-contain">
+
+                <div>
+                    <h4 class="font-bold uppercase mb-2 text-base leading-tight">
+                        Dashboard<br>
+                        Admin
+                    </h4>
+                    <p class="text-xs text-white leading-relaxed">
+                        Admin mengelola seluruh data sistem, termasuk data kriteria, jurusan, dan tempat PKL, serta memastikan sistem berjalan dengan baik melalui fitur CRUD yang tersedia.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+</div>
         <!-- Contact Section -->
-        <section id="contact" class="container mx-auto px-10 py-24 text-center">
-            <h2 class="text-3xl font-bold uppercase mb-10 tracking-widest">Contact</h2>
-        </section>
+<section id="contact" class="bg-[#242562] px-10 py-24 text-center">
+    
+</section>
     </div>
 
     <!-- Footer -->
-    <footer class="bg-green-600 text-white py-12">
-        <div class="container mx-auto px-10 grid grid-cols-1 md:grid-cols-3 gap-10">
-            <div>
-                <h5 class="font-bold mb-4 border-b border-white/20 pb-2 inline-block">Lokasi</h5>
-                <div class="w-full h-40 bg-gray-200 rounded-lg overflow-hidden mt-4">
-                    <!-- Placeholder Map -->
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3949.3361184347784!2d113.7196024!3d-8.1688537!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dd69596489a244d%3A0x6b864117b4430e3!2sSMK%20Negeri%205%20Jember!5e0!3m2!1sid!2sid!4v1714480000000" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
-                </div>
-                <p class="text-xs mt-2">SMK Negeri 5 Jember</p>
+<footer class="bg-[#323388] text-white py-16">
+    <div class="container mx-auto px-10 grid grid-cols-1 md:grid-cols-3 gap-14">
+
+        <!-- Lokasi -->
+        <div>
+           <h5 class="font-bold text-2xl mb-5 border-b border-white/20 pb-3 inline-block">
+            Lokasi
+        </h5>
+
+            <div class="w-full h-48 bg-gray-200 rounded-xl overflow-hidden mt-6 shadow-lg">
+                <iframe 
+                    src="https://www.google.com/maps?q=SMK%20Negeri%205%20Jember%2C%20Jl.%20Brawijaya%20No.55%2C%20Darungan%2C%20Jubung%2C%20Kec.%20Sukorambi%2C%20Kabupaten%20Jember%2C%20Jawa%20Timur%2068151&output=embed"
+                    width="100%" 
+                    height="100%" 
+                    style="border:0;" 
+                    allowfullscreen="" 
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
             </div>
-            <div>
-                <h5 class="font-bold mb-4 border-b border-white/20 pb-2 inline-block">Kontak Resmi SMK N 5 Jember</h5>
-                <div class="flex items-start gap-4 mt-4">
-                    <div class="bg-white p-1 rounded"><img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=SMKN5JEMBER" alt="QR" class="w-20"></div>
-                    <div class="text-xs space-y-2">
-                        <p>Alamat: JL. BRAWIJAYA NO. 55 JEMBER</p>
-                        <p>Email: smkn5jember@gmail.com</p>
-                        <p>WhatsApp: +62 8XX XXXX XXXX</p>
-                    </div>
+
+            <p class="text-base font-semibold mt-4">
+                SMK Negeri 5 Jember
+            </p>
+        </div>
+
+        <!-- Kontak -->
+        <div>
+            <h5 class="font-bold text-2xl mb-5 border-b border-white/20 pb-3 inline-block">
+                Kontak Resmi SMK N 5 Jember
+            </h5>
+
+            <div class="mt-6 space-y-5 text-base leading-relaxed">
+                <div>
+                    <p class="font-bold mb-1">Alamat:</p>
+                    <p class="text-white/90">
+                        Jl. Brawijaya No.55, Darungan, Jubung, Kec. Sukorambi,
+                        Kabupaten Jember, Jawa Timur 68151, Indonesia
+                    </p>
                 </div>
-            </div>
-            <div>
-                <h5 class="font-bold mb-4 border-b border-white/20 pb-2 inline-block">Link Terkait</h5>
-                <ul class="text-xs space-y-2">
-                    <li><a href="#" class="hover:underline">› Profil Sekolah</a></li>
-                    <li><a href="#" class="hover:underline">› Data Lulusan (SISKOTIK)</a></li>
-                    <li><a href="#" class="hover:underline">› E-Learning</a></li>
-                    <li><a href="#" class="hover:underline">› SMK PK Th 2022-2023</a></li>
-                </ul>
+
+                <div>
+                    <p class="font-bold mb-1">Email:</p>
+                    <p class="text-white/90">
+                        smkn5jember@gmail.com
+                    </p>
+                </div>
             </div>
         </div>
-    </footer>
+
+        <!-- Link Terkait -->
+        <div>
+            <h5 class="font-bold text-2xl mb-5 border-b border-white/20 pb-3 inline-block">
+                Link Terkait
+            </h5>
+
+            <ul class="mt-6 text-base space-y-4 font-medium">
+                <li>
+                    <a href="#" class="hover:underline hover:text-yellow-300 transition">
+                        › Profil Sekolah
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="hover:underline hover:text-yellow-300 transition">
+                        › Data Lulusan (SISKOTIK)
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="hover:underline hover:text-yellow-300 transition">
+                        › E-Learning
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="hover:underline hover:text-yellow-300 transition">
+                        › SMK PK Th 2022-2023
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+</footer>
 
 </body>
 </html>
