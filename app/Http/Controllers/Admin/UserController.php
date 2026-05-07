@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
-use App\Models\Siswa;
 use App\Models\Guru;
+use App\Models\JurusanSmk;
+use App\Models\Siswa;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -19,7 +20,8 @@ class UserController extends Controller
 
     public function create()
     {
-        return view('admin.users.create');
+        $jurusans = JurusanSmk::all();
+        return view('admin.users.create', compact('jurusans'));
     }
 
     public function store(Request $request)
@@ -29,8 +31,7 @@ class UserController extends Controller
             'email'    => 'required|email|unique:users,email',
             'password' => 'required|min:6|confirmed',
             'role'     => 'required|in:admin,guru,siswa',
-            // field tambahan siswa
-            'jurusan_siswa' => 'required_if:role,siswa|nullable|string|max:255',
+            'jurusan_smk_id' => 'required_if:role,siswa|nullable|exists:jurusan_smk,id',
         ]);
 
         $user = User::create([
@@ -43,7 +44,7 @@ class UserController extends Controller
         if ($request->role === 'siswa') {
             Siswa::create([
                 'users_id'      => $user->id,
-                'jurusan_siswa' => $request->jurusan_siswa,
+                'jurusan_smk_id' => $request->jurusan_smk_id,
             ]);
         } elseif ($request->role === 'guru') {
             Guru::create([
@@ -55,16 +56,12 @@ class UserController extends Controller
             ->with('success', 'User berhasil ditambahkan.');
     }
 
-    public function show(string $id)
-    {
-        $user = User::findOrFail($id);
-        return view('admin.users.show', compact('user'));
-    }
 
     public function edit(string $id)
     {
         $user = User::findOrFail($id);
-        return view('admin.users.edit', compact('user'));
+        $jurusans = JurusanSmk::all();
+        return view('admin.users.edit', compact('user', 'jurusans'));
     }
 
     public function update(Request $request, string $id)
@@ -76,7 +73,7 @@ class UserController extends Controller
             'email'         => 'required|email|unique:users,email,' . $user->id,
             'password'      => 'nullable|min:6|confirmed',
             'role'          => 'required|in:admin,guru,siswa',
-            'jurusan_siswa' => 'required_if:role,siswa|nullable|string|max:255',
+            'jurusan_smk_id' => 'required_if:role,siswa|nullable|exists:jurusan_smk,id',
         ]);
 
         $user->update([
@@ -92,7 +89,7 @@ class UserController extends Controller
         if ($request->role === 'siswa') {
             Siswa::updateOrCreate(
                 ['users_id' => $user->id],
-                ['jurusan_siswa' => $request->jurusan_siswa]
+                ['jurusan_smk_id' => $request->jurusan_smk_id]
             );
         }
 

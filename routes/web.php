@@ -4,8 +4,11 @@ use App\Http\Controllers\Guru\DashboardController as GuruDashboard;
 use App\Http\Controllers\Siswa\DashboardController as SiswaDashboard;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\JurusanController;
+use App\Http\Controllers\Admin\JurusanSmkController;
 use App\Http\Controllers\Admin\TempatMagangController;
 use App\Http\Controllers\Admin\KriteriaController;
+use App\Http\Controllers\Admin\SkillController;
+use App\Http\Controllers\Admin\KuisonerController as AdminKuisonerController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Guru\NilaiController;
 use App\Http\Controllers\Guru\SiswaController;
@@ -44,9 +47,12 @@ Route::middleware(['auth', 'role:admin'])
     ->group(function () {
         Route::get('/dashboard', [AdminDashboard::class, 'index'])->name('dashboard');
         Route::resource('users', UserController::class);
-        Route::resource('jurusan', JurusanController::class);
+        Route::resource('jurusan_smk', JurusanSmkController::class);
+        Route::resource('jurusan_kuliah', JurusanController::class);
+        Route::resource('skill', SkillController::class);
         Route::resource('tempat_magang', TempatMagangController::class);
         Route::resource('kriteria', KriteriaController::class);
+        Route::resource('kuisoner', AdminKuisonerController::class);
     });
 //---------- Guru Routes ----------
 Route::middleware(['auth', 'role:guru'])

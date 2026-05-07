@@ -43,7 +43,7 @@
                 @csrf
 
                 {{-- Email --}}
-                <div class="form-group">
+                <div class="form-group">+
                     <div class="input-wrapper">
                         <input
                         type="email"
@@ -92,14 +92,14 @@
                         @enderror
                     </div>
 
-                    {{-- Forgot Password --}}
+                    {{-- Forgot Password
                     <div class="forgot-row">
                         @if (Route::has('password.request'))
                         <a href="{{ route('password.request') }}">Forgot Password?</a>
                         @else
                         <a href="#">Forgot Password?</a>
                         @endif
-                    </div>
+                    </div> --}}
 
                     {{-- Submit --}}
                     <button type="submit" class="btn-login" id="submitBtn">

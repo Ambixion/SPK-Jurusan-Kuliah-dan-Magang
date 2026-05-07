@@ -12,22 +12,16 @@ class JurusanController extends Controller
 {
     public function index() {
         $jurusan = JurusanKuliah::latest()->paginate(10);
-        return view('admin.jurusan.index', compact('jurusan'));
+        return view('admin.jurusan_kuliah.index', compact('jurusan'));
     }
 
     public function create() {
         $kriterias = Kriteria::where('jenis', 'jurusan')->get();
-        return view('admin.jurusan.create', compact('kriterias'));
+        return view('admin.jurusan_kuliah.create', compact('kriterias'));
     }
 
     public function store(Request $request) {
-        $request->validate([
-            'nama'        => 'required|string|max:255',
-            'deskripsi'   => 'nullable|string',
-            'bidang_studi'=> 'required|string|max:255',
-            'skor'        => 'nullable|array',
-            'skor.*'      => 'nullable|integer|min:0|max:100',
-        ]);
+        $request->validate($this->validationRules());
 
         $jurusan = JurusanKuliah::create($request->only([
             'nama', 'deskripsi', 'bidang_studi'
@@ -43,13 +37,9 @@ class JurusanController extends Controller
             }
         }
 
-        return redirect()->route('admin.jurusan.index')->with('success', 'Jurusan berhasil ditambahkan.');
+        return redirect()->route('admin.jurusan_kuliah.index')->with('success', 'Jurusan berhasil ditambahkan.');
     }
 
-    public function show(string $id) {
-        $jurusan = JurusanKuliah::with(['skorJurusan.kriteria'])->findOrFail($id);
-        return view('admin.jurusan.show', compact('jurusan'));
-    }
 
     public function edit(string $id) {
         $jurusan = JurusanKuliah::with('skorJurusan')->findOrFail($id);
@@ -57,19 +47,13 @@ class JurusanController extends Controller
 
         //map skor yang sudah ada yaitu kriteria_id -> score
         $skorExisting = $jurusan->skorJurusan->pluck('score', 'kriteria_id');
-        return view('admin.jurusan.edit', compact('jurusan', 'kriterias', 'skorExisting'));
+        return view('admin.jurusan_kuliah.edit', compact('jurusan', 'kriterias', 'skorExisting'));
     }
 
     public function update(Request $request, string $id) {
         $jurusan = JurusanKuliah::findOrFail($id);
 
-        $request->validate([
-            'nama'        => 'required|string|max:255',
-            'deskripsi'   => 'nullable|string',
-            'bidang_studi'=> 'required|string|max:255',
-            'skor'        => 'nullable|array',
-            'skor.*'      => 'nullable|integer|min:0|max:100',
-        ]);
+        $request->validate($this->validationRules());
 
         $jurusan->update($request->only([
             'nama', 'deskripsi', 'bidang_studi'
@@ -84,13 +68,24 @@ class JurusanController extends Controller
             }
         }
 
-        return redirect()->route('admin.jurusan.index')->with('success', 'Jurusan berhasil diperbarui.');
+        return redirect()->route('admin.jurusan_kuliah.index')->with('success', 'Jurusan berhasil diperbarui.');
     }
 
     public function destroy(string $id) {
         JurusanKuliah::findOrFail($id)->delete();
 
-        return redirect()->route('admin.jurusan.index')
+        return redirect()->route('admin.jurusan_kuliah.index')
             ->with('success', 'Jurusan berhasil dihapus.');
+    }
+
+    private function validationRules(): array
+    {
+        return [
+            'nama'        => 'required|string|max:255',
+            'deskripsi'   => 'nullable|string',
+            'bidang_studi'=> 'required|string|max:255',
+            'skor'        => 'nullable|array',
+            'skor.*'      => 'nullable|integer|min:0|max:100',
+        ];
     }
 }

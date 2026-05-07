@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Database\Seeders\SkorJurusan;
+use App\Models\SkorJurusan;
 use Illuminate\Database\Eloquent\Model;
 
 class JurusanKuliah extends Model

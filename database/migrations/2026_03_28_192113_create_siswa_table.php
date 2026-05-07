@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('siswa', function (Blueprint $table) {
             $table->id();
             $table->foreignId('users_id')->unique()->constrained()->cascadeOnDelete();
-            $table->string('jurusan_siswa');
+            $table->foreignId('jurusan_smk_id')->nullable()->constrained('jurusan_smk')->nullOnDelete();
             $table->timestamps();
         });
     }

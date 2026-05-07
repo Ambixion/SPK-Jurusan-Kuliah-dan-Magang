@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Database\Seeders\SkorJurusan;
-use Database\Seeders\SkorSiswa;
+use App\Models\SkorJurusan;
+use App\Models\SkorSiswa;
 use Illuminate\Database\Eloquent\Model;
 
 class Kriteria extends Model

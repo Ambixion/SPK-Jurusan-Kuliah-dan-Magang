@@ -10,6 +10,10 @@ class SkorMagang extends Model
 
     protected $fillable = ['tempat_magang_id', 'kriteria_id', 'score'];
 
+    protected $casts = [
+        'score' => 'integer',
+    ];
+
     public function tempatMagang() {
         return $this->belongsTo(TempatMagang::class, 'tempat_magang_id');
     }

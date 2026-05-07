@@ -10,6 +10,10 @@ class SkorJurusan extends Model
 
     protected $fillable = ['jurusan_kuliah_id', 'kriteria_id', 'score'];
 
+    protected $casts = [
+        'score' => 'integer',
+    ];
+
     public function jurusan() {
         return $this->belongsTo(JurusanKuliah::class, 'jurusan_kuliah_id');
     }

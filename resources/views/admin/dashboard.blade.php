@@ -1,119 +1,73 @@
-{{-- @extends('layouts.admin')
-
+@extends('layouts.admin')
 @section('title', 'Dashboard Admin')
+@section('page-title', 'Dashboard')
 
 @section('content')
-<div class="mb-4">
-    <h3 class="mb-4">📊 Dashboard</h3>
-
-    <div class="row">
-        <!-- Total Users -->
-        <div class="col-md-6 col-lg-4 mb-3">
-            <div class="card border-primary">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-0">Total User</h6>
-                            <h2 class="mb-0 text-primary">{{ $total_users }}</h2>
-                        </div>
-                        <div style="font-size: 2.5rem;">👥</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Total Siswa -->
-        <div class="col-md-6 col-lg-4 mb-3">
-            <div class="card border-success">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-0">Total Siswa</h6>
-                            <h2 class="mb-0 text-success">{{ $total_siswa }}</h2>
-                        </div>
-                        <div style="font-size: 2.5rem;">🎓</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Total Guru -->
-        <div class="col-md-6 col-lg-4 mb-3">
-            <div class="card border-info">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-0">Total Guru</h6>
-                            <h2 class="mb-0 text-info">{{ $total_guru }}</h2>
-                        </div>
-                        <div style="font-size: 2.5rem;">👨‍🏫</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Total Jurusan -->
-        <div class="col-md-6 col-lg-4 mb-3">
-            <div class="card border-warning">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-0">Total Jurusan</h6>
-                            <h2 class="mb-0 text-warning">{{ $total_jurusan }}</h2>
-                        </div>
-                        <div style="font-size: 2.5rem;">📚</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Total Tempat Magang -->
-        <div class="col-md-6 col-lg-4 mb-3">
-            <div class="card border-danger">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-0">Total Tempat Magang</h6>
-                            <h2 class="mb-0 text-danger">{{ $total_tempat_magang }}</h2>
-                        </div>
-                        <div style="font-size: 2.5rem;">🏢</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Total Kriteria -->
-        <div class="col-md-6 col-lg-4 mb-3">
-            <div class="card border-secondary">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-0">Total Kriteria</h6>
-                            <h2 class="mb-0 text-secondary">{{ $total_kriteria }}</h2>
-                        </div>
-                        <div style="font-size: 2.5rem;">⚙️</div>
-                    </div>
-                </div>
+{{-- BIG STAT CARDS --}}
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div style="background:linear-gradient(135deg,#5b6af0,#7c3aed);border-radius:16px;padding:24px;">
+            <div style="color:rgba(255,255,255,0.7);font-size:0.85rem;margin-bottom:8px;">Total Jurusan Kuliah</div>
+            <div style="font-size:2.4rem;font-weight:700;color:#fff;line-height:1;">
+                {{ $total_jurusan ?? 0 }} <span style="font-size:1rem;font-weight:400;opacity:0.8;">Prodi</span>
             </div>
         </div>
     </div>
-
-    <!-- Quick Links -->
-    <div class="row mt-5">
-        <div class="col-md-12">
-            <h5 class="mb-3">Akses Cepat</h5>
-            <div class="d-flex gap-2 flex-wrap">
-                <a href="{{ route('admin.users.create') }}" class="btn btn-primary btn-sm">+ Tambah User</a>
-                <a href="{{ route('admin.jurusan.create') }}" class="btn btn-success btn-sm">+ Tambah Jurusan</a>
-                <a href="{{ route('admin.tempat_magang.create') }}" class="btn btn-info btn-sm">+ Tambah Tempat Magang</a>
-                <a href="{{ route('admin.kriteria.create') }}" class="btn btn-warning btn-sm">+ Tambah Kriteria</a>
+    <div class="col-md-4">
+        <div style="background:linear-gradient(135deg,#1e40af,#5b6af0);border-radius:16px;padding:24px;">
+            <div style="color:rgba(255,255,255,0.7);font-size:0.85rem;margin-bottom:8px;">Total Jurusan SMK</div>
+            <div style="font-size:2.4rem;font-weight:700;color:#fff;line-height:1;">
+                {{ $total_jurusan_smk ?? 0 }} <span style="font-size:1rem;font-weight:400;opacity:0.8;">Jurusan</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div style="background:linear-gradient(135deg,#7c3aed,#a855f7);border-radius:16px;padding:24px;">
+            <div style="color:rgba(255,255,255,0.7);font-size:0.85rem;margin-bottom:8px;">Total Tempat Magang</div>
+            <div style="font-size:2.4rem;font-weight:700;color:#fff;line-height:1;">
+                {{ $total_tempat_magang ?? 0 }} <span style="font-size:1rem;font-weight:400;opacity:0.8;">Tempat</span>
             </div>
         </div>
     </div>
 </div>
-@endsection --}}
-ini dashboard admin
-<form method="POST" action="{{ route('logout') }}">
-    @csrf
-    <button type="submit">Logout</button>
-</form>
+
+{{-- SMALLER STAT CARDS --}}
+<div class="row g-3">
+    <div class="col-md-3">
+        <div class="card-dark d-flex align-items-center gap-3">
+            <div style="width:48px;height:48px;border-radius:12px;background:rgba(139,92,246,0.2);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;">👥</div>
+            <div>
+                <div style="color:#8892a4;font-size:0.78rem;margin-bottom:2px;">Total User</div>
+                <div style="font-size:1.8rem;font-weight:700;color:#fff;line-height:1;">{{ $total_user ?? 0 }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card-dark d-flex align-items-center gap-3">
+            <div style="width:48px;height:48px;border-radius:12px;background:rgba(34,197,94,0.2);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;">🎓</div>
+            <div>
+                <div style="color:#8892a4;font-size:0.78rem;margin-bottom:2px;">Total Siswa</div>
+                <div style="font-size:1.8rem;font-weight:700;color:#fff;line-height:1;">{{ $total_siswa ?? 0 }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card-dark d-flex align-items-center gap-3">
+            <div style="width:48px;height:48px;border-radius:12px;background:rgba(59,130,246,0.2);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;">👨‍🏫</div>
+            <div>
+                <div style="color:#8892a4;font-size:0.78rem;margin-bottom:2px;">Total Guru</div>
+                <div style="font-size:1.8rem;font-weight:700;color:#fff;line-height:1;">{{ $total_guru ?? 0 }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card-dark d-flex align-items-center gap-3">
+            <div style="width:48px;height:48px;border-radius:12px;background:rgba(245,158,11,0.2);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;">⚙️</div>
+            <div>
+                <div style="color:#8892a4;font-size:0.78rem;margin-bottom:2px;">Total Kriteria</div>
+                <div style="font-size:1.8rem;font-weight:700;color:#fff;line-height:1;">{{ $total_kriteria ?? 0 }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection

@@ -8,10 +8,14 @@ class Siswa extends Model
 {
     protected $table = 'siswa';
 
-    protected $fillable = ['users_id', 'jurusan_siswa'];
+    protected $fillable = ['users_id', 'jurusan_smk_id'];
 
     public function user() {
         return $this->belongsTo(User::class, 'users_id');
+    }
+
+    public function jurusanSmk() {
+        return $this->belongsTo(JurusanSmk::class, 'jurusan_smk_id');
     }
 
     public function skorSiswa() {
