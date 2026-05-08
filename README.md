@@ -1,144 +1,217 @@
-# 🎓 SPK Pemilihan Jurusan Kuliah & Tempat Magang
+# Sistem Pendukung Keputusan Pemilihan Jurusan Kuliah dan Tempat Magang
 
-Sistem Pendukung Keputusan (SPK) berbasis web untuk membantu siswa dalam menentukan **jurusan kuliah** dan **tempat magang** yang paling sesuai berdasarkan kriteria tertentu menggunakan metode **Simple Additive Weighting (SAW)**.
+Sistem Pendukung Keputusan Pemilihan Jurusan Kuliah dan Tempat Magang merupakan aplikasi berbasis web yang dikembangkan untuk membantu proses pengambilan keputusan dalam menentukan jurusan kuliah dan tempat magang terbaik berdasarkan beberapa kriteria penilaian.
 
----
-
-## 📌 Latar Belakang
-
-Banyak siswa mengalami kebingungan dalam menentukan jurusan kuliah maupun tempat magang karena harus mempertimbangkan berbagai faktor seperti minat, nilai akademik, dan jarak.
-
-Oleh karena itu, sistem ini dibuat untuk membantu proses pengambilan keputusan secara **objektif, terstruktur, dan berbasis data**.
+Sistem ini menggunakan metode Simple Additive Weighting (SAW) sebagai metode utama dalam proses perhitungan dan perangkingan alternatif sehingga hasil rekomendasi dapat lebih objektif, terstruktur, dan mudah dipahami.
 
 ---
 
-## 🎯 Tujuan
+# Tentang Project
 
-* Membantu siswa menentukan jurusan kuliah yang sesuai
-* Memberikan rekomendasi tempat magang terbaik
-* Mengimplementasikan metode **SAW** dalam sistem nyata
-* Menerapkan konsep **DevOps menggunakan Docker**
+Pemilihan jurusan kuliah dan tempat magang sering menjadi tantangan bagi siswa karena banyaknya pilihan yang tersedia. Tidak sedikit pengguna mengalami kesulitan dalam menentukan pilihan yang sesuai dengan kemampuan, minat, maupun kebutuhan mereka.
 
----
-
-## 🧠 Metode yang Digunakan
-
-### 🔹 Simple Additive Weighting (SAW)
-
-Metode SAW digunakan untuk melakukan perankingan alternatif berdasarkan beberapa kriteria.
-
-**Tahapan:**
-
-1. Menentukan kriteria dan bobot
-2. Normalisasi nilai
-3. Perhitungan nilai preferensi
-4. Perankingan hasil
+Melalui project ini, sistem dibangun untuk membantu pengguna mendapatkan rekomendasi terbaik berdasarkan kriteria tertentu menggunakan pendekatan Sistem Pendukung Keputusan (SPK).
 
 ---
 
-## 🗂️ Fitur Sistem
+# Metode yang Digunakan
 
-* 👤 **Admin**
+Project ini menggunakan metode Simple Additive Weighting (SAW).
 
-  * CRUD data (kriteria, jurusan, tempat magang, user)
+Simple Additive Weighting merupakan metode pengambilan keputusan multikriteria yang bekerja dengan cara:
 
-* 👨‍🏫 **Guru**
+* Menentukan kriteria penilaian
+* Memberikan bobot pada setiap kriteria
+* Melakukan normalisasi data
+* Menghitung nilai preferensi
+* Menentukan ranking alternatif terbaik
 
-  * Monitoring data siswa
-  * Input data yang dibutuhkan
+Metode SAW dipilih karena:
 
-* 👨‍🎓 **Siswa**
-
-  * Mengisi kuisioner minat
-  * Melihat hasil rekomendasi
-
-* ⚙️ **Sistem SPK**
-
-  * Perhitungan otomatis menggunakan metode SAW
-  * Menampilkan ranking jurusan & tempat magang
+* Mudah diimplementasikan
+* Perhitungan lebih cepat
+* Cocok untuk proses ranking
+* Hasil mudah dipahami pengguna
 
 ---
 
-## 🧱 Struktur Database (Singkat)
+# Fitur Utama
 
-Beberapa tabel utama:
+## Dashboard Admin
 
-* `users`
-* `siswa`
-* `kriteria`
-* `jurusan_kuliah`
-* `tempat_magang`
-* `skor_siswa`
-* `skor_jurusan`
-* `hasil_jurusan`
-* `hasil_magang`
+* Menampilkan total data jurusan kuliah
+* Menampilkan total data tempat magang
+* Menampilkan total program studi
+* Card interaktif untuk melihat detail data
+* Statistik data sistem
+
+## Manajemen Jurusan Kuliah
+
+* Tambah data jurusan
+* Edit data jurusan
+* Hapus data jurusan
+* Detail informasi jurusan
+* Validasi data
+
+## Manajemen Tempat Magang
+
+* Tambah data tempat magang
+* Edit data tempat magang
+* Hapus data tempat magang
+* Informasi perusahaan/tempat magang
+
+## Manajemen Program Studi
+
+* CRUD program studi
+* Pengelompokan bidang studi
+* Deskripsi program studi
+
+## Sistem Pendukung Keputusan (SPK)
+
+* Penentuan kriteria
+* Penentuan bobot
+* Normalisasi matriks
+* Perhitungan metode SAW
+* Perangkingan alternatif
+* Hasil rekomendasi jurusan
+* Hasil rekomendasi tempat magang
+
+## Authentication
+
+* Login admin
+* Login guru
+* Login siswa
+* Session management
+* Middleware authentication
 
 ---
 
-## ⚙️ Teknologi yang Digunakan
+# Teknologi yang Digunakan
 
-* Laravel (Backend)
-* MySQL (Database)
-* Docker (DevOps)
+## Backend
+
 * PHP
+* Laravel Framework
+
+## Frontend
+
+* Blade Template Engine
+* Bootstrap
+* JavaScript
+* AJAX / Fetch API
+
+## Database
+
+* MySQL
+
+## Tools
+
+* Composer
+* Git
+* GitHub
 
 ---
 
-## 🚀 Cara Menjalankan Project
+# Struktur Menu Sistem
 
-### 🔹 Tanpa Docker
-
-```bash
-git clone <repository>
-cd project
-
-composer install
-cp .env.example .env
-php artisan key:generate
-
-php artisan migrate
-php artisan db:seed
-
-php artisan serve
+```bash id="v5s7mi"
+├── Dashboard
+├── Data Jurusan Kuliah
+├── Data Tempat Magang
+├── Data Program Studi
+├── Data Kriteria
+├── Data Bobot
+├── Perhitungan SAW
+├── Hasil Ranking
+└── Authentication
 ```
 
 ---
 
-### 🔹 Menggunakan Docker
+# Alur Metode SAW
 
-```bash
-docker-compose up --build
+```text id="g6b3g1"
+1. Menentukan alternatif
+2. Menentukan kriteria
+3. Memberikan bobot pada setiap kriteria
+4. Membuat matriks keputusan
+5. Melakukan normalisasi matriks
+6. Menghitung nilai preferensi
+7. Melakukan proses ranking
+8. Menampilkan hasil rekomendasi terbaik
 ```
 
 ---
 
-## 📊 Contoh Hasil
 
-Sistem akan menghasilkan ranking seperti:
+# Contoh Kriteria Penilaian
 
-1. Teknik Informatika → 0.97
-2. Sistem Informasi → 0.88
-3. DKV → 0.80
+## Jurusan Kuliah
 
----
+* Minat
+* Nilai akademik
+* Prospek kerja
+* Biaya kuliah
+* Kemampuan dasar
 
-## 📈 Pengembangan Selanjutnya
+## Tempat Magang
 
-* Implementasi metode **AHP** untuk penentuan bobot
-* Integrasi data real siswa
-* UI/UX yang lebih interaktif
-* Deployment ke server
-
----
-
-## 👨‍💻 Developer
-
-Dibuat oleh mahasiswa sebagai bagian dari **Project Based Learning (PBL)**.
+* Lokasi
+* Fasilitas
+* Relevansi bidang
+* Jam kerja
+* Reputasi perusahaan
 
 ---
 
-## 📌 Catatan
+# Keunggulan Sistem
 
-Project ini masih dalam tahap pengembangan dan dapat mengalami perubahan sesuai kebutuhan.
+* Interface sederhana dan mudah digunakan
+* Sistem perhitungan otomatis
+* Proses ranking cepat
+* Data terorganisir
+* Mudah dikembangkan kembali
+* Cocok untuk penelitian maupun pembelajaran
 
 ---
+
+# Pengembangan Selanjutnya
+
+Beberapa pengembangan yang dapat dilakukan:
+
+* Export PDF dan Excel
+* Grafik visualisasi data
+* Sistem rekomendasi berbasis AI
+* Multi role user
+* REST API
+* Responsive mobile interface
+* Notifikasi sistem
+* Riwayat hasil perhitungan
+
+---
+
+# Kontributor
+
+Developer:
+
+* Dagi
+* Ali
+* Bintang
+* Ariel
+* Nayla
+
+GitHub:
+
+* https://github.com/dugdugies
+
+---
+
+# License
+
+Project ini dibuat untuk kebutuhan:
+
+* Pembelajaran
+* Penelitian
+* Pengembangan sistem pendukung keputusan
+
+Silakan gunakan dan kembangkan project ini sesuai kebutuhan.
