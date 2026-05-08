@@ -38,8 +38,11 @@
                     <td style="text-align:right;">
                         <div class="d-flex gap-2 justify-content-end">
                             <a href="{{ route('admin.kriteria.edit', $k->id) }}" class="btn-sm-action btn-edit">✏ Edit</a>
-                            <form method="POST" action="{{ route('admin.kriteria.destroy', $k->id) }}" class="d-inline"
-                                onsubmit="return confirm('Yakin hapus kriteria ini?')">
+                            <form method="POST"
+                                  action="{{ route('admin.kriteria.destroy', $k->id) }}"
+                                  class="d-inline"
+                                  data-confirm-delete
+                                  data-confirm-text="Yakin hapus kriteria ini?">
                                 @csrf @method('DELETE')
                                 <button type="submit" class="btn-sm-action btn-delete">🗑 Hapus</button>
                             </form>

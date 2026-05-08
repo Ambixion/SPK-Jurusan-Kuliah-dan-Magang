@@ -8,6 +8,21 @@
     <a href="{{ route('admin.kuisoner.create') }}" class="btn-primary-custom">+ Tambah Kuisoner</a>
 </div>
 
+<div class="card-dark mb-3" style="padding:14px 16px;display:inline-flex;">
+    <form method="GET" action="{{ route('admin.kuisoner.index') }}" class="d-flex gap-2 align-items-center flex-wrap">
+        <div style="color:#a0aec0;font-weight:600;font-size:0.85rem;">Filter Jenis</div>
+        <select name="jenis" class="form-select-dark" style="max-width:220px;">
+            <option value="keduanya" @selected(($jenis ?? 'keduanya') === 'keduanya')>Keduanya</option>
+            <option value="magang" @selected(($jenis ?? 'keduanya') === 'magang')>Magang</option>
+            <option value="jurusan" @selected(($jenis ?? 'keduanya') === 'jurusan')>Jurusan</option>
+        </select>
+        <button type="submit" class="btn-primary-custom">Terapkan</button>
+        @if(($jenis ?? 'keduanya') !== 'keduanya')
+            <a href="{{ route('admin.kuisoner.index') }}" class="btn-secondary-custom">Reset</a>
+        @endif
+    </form>
+</div>
+
 <div class="card-dark" style="padding:0;overflow:hidden;">
     @if($kuisoner->isEmpty())
         <div style="padding:40px;text-align:center;color:#8892a4;">
@@ -42,8 +57,11 @@
                     <td style="text-align:right;">
                         <div class="d-flex gap-2 justify-content-end">
                             <a href="{{ route('admin.kuisoner.edit', $item->id) }}" class="btn-sm-action btn-edit">✏ Edit</a>
-                            <form method="POST" action="{{ route('admin.kuisoner.destroy', $item->id) }}" class="d-inline"
-                                onsubmit="return confirm('Yakin hapus soal ini?')">
+                            <form method="POST"
+                                  action="{{ route('admin.kuisoner.destroy', $item->id) }}"
+                                  class="d-inline"
+                                  data-confirm-delete
+                                  data-confirm-text="Yakin hapus soal ini?">
                                 @csrf @method('DELETE')
                                 <button type="submit" class="btn-sm-action btn-delete">🗑 Hapus</button>
                             </form>

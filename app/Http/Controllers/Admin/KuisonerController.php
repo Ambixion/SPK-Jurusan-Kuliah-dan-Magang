@@ -9,10 +9,19 @@ use Illuminate\Http\Request;
 
 class KuisonerController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $kuisoner = Kuisoner::with('opsi')->latest()->paginate(10);
-        return view('admin.kuisoner.index', compact('kuisoner'));
+        $jenis = $request->query('jenis', 'keduanya');
+
+        $kuisoner = Kuisoner::with('opsi')
+            ->when(in_array($jenis, ['magang', 'jurusan'], true), function ($query) use ($jenis) {
+                $query->where('type', $jenis);
+            })
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('admin.kuisoner.index', compact('kuisoner', 'jenis'));
     }
 
     public function create()

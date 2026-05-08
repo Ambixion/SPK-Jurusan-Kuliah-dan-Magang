@@ -29,8 +29,11 @@
                 <td style="text-align:right;">
                     <div class="d-flex gap-2 justify-content-end">
                         <a href="{{ route('admin.users.edit', $user->id) }}" class="btn-sm-action btn-edit">✏ Edit</a>
-                        <form method="POST" action="{{ route('admin.users.destroy', $user->id) }}" class="d-inline"
-                            onsubmit="return confirm('Yakin hapus user ini?')">
+                        <form method="POST"
+                              action="{{ route('admin.users.destroy', $user->id) }}"
+                              class="d-inline"
+                              data-confirm-delete
+                              data-confirm-text="Yakin hapus user ini?">
                             @csrf @method('DELETE')
                             <button type="submit" class="btn-sm-action btn-delete">🗑 Hapus</button>
                         </form>

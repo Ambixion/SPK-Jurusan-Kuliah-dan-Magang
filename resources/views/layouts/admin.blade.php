@@ -161,6 +161,45 @@
         .pagination .page-link:hover { background: var(--card-hover); color: #fff; }
         select[multiple].form-control-dark { min-height: 120px; }
         option { background: #0d1117; }
+
+        /* Confirm delete modal (themed) */
+        #confirmDeleteModal .modal-content {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            color: #e2e8f0;
+        }
+        #confirmDeleteModal .modal-header {
+            border-bottom: 1px solid var(--border-color);
+        }
+        #confirmDeleteModal .modal-footer {
+            border-top: 1px solid var(--border-color);
+        }
+        #confirmDeleteModal .btn-close {
+            filter: invert(1) grayscale(100%);
+            opacity: 0.8;
+        }
+        #confirmDeleteModal .btn-close:hover { opacity: 1; }
+
+        /* Make modal footer buttons consistent size */
+        #confirmDeleteYes {
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            line-height: 1.2;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid rgba(239,68,68,0.35);
+            background: rgba(239,68,68,0.15);
+            color: #f87171;
+            transition: all 0.2s;
+        }
+        #confirmDeleteYes:hover {
+            background: rgba(239,68,68,0.3);
+            color: #f87171;
+        }
     </style>
 </head>
 <body>
@@ -226,7 +265,67 @@
             @yield('content')
         </div>
     </div>
+
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmDeleteTitle" style="font-weight:700;">Konfirmasi Hapus</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="confirmDeleteText" style="color:#a0aec0;">
+                    Yakin ingin menghapus data ini?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary-custom" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" id="confirmDeleteYes">Ya, Hapus</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        (function () {
+            let pendingDeleteForm = null;
+
+            function getModal() {
+                const el = document.getElementById('confirmDeleteModal');
+                if (!el || !window.bootstrap) return null;
+                return bootstrap.Modal.getOrCreateInstance(el);
+            }
+
+            function openConfirmModal(message) {
+                const textEl = document.getElementById('confirmDeleteText');
+                if (textEl) textEl.textContent = message || 'Yakin ingin menghapus data ini?';
+
+                const modal = getModal();
+                if (modal) modal.show();
+            }
+
+            document.addEventListener('submit', function (e) {
+                const form = e.target;
+                if (!(form instanceof HTMLFormElement)) return;
+                if (!form.hasAttribute('data-confirm-delete')) return;
+                if (form.dataset.confirmed === '1') return;
+
+                e.preventDefault();
+                pendingDeleteForm = form;
+
+                const msg = form.getAttribute('data-confirm-text') || 'Yakin ingin menghapus data ini?';
+                openConfirmModal(msg);
+            }, true);
+
+            document.addEventListener('click', function (e) {
+                const btn = e.target && e.target.closest ? e.target.closest('#confirmDeleteYes') : null;
+                if (!btn) return;
+                if (!pendingDeleteForm) return;
+
+                pendingDeleteForm.dataset.confirmed = '1';
+                pendingDeleteForm.submit();
+                pendingDeleteForm = null;
+            });
+        })();
+    </script>
     @stack('scripts')
 </body>
 </html>
