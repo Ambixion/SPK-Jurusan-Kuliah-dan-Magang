@@ -11,12 +11,15 @@ class JurusanSmk extends Model
 
     public function skills()
     {
-        return $this->belongsToMany(Skill::class, 'jurusan_smk_skill', 'jurusan_smk_id', 'skill_id')->withTimestamps();
+        return $this->belongsToMany(Skill::class, 'jurusan_smk_skill', 'jurusan_smk_id', 'skill_id')
+                    ->withTimestamps();
     }
 
-    public function skillPivots()
+    // Bidang yang dimiliki jurusan SMK ini
+    public function bidangs()
     {
-        return $this->hasMany(JurusanSmkSkill::class, 'jurusan_smk_id');
+        return $this->belongsToMany(Bidang::class, 'jurusan_smk_bidang', 'jurusan_smk_id', 'bidang_id')
+                    ->withTimestamps();
     }
 
     public function siswa()

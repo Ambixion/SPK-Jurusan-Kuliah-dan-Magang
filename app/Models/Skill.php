@@ -38,4 +38,10 @@ class Skill extends Model
     {
         return $this->belongsToMany(TempatMagang::class, 'tempat_magang_skill', 'skill_id', 'tempat_magang_id')->withTimestamps();
     }
+
+    public function bidangs()
+    {
+        return $this->belongsToMany(Bidang::class, 'bidang_skill', 'skill_id', 'bidang_id')
+                    ->withTimestamps();
+    }
 }

@@ -6,27 +6,46 @@ use App\Http\Controllers\Controller;
 use App\Models\HasilJurusan;
 use App\Models\HasilMagang;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class HasilController extends Controller
 {
-    public function index() {
-        $siswa = Auth::user()->siswa;
+    // ── Hasil Pemilihan Jurusan Kuliah ──────────────────────────────────────
+    public function jurusan()
+    {
+        $siswa        = Auth::user()->siswa;
+        $nilaiRata    = round(DB::table('nilai_siswa')->where('siswa_id', $siswa->id)->avg('nilai') ?? 0, 2);
+        $sudahMengisi = $siswa->jawabanSiswa()->whereHas('opsi.kuisoner', fn($q) => $q->where('type', 'jurusan'))->exists();
 
-        if (!$siswa->jawabanSiswa()->exists()) {
-            return redirect()->route('siswa.kuisoner')->with('info', 'Silahkan isi kuisoner terlebih dahulu untuk melihat hasil rekomendasi.');
-
+        $hasilJurusan = collect();
+        if ($sudahMengisi) {
+            $hasilJurusan = HasilJurusan::with('jurusan')
+                ->where('siswa_id', $siswa->id)
+                ->orderBy('rank')->get();
         }
 
-        $hasilJurusan = HasilJurusan::with('jurusan')
-        ->where('siswa_id', $siswa->id)
-        ->orderBy('rank')
-        ->get();
+        return view('siswa.hasil.jurusan', compact('siswa', 'nilaiRata', 'hasilJurusan', 'sudahMengisi'));
+    }
 
-        $hasilMagang = HasilMagang::with('tempatMagang')
-        ->where('siswa_id', $siswa->id)
-        ->orderBy('rank')
-        ->get();
+    // ── Hasil Pemilihan PKL ─────────────────────────────────────────────────
+    public function pkl()
+    {
+        $siswa        = Auth::user()->siswa;
+        $nilaiRata    = round(DB::table('nilai_siswa')->where('siswa_id', $siswa->id)->avg('nilai') ?? 0, 2);
+        $sudahMengisi = HasilMagang::where('siswa_id', $siswa->id)->exists();
 
-        return view('siswa.hasil.index', compact('hasilJurusan', 'hasilMagang', 'siswa'));
+        $hasilMagang = collect();
+        if ($sudahMengisi) {
+            $hasilMagang = HasilMagang::with('tempatMagang')
+                ->where('siswa_id', $siswa->id)
+                ->orderBy('rank')->get();
+        }
+
+        return view('siswa.hasil.pkl', compact('siswa', 'nilaiRata', 'hasilMagang', 'sudahMengisi'));
+    }
+
+    public function index()
+    {
+        return $this->jurusan();
     }
 }

@@ -2,24 +2,44 @@
 
 namespace Database\Seeders;
 
-
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
+use App\Models\Siswa;
+use App\Models\User;
+use App\Models\JurusanSmk;
 
 class SiswaSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // $user = DB::table('users')->where('role', 'siswa')->first();
+        $users      = User::where('role', 'siswa')->get();
+        $jurusanIds = JurusanSmk::pluck('id');
 
-        // DB::table('siswa')->insert([
-        //     'users_id' => $user->id,
-        //     'jurusan_siswa' => 'IPA',
-        //     'created_at' => now(),
-        //     'updated_at' => now(),
-        // ]);
+        if ($jurusanIds->isEmpty()) {
+            $this->command->warn('Tidak ada data jurusan_smk! Jalankan JurusanSmkSeeder terlebih dahulu.');
+            return;
+        }
+
+        $counter = 1;
+        foreach ($users as $user) {
+            if (Siswa::where('users_id', $user->id)->exists()) {
+                $counter++;
+                continue;
+            }
+
+            // Generate NISN unik 10 digit
+            $nisn = str_pad($counter, 10, '0', STR_PAD_LEFT);
+
+            Siswa::create([
+                'users_id'       => $user->id,
+                'jurusan_smk_id' => $jurusanIds->random(),
+                'nisn'           => $nisn,
+                'kelas'          => 'XII',
+                'semester'       => 6,
+                'no_telp'        => '08123456789',
+                'alamat'         => 'Jember',
+            ]);
+
+            $counter++;
+        }
     }
 }

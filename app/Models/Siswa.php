@@ -8,33 +8,80 @@ class Siswa extends Model
 {
     protected $table = 'siswa';
 
-    protected $fillable = ['users_id', 'jurusan_smk_id'];
+    protected $fillable = [
+        'users_id',
+        'jurusan_smk_id',
+        'nisn',
+        'kelas',
+        'semester',
+        'no_telp',
+        'alamat',
+    ];
 
-    public function user() {
+    // =====================================================================
+    // RELATIONSHIPS
+    // =====================================================================
+
+    public function user()
+    {
         return $this->belongsTo(User::class, 'users_id');
     }
 
-    public function jurusanSmk() {
+    public function jurusanSmk()
+    {
         return $this->belongsTo(JurusanSmk::class, 'jurusan_smk_id');
     }
 
-    public function skorSiswa() {
+    public function skorSiswa()
+    {
         return $this->hasMany(SkorSiswa::class, 'siswa_id');
     }
 
-    public function jawabanSiswa() {
+    public function jawabanSiswa()
+    {
         return $this->hasMany(JawabanSiswa::class, 'siswa_id');
     }
 
-    public function nilaiSiswa() {
+    public function nilaiSiswa()
+    {
         return $this->hasMany(NilaiSiswa::class, 'siswa_id');
     }
 
-    public function hasilJurusan() {
+    // Alias agar bisa dipanggil dengan ->nilai() juga (backward compat)
+    public function nilai()
+    {
+        return $this->nilaiSiswa();
+    }
+
+    public function hasilJurusan()
+    {
         return $this->hasMany(HasilJurusan::class, 'siswa_id');
     }
 
-    public function hasilMagang() {
+    public function hasilMagang()
+    {
         return $this->hasMany(HasilMagang::class, 'siswa_id');
+    }
+
+    // =====================================================================
+    // ACCESSORS
+    // =====================================================================
+
+    /**
+     * Accessor jurusan_siswa → nama jurusan SMK dari relasi
+     * Dipakai di view: $siswa->jurusan_siswa
+     */
+    public function getJurusanSiswaAttribute(): string
+    {
+        return $this->jurusanSmk->nama_jurusan ?? '-';
+    }
+
+    /**
+     * Nilai rata-rata rapot dari tabel nilai_siswa
+     * Dipakai di view: $siswa->nilai_rata
+     */
+    public function getNilaiRataAttribute(): float
+    {
+        return round($this->nilaiSiswa()->avg('nilai') ?? 0, 2);
     }
 }

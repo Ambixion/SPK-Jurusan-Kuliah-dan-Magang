@@ -2,29 +2,28 @@
 
 namespace Database\Seeders;
 
-
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-
-use function Symfony\Component\Translation\t;
 
 class DatabaseSeeder extends Seeder
 {
     use WithoutModelEvents;
 
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
         $this->call([
-            SkillSeeder::class,
-            UserSeeder::class,
-            SiswaSeeder::class,
-            JurusanSeeder::class,
-            KriteriaSeeder::class,
-            SkorSiswa::class,
-            SkorJurusan::class,
+            SkillSeeder::class,             // 1. Skill
+            UserSeeder::class,              // 2. Users
+            JurusanSmkSeeder::class,        // 3. Jurusan SMK
+            JurusanSeeder::class,           // 4. Jurusan Kuliah
+            TempatMagangSeeder::class,      // 5. Tempat Magang
+            KriteriaSeeder::class,          // 6. Kriteria SAW
+            SkorJurusan::class,             // 7. Skor Jurusan
+            SkorMagangSeeder::class,        // 8. Skor Magang
+            BidangSeeder::class,            // 9. Bidang + relasi
+            KuisonerDinamisSeeder::class,   // 10. Kuisoner dinamis
+            SiswaSeeder::class,             // 11. Siswa (setelah jurusan SMK)
+            NilaiSeeder::class,             // 12. Nilai rapot siswa ← BARU
         ]);
     }
 }
