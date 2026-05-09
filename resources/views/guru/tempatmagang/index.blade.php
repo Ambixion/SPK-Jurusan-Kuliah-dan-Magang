@@ -103,10 +103,10 @@
             font-size: 23px;
         }
 
-        .icon-yellow { background: #e6b800; }
-        .icon-red { background: #e21414; }
-        .icon-purple { background: #4141bb; }
-        .icon-green { background: #43c23f; }
+        .yellow { background: #e6b800; }
+        .red { background: #e21414; }
+        .purple { background: #4141bb; }
+        .green { background: #43c23f; }
 
         .logout-btn {
             background: #4444b7;
@@ -116,11 +116,6 @@
             padding: 12px 32px;
             font-family: 'Poppins', sans-serif;
             cursor: pointer;
-            transition: 0.25s;
-        }
-
-        .logout-btn:hover {
-            background: #5757d8;
         }
 
         .main {
@@ -137,48 +132,15 @@
             letter-spacing: 1px;
         }
 
-        .stat-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 22px;
-            margin-bottom: 28px;
-        }
-
-        .stat-card {
-            background: linear-gradient(135deg, #3f3fc4, #5c5cff);
-            padding: 22px 26px;
-            border-radius: 10px;
-            min-height: 120px;
-        }
-
-        .stat-title {
-            font-size: 18px;
-            margin-bottom: 12px;
-        }
-
-        .stat-value {
-            font-size: 28px;
-            font-weight: 700;
-            color: #94d1d3;
-        }
-
         .card {
             background: #242467;
             border-radius: 12px;
             padding: 26px;
         }
 
-        .section-title {
-            font-size: 24px;
-            font-weight: 800;
-            margin-bottom: 22px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
         .toolbar {
             display: grid;
-            grid-template-columns: 1.5fr 1fr;
+            grid-template-columns: 1.6fr 1fr;
             gap: 18px;
             margin-bottom: 22px;
         }
@@ -266,24 +228,6 @@
             color: #d6d6e7 !important;
         }
 
-        .pagination {
-            margin-top: 20px;
-        }
-
-        .pagination nav {
-            color: white;
-        }
-
-        @media(max-width: 1200px) {
-            .stat-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .toolbar {
-                grid-template-columns: 1fr;
-            }
-        }
-
         @media(max-width: 900px) {
             .sidebar {
                 position: relative;
@@ -301,12 +245,16 @@
                 padding: 30px 20px;
             }
 
+            .toolbar {
+                grid-template-columns: 1fr;
+            }
+
             .card {
                 overflow-x: auto;
             }
 
             .table {
-                min-width: 950px;
+                min-width: 900px;
             }
         }
     </style>
@@ -326,24 +274,24 @@
 
             <nav class="menu">
                 <a href="{{ route('guru.dashboard') }}" class="menu-item">
-                    <div class="menu-icon icon-yellow">👤</div>
+                    <div class="menu-icon yellow">👤</div>
                     <span>Dashboard Guru</span>
                 </a>
 
                 <a href="{{ route('guru.siswa.index') }}" class="menu-item">
-                    <div class="menu-icon icon-red">👔</div>
+                    <div class="menu-icon red">👔</div>
                     <span>Tambah Data Siswa</span>
                 </a>
 
                 <a href="{{ route('guru.tempat_magang') }}" class="menu-item active">
-                    <div class="menu-icon icon-purple">🏢</div>
+                    <div class="menu-icon purple">🏢</div>
                     <span>Data Pemilihan PKL</span>
                 </a>
 
                 <a href="{{ route('guru.jurusan_kuliah') }}" class="menu-item">
-                    <div class="menu-icon icon-green">🏫</div>
-                    <span>Data Pemilihan Prodi</span>
-                </a>
+    <div class="menu-icon green">🏫</div>
+    <span>Data Pemilihan Prodi</span>
+</a>
             </nav>
         </div>
 
@@ -356,37 +304,9 @@
     <main class="main">
         <h1 class="title">Data Pemilihan PKL</h1>
 
-        <section class="stat-grid">
-            <div class="stat-card">
-                <div class="stat-title">Total Tempat Magang</div>
-                <div class="stat-value">{{ $tempatMagang->total() }} Tempat</div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-title">Total Bidang</div>
-                <div class="stat-value">
-                    {{ $tempatMagang->pluck('bidang')->filter()->unique()->count() }} Bidang
-                </div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-title">Total Kuota</div>
-                <div class="stat-value">
-                    {{ $tempatMagang->sum('kuota') }} Kuota
-                </div>
-            </div>
-        </section>
-
         <section class="card">
-            <h2 class="section-title">List Tempat Magang</h2>
-
             <div class="toolbar">
-                <input
-                    type="text"
-                    id="searchInput"
-                    class="input"
-                    placeholder="🔍 Cari nama tempat magang / bidang"
-                >
+                <input type="text" id="searchInput" class="input" placeholder="🔍 Cari nama tempat magang / bidang">
 
                 <select id="bidangFilter" class="select">
                     <option value="">Semua Bidang</option>
@@ -400,7 +320,7 @@
             <table class="table" id="magangTable">
                 <thead>
                     <tr>
-                        <th>No.</th>
+                        <th style="width: 70px;">No.</th>
                         <th>Nama Tempat Magang</th>
                         <th>Bidang</th>
                         <th>Kuota</th>
@@ -423,14 +343,14 @@
                             data-nama="{{ strtolower($nama) }}"
                             data-bidang="{{ strtolower($bidang) }}"
                         >
-                            <td>{{ $tempatMagang->firstItem() + $loop->index }}</td>
+                            <td>{{ $loop->iteration }}</td>
                             <td class="text-left">{{ $nama }}</td>
                             <td>{{ $bidang }}</td>
                             <td>
                                 @if($kuota > 0)
-                                    <span class="badge badge-success">{{ $kuota }} Orang</span>
+                                    <span class="badge badge-success">{{ $kuota }} Kuota</span>
                                 @else
-                                    <span class="badge badge-warning">Belum Ada</span>
+                                    <span class="badge badge-warning">Tidak Tersedia</span>
                                 @endif
                             </td>
                             <td>{{ $kontak }}</td>
@@ -445,10 +365,6 @@
                     @endforelse
                 </tbody>
             </table>
-
-            <div class="pagination">
-                {{ $tempatMagang->links() }}
-            </div>
         </section>
     </main>
 </div>

@@ -16,6 +16,8 @@ use App\Http\Controllers\Siswa\KuisonerJurusanController;
 use App\Http\Controllers\Siswa\HasilController;
 use App\Http\Controllers\Siswa\HasilPklController;
 use App\Http\Controllers\Siswa\HasilJurusanController;
+use App\Http\Controllers\Guru\TempatMagangController as GuruTempatMagangController;
+use App\Http\Controllers\Guru\JurusanKuliahController as GuruJurusanKuliahController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -63,6 +65,10 @@ Route::middleware(['auth', 'role:guru'])
         Route::get('/dashboard', [GuruDashboard::class, 'index'])->name('dashboard');
         Route::resource('siswa', SiswaController::class);
         Route::resource('nilai', NilaiController::class);
+        Route::get('/tempat-magang', [GuruTempatMagangController::class, 'index'])
+            ->name('tempat_magang');
+        Route::get('/jurusan-kuliah', [GuruJurusanKuliahController::class, 'index'])
+            ->name('jurusan_kuliah');
     });
 
 // ---------- SISWA ----------
