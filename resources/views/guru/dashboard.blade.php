@@ -335,10 +335,12 @@
 
 .modal-card {
     width: 100%;
-    max-width: 820px;
+    max-width: 780px;
+    max-height: 90vh;
+    overflow-y: auto;
     background: #242467;
     border-radius: 16px;
-    padding: 32px;
+    padding: 28px;
     box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
     animation: modalPop 0.25s ease;
 }
@@ -669,6 +671,9 @@
     data-nisn="{{ $siswa->nisn ?? '' }}"
     data-kelas="{{ $siswa->kelas ?? '' }}"
     data-jurusan="{{ $siswa->jurusan_smk_id }}"
+    data-no-telp="{{ $siswa->no_telp ?? '' }}"
+    data-alamat="{{ $siswa->alamat ?? '' }}"
+    data-nilai="{{ $siswa->nilaiSiswa->first()->nilai ?? '' }}"
     data-action="{{ route('guru.siswa.update', $siswa->id) }}"
 >
     Edit
@@ -794,16 +799,21 @@
                     <input type="email" name="email" id="editEmail" placeholder="Masukkan email siswa" required>
                 </div>
 
-                <div class="form-group">
-                    <label>Password Default</label>
-                    <input type="text" value="smkn5jember" disabled>
-                    <div class="help">Password tidak bisa diubah dari popup ini.</div>
-                </div>
 
                 <div class="form-group">
                     <label>NISN</label>
                     <input type="text" name="nisn" id="editNisn" placeholder="Masukkan NISN siswa">
                 </div>
+
+                <div class="form-group">
+    <label>No. Telepon</label>
+    <input type="text" name="no_telp" id="editNoTelp" placeholder="Contoh: 085712345678">
+</div>
+
+<div class="form-group full">
+    <label>Alamat</label>
+    <input type="text" name="alamat" id="editAlamat" placeholder="Masukkan alamat siswa">
+</div>
 
                 <div class="form-group">
                     <label>Kelas</label>
@@ -827,6 +837,19 @@
                         @endforeach
                     </select>
                 </div>
+
+                <div class="form-group">
+    <label>Nilai Rata-rata</label>
+    <input
+        type="number"
+        step="0.01"
+        name="nilai_rata_rata"
+        id="editNilai"
+        placeholder="Contoh: 85.50"
+        required
+    >
+</div>
+                
             </div>
 
             <div class="modal-actions">
@@ -848,6 +871,9 @@
     const editNisn = document.getElementById('editNisn');
     const editKelas = document.getElementById('editKelas');
     const editJurusan = document.getElementById('editJurusan');
+    const editNilai = document.getElementById('editNilai');
+const editNoTelp = document.getElementById('editNoTelp');
+const editAlamat = document.getElementById('editAlamat');
 
     document.querySelectorAll('.open-edit-modal').forEach(button => {
         button.addEventListener('click', function () {
@@ -858,6 +884,9 @@
             editNisn.value = this.dataset.nisn || '';
             editKelas.value = this.dataset.kelas || '';
             editJurusan.value = this.dataset.jurusan || '';
+            editNilai.value = this.dataset.nilai || '';
+            editNoTelp.value = this.dataset.noTelp || '';
+            editAlamat.value = this.dataset.alamat || '';
 
             editModal.classList.add('show');
         });

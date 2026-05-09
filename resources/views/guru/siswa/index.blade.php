@@ -372,6 +372,34 @@
                     </div>
 
                     <div class="form-group">
+    <label>No. Telepon</label>
+    <input 
+        type="text" 
+        name="no_telp" 
+        value="{{ old('no_telp') }}" 
+        placeholder="Contoh: 085712345678"
+    >
+
+    @error('no_telp')
+        <div class="error">{{ $message }}</div>
+    @enderror
+</div>
+
+<div class="form-group">
+    <label>Alamat</label>
+    <input 
+        type="text" 
+        name="alamat" 
+        value="{{ old('alamat') }}" 
+        placeholder="Masukkan alamat siswa"
+    >
+
+    @error('alamat')
+        <div class="error">{{ $message }}</div>
+    @enderror
+</div>
+
+                    <div class="form-group">
                         <label>Kelas</label>
                         <select name="kelas" required>
                             <option value="">Pilih Kelas</option>
@@ -401,6 +429,23 @@
                             <div class="error">{{ $message }}</div>
                         @enderror
                     </div>
+
+                    <div class="form-group">
+    <label>Nilai Rata-rata</label>
+    <input 
+        type="number" 
+        step="0.01" 
+        name="nilai_rata_rata" 
+        value="{{ old('nilai_rata_rata') }}" 
+        placeholder="Contoh: 85.50" 
+        required
+    >
+
+    @error('nilai_rata_rata')
+        <div class="error">{{ $message }}</div>
+    @enderror
+</div>
+
                 </div>
 
                 <div class="actions">

@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\JurusanSmk;
 use App\Models\HasilJurusan;
 use App\Models\HasilMagang;
+use App\Models\NilaiSiswa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -25,14 +26,17 @@ class SiswaController extends Controller
     return redirect()->route('guru.siswa.index');
 }
 
-    public function store(Request $request)
+ public function store(Request $request)
 {
     $request->validate([
         'nama' => 'required|string|max:255',
         'email' => 'required|email|unique:users,email',
-        'jurusan_smk_id' => 'required|exists:jurusan_smk,id',
         'nisn' => 'nullable|string|max:20|unique:siswa,nisn',
-        'kelas' => 'nullable|string|max:50',
+        'kelas' => 'required|in:10,11,12',
+        'jurusan_smk_id' => 'required|exists:jurusan_smk,id',
+         'no_telp' => 'nullable|string|max:20',
+        'alamat' => 'nullable|string|max:500',
+        'nilai_rata_rata' => 'required|numeric|min:0|max:100',
     ]);
 
     $user = User::create([
@@ -42,16 +46,26 @@ class SiswaController extends Controller
         'role' => 'siswa',
     ]);
 
-    Siswa::create([
+    $siswa = Siswa::create([
         'users_id' => $user->id,
         'jurusan_smk_id' => $request->jurusan_smk_id,
         'nisn' => $request->nisn,
         'kelas' => $request->kelas,
+        'no_telp' => $request->no_telp,
+        'alamat' => $request->alamat,
+    ]);
+
+    NilaiSiswa::create([
+        'siswa_id' => $siswa->id,
+        'mata_pelajaran' => 'Rata-rata',
+        'nilai' => $request->nilai_rata_rata,
+        'semester' => 0,
+        'tahun_ajaran' => date('Y'),
     ]);
 
     return redirect()
         ->route('guru.dashboard')
-        ->with('success', 'Data siswa berhasil ditambahkan.');
+        ->with('success', 'Data siswa dan nilai rata-rata berhasil ditambahkan.');
 }
 
     public function show(string $id)
@@ -91,6 +105,8 @@ class SiswaController extends Controller
         'nisn' => 'nullable|string|max:20|unique:siswa,nisn,' . $siswa->id,
         'kelas' => 'required|in:10,11,12',
         'jurusan_smk_id' => 'required|exists:jurusan_smk,id',
+        'no_telp' => 'nullable|string|max:20',
+        'alamat' => 'nullable|string|max:500',
     ]);
 
     $siswa->user->update([
@@ -102,6 +118,8 @@ class SiswaController extends Controller
         'nisn' => $request->nisn,
         'kelas' => $request->kelas,
         'jurusan_smk_id' => $request->jurusan_smk_id,
+        'no_telp' => $request->no_telp,
+        'alamat' => $request->alamat,
     ]);
 
     return redirect()
