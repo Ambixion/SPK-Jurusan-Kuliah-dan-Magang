@@ -23,6 +23,13 @@
             min-height: 100vh;
             margin: 0;
         }
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 1040;
+            display: none;
+        }
         .sidebar {
             width: 230px;
             min-height: 100vh;
@@ -92,7 +99,22 @@
             padding: 14px 28px;
             display: flex; align-items: center; justify-content: space-between;
         }
+        .topbar-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
         .topbar-title { font-weight: 700; font-size: 1.25rem; }
+        .btn-hamburger {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            color: #e2e8f0;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .btn-hamburger:hover { background: var(--card-hover); }
         .main-content { flex: 1; padding: 28px; }
         .card-dark { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; padding: 20px; }
         .table-dark-custom { color: #e2e8f0; width: 100%; border-collapse: separate; border-spacing: 0; }
@@ -200,9 +222,84 @@
             background: rgba(239,68,68,0.3);
             color: #f87171;
         }
+
+        /* Mobile: sidebar becomes off-canvas with hamburger */
+        @media (max-width: 768px) {
+            body { display: block; }
+            .btn-hamburger { display: inline-flex; }
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100vh;
+                z-index: 1050;
+                transform: translateX(-110%);
+                transition: transform 0.22s ease;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+            }
+            body.sidebar-open .sidebar { transform: translateX(0); }
+            body.sidebar-open .sidebar-overlay { display: block; }
+            .topbar { padding: 12px 16px; }
+            .topbar-title { font-size: 1.05rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .topbar-subtitle { display: none; }
+            .main-content { padding: 16px; }
+
+            /* Default: all admin tables can horizontal-scroll on mobile (Option A) */
+            .table-dark-custom {
+                display: block;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                width: 100%;
+            }
+            .table-dark-custom th,
+            .table-dark-custom td {
+                white-space: nowrap;
+            }
+
+            /* Dashboard: table transforms to cards on mobile (Option B) */
+            .table-dark-custom.table-cards-mobile {
+                display: table;
+                overflow: visible;
+            }
+            .table-dark-custom.table-cards-mobile thead {
+                display: none;
+            }
+            .table-dark-custom.table-cards-mobile tbody,
+            .table-dark-custom.table-cards-mobile tr,
+            .table-dark-custom.table-cards-mobile td {
+                display: block;
+                width: 100%;
+            }
+            .table-dark-custom.table-cards-mobile tbody tr {
+                background: var(--card-bg);
+                border: 1px solid var(--border-color);
+                border-radius: 14px;
+                margin: 10px 0;
+                padding: 6px 10px;
+            }
+            .table-dark-custom.table-cards-mobile tbody td {
+                padding: 10px 8px;
+                border-bottom: 1px solid rgba(30,42,66,0.75);
+                white-space: normal;
+            }
+            .table-dark-custom.table-cards-mobile tbody td:last-child {
+                border-bottom: none;
+            }
+            .table-dark-custom.table-cards-mobile tbody td::before {
+                content: attr(data-label);
+                display: block;
+                font-size: 0.72rem;
+                font-weight: 700;
+                color: #8892a4;
+                text-transform: uppercase;
+                letter-spacing: 0.04em;
+                margin-bottom: 4px;
+            }
+        }
     </style>
 </head>
 <body>
+    <div class="sidebar-overlay" data-sidebar-overlay></div>
     <div class="sidebar">
         <div class="sidebar-brand">
             <div class="avatar">👤</div>
@@ -244,8 +341,11 @@
 
     <div class="main-wrapper">
         <div class="topbar">
-            <div class="topbar-title">@yield('page-title', 'Admin Panel')</div>
-            <small style="color:#8892a4;">Sistem Pemilih Jurusan</small>
+            <div class="topbar-left">
+                <button type="button" class="btn-hamburger" aria-label="Toggle menu" data-sidebar-toggle>☰</button>
+                <div class="topbar-title">@yield('page-title', 'Admin Panel')</div>
+            </div>
+            <small class="topbar-subtitle" style="color:#8892a4;">Sistem Pemilih Jurusan</small>
         </div>
         <div class="main-content">
             @if(session('success'))
@@ -285,6 +385,33 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        (function () {
+            const toggleBtn = document.querySelector('[data-sidebar-toggle]');
+            const overlay = document.querySelector('[data-sidebar-overlay]');
+
+            function setOpen(open) {
+                document.body.classList.toggle('sidebar-open', !!open);
+            }
+
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', function () {
+                    setOpen(!document.body.classList.contains('sidebar-open'));
+                });
+            }
+
+            if (overlay) {
+                overlay.addEventListener('click', function () {
+                    setOpen(false);
+                });
+            }
+
+            document.addEventListener('click', function (e) {
+                const link = e.target && e.target.closest ? e.target.closest('.sidebar a.nav-item-custom') : null;
+                if (link && window.matchMedia && window.matchMedia('(max-width: 768px)').matches) {
+                    setOpen(false);
+                }
+            });
+        })();
         (function () {
             let pendingDeleteForm = null;
 
