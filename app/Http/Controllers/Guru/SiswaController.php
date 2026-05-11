@@ -16,9 +16,19 @@ class SiswaController extends Controller
 {
     public function index()
 {
+    $siswas = Siswa::with([
+        'user',
+        'jurusanSmk',
+        'hasilJurusan',
+        'hasilMagang',
+        'nilaiSiswa',
+    ])
+    ->latest()
+    ->get();
+
     $jurusanSmk = JurusanSmk::orderBy('nama_jurusan', 'asc')->get();
 
-    return view('guru.siswa.index', compact('jurusanSmk'));
+    return view('guru.siswa.index', compact('siswas', 'jurusanSmk'));
 }
 
     public function create()
@@ -33,6 +43,7 @@ class SiswaController extends Controller
         'email' => 'required|email|unique:users,email',
         'nisn' => 'nullable|string|max:20|unique:siswa,nisn',
         'kelas' => 'required|in:10,11,12',
+        'semester' => 'required|integer|in:1,2,3,4,5,6',
         'jurusan_smk_id' => 'required|exists:jurusan_smk,id',
          'no_telp' => 'nullable|string|max:20',
         'alamat' => 'nullable|string|max:500',
@@ -51,6 +62,7 @@ class SiswaController extends Controller
         'jurusan_smk_id' => $request->jurusan_smk_id,
         'nisn' => $request->nisn,
         'kelas' => $request->kelas,
+        'semester' => $request->semester,
         'no_telp' => $request->no_telp,
         'alamat' => $request->alamat,
     ]);
@@ -59,12 +71,12 @@ class SiswaController extends Controller
         'siswa_id' => $siswa->id,
         'mata_pelajaran' => 'Rata-rata',
         'nilai' => $request->nilai_rata_rata,
-        'semester' => 0,
+         'semester' => $request->semester,
         'tahun_ajaran' => date('Y'),
     ]);
 
     return redirect()
-        ->route('guru.dashboard')
+        ->route('guru.siswa.index')
         ->with('success', 'Data siswa dan nilai rata-rata berhasil ditambahkan.');
 }
 
@@ -104,9 +116,11 @@ class SiswaController extends Controller
         'email' => 'required|email|unique:users,email,' . $siswa->users_id,
         'nisn' => 'nullable|string|max:20|unique:siswa,nisn,' . $siswa->id,
         'kelas' => 'required|in:10,11,12',
+        'semester' => 'required|integer|in:1,2,3,4,5,6',
         'jurusan_smk_id' => 'required|exists:jurusan_smk,id',
         'no_telp' => 'nullable|string|max:20',
         'alamat' => 'nullable|string|max:500',
+         'nilai_rata_rata' => 'required|numeric|min:0|max:100',
     ]);
 
     $siswa->user->update([
@@ -117,13 +131,26 @@ class SiswaController extends Controller
     $siswa->update([
         'nisn' => $request->nisn,
         'kelas' => $request->kelas,
+        'semester' => $request->semester,
         'jurusan_smk_id' => $request->jurusan_smk_id,
         'no_telp' => $request->no_telp,
         'alamat' => $request->alamat,
     ]);
 
+    NilaiSiswa::updateOrCreate(
+        [
+            'siswa_id' => $siswa->id,
+            'mata_pelajaran' => 'Rata-rata',
+        ],
+        [
+            'nilai' => $request->nilai_rata_rata,
+            'semester' => $request->semester,
+            'tahun_ajaran' => date('Y'),
+        ]
+    );
+
     return redirect()
-        ->route('guru.dashboard')
+        ->route('guru.siswa.index')
         ->with('success', 'Data siswa berhasil diperbarui.');
 }
 
@@ -134,7 +161,7 @@ class SiswaController extends Controller
         $siswa->user->delete();
 
         return redirect()
-            ->route('guru.dashboard')
+            ->route('guru.siswa.index')
             ->with('success', 'Data siswa berhasil dihapus.');
     }
 }
