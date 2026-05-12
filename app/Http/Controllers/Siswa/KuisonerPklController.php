@@ -8,7 +8,6 @@ use App\Models\Bidang;
 use App\Models\JawabanSiswa;
 use App\Models\Kuisoner;
 use App\Models\KuisonerOpsi;
-use App\Models\Skill;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -16,80 +15,93 @@ use Illuminate\Support\Facades\DB;
 class KuisonerPklController extends Controller
 {
     // =========================================================================
-    // LANDING — Data diri siswa + pilih bidang & skill dari DB
+    // LANDING — Auto-detect jurusan SMK siswa, tampilkan skill dari DB
     // =========================================================================
     public function landing()
     {
         $siswa = Auth::user()->siswa;
         if (!$siswa) abort(403);
 
-        // Nilai rata-rata dari relasi (bukan DB::table langsung)
         $nilaiRata = round($siswa->nilaiSiswa()->avg('nilai') ?? 0, 2);
 
-        // Bidang & skill diambil dari DB — tidak hardcode
-        $bidangs = Bidang::orderBy('nama')->get();
-        $skills  = Skill::orderBy('jenis_skill')->get();
+        // Ambil jurusan SMK siswa beserta skill-nya dari DB
+        $jurusanSmk  = $siswa->jurusanSmk;               // relasi ke JurusanSmk
+        $skillJurusan = $jurusanSmk                       // skill milik jurusan SMK ini
+            ? $jurusanSmk->skills()->orderBy('jenis_skill')->get()
+            : collect();
+
+        // Jika tidak ada skill di jurusan → tampilkan semua skill sebagai fallback
+        if ($skillJurusan->isEmpty()) {
+            $skillJurusan = \App\Models\Skill::orderBy('jenis_skill')->get();
+        }
 
         $sudahMengisi = JawabanSiswa::where('siswa_id', $siswa->id)
             ->whereHas('opsi.kuisoner', fn($q) => $q->where('type', 'magang'))
             ->exists();
 
         return view('siswa.pkl.landing', compact(
-            'siswa', 'nilaiRata', 'bidangs', 'skills', 'sudahMengisi'
+            'siswa',
+            'nilaiRata',
+            'jurusanSmk',
+            'skillJurusan',
+            'sudahMengisi'
         ));
     }
 
     // =========================================================================
-    // INDEX (Step 1) — Soal kuisoner PKL diambil dari DB berdasarkan bidang & skill
+    // INDEX — Ambil soal PKL dari DB berdasarkan skill jurusan SMK siswa
     // =========================================================================
     public function index(Request $request)
     {
         $siswa = Auth::user()->siswa;
         if (!$siswa) abort(403);
 
-        // Pastikan ada kuisoner magang di DB
         if (!Kuisoner::where('type', 'magang')->exists()) {
             return redirect()->route('siswa.pkl')
-                ->with('error', 'Belum ada kuisoner PKL. Hubungi admin untuk menambahkan soal.');
+                ->with('error', 'Belum ada kuisoner PKL. Hubungi admin.');
         }
 
-        // Ambil bidang_id dari query string (dikirim dari landing)
-        $bidangIds = $request->query('bidang_ids')
-            ? explode(',', $request->query('bidang_ids'))
+        // Skill yang dipilih siswa di landing (dari query string)
+        $skillIds = $request->query('skill_ids')
+            ? array_filter(explode(',', $request->query('skill_ids')))
             : [];
 
-        // Ambil soal dari DB — filter per bidang yang dipilih, atau semua kalau tidak ada pilihan
-        $query = Kuisoner::with('opsi')
+        // Jika tidak ada skill dipilih → pakai semua skill jurusan SMK siswa otomatis
+        if (empty($skillIds) && $siswa->jurusanSmk) {
+            $skillIds = $siswa->jurusanSmk->skills()->pluck('skill.id')->toArray();
+        }
+
+        $query = Kuisoner::with(['opsi' => fn($q) => $q->orderByDesc('nilai'), 'skill', 'bidang', 'kriteria'])
             ->where('type', 'magang')
             ->orderBy('urutan')
             ->orderBy('id');
 
-        if (!empty($bidangIds)) {
-            $query->where(function ($q) use ($bidangIds) {
-                $q->whereIn('bidang_id', $bidangIds)
-                  ->orWhereNull('bidang_id');
+        if (!empty($skillIds)) {
+            $query->where(function ($q) use ($skillIds) {
+                // Soal global (skill_id NULL) + soal untuk skill yang dipilih
+                $q->whereNull('skill_id')
+                    ->orWhereIn('skill_id', $skillIds);
             });
+        } else {
+            // Tidak ada skill sama sekali → hanya tampilkan soal global
+            $query->whereNull('skill_id');
         }
 
         $pertanyaan = $query->get();
 
         if ($pertanyaan->isEmpty()) {
             return redirect()->route('siswa.pkl')
-                ->with('error', 'Tidak ada kuisoner yang sesuai dengan bidang pilihan Anda. Coba pilih bidang lain.');
+                ->with('error', 'Tidak ada kuisoner PKL untuk jurusan Anda. Hubungi admin.');
         }
 
-        // Simpan context ke session
-        session(['pkl_step_context' => ['bidang_ids' => $bidangIds]]);
+        session(['pkl_step_context' => ['skill_ids' => implode(',', $skillIds)]]);
 
-        // Paginate soal per 10 per step
         $chunks    = $pertanyaan->chunk(10);
         $step      = max(1, (int) $request->query('step', 1));
         $stepData  = $chunks->get($step - 1);
         $totalStep = $chunks->count();
 
-        if (!$stepData) {
-            return redirect()->route('siswa.pkl');
-        }
+        if (!$stepData) return redirect()->route('siswa.pkl');
 
         return view('siswa.pkl.step', compact('siswa', 'stepData', 'step', 'totalStep'));
     }
@@ -99,15 +111,15 @@ class KuisonerPklController extends Controller
     // =========================================================================
     public function store(Request $request)
     {
-        $siswa       = Auth::user()->siswa;
+        $siswa = Auth::user()->siswa;
         if (!$siswa) abort(403);
 
         $currentStep = (int) $request->input('step', 1);
         $totalStep   = (int) $request->input('total_step', 1);
-        $jawaban     = $request->input('jawaban', []);
-        $soalIds     = $request->input('soal_ids', []);
+        $jawaban     = $request->input('jawaban', []);   // [kuisoner_id => opsi_id]
+        $soalIds     = $request->input('soal_ids', []);  // array soal di step ini
 
-        // Validasi semua soal di step ini sudah dijawab
+        // Validasi: semua soal di step ini harus dijawab
         $belumDijawab = array_diff($soalIds, array_keys($jawaban));
         if (!empty($belumDijawab)) {
             return back()
@@ -115,18 +127,19 @@ class KuisonerPklController extends Controller
                 ->with('error', 'Harap jawab semua pertanyaan sebelum lanjut.');
         }
 
-        // Simpan jawaban step ini ke session (key = opsi_id, value = opsi_id)
+        // Simpan jawaban step ini ke session
         session(["pkl_jawaban_step{$currentStep}" => $jawaban]);
 
-        // Kalau belum step terakhir → redirect ke step berikutnya
+        // Jika belum step terakhir → redirect ke step berikutnya
         if ($currentStep < $totalStep) {
-            $context = session('pkl_step_context', []);
-            return redirect()->route('siswa.pkl.kuisoner', array_merge($context, [
-                'step' => $currentStep + 1,
-            ]));
+            $ctx = session('pkl_step_context', []);
+            return redirect()->route('siswa.pkl.kuisoner', array_merge(
+                ['step' => $currentStep + 1],
+                $ctx
+            ));
         }
 
-        // ── STEP TERAKHIR: Gabungkan semua jawaban & simpan ke DB ────────────
+        // ── STEP TERAKHIR: Gabungkan semua jawaban & simpan ──────────────────
         $semuaJawaban = [];
         for ($i = 1; $i <= $totalStep; $i++) {
             $semuaJawaban = array_merge($semuaJawaban, session("pkl_jawaban_step{$i}", []));
@@ -140,17 +153,17 @@ class KuisonerPklController extends Controller
                 ->whereIn('kuisoner_opsi_id', $opsiMagang)
                 ->delete();
 
-            // Simpan jawaban baru — opsi_id langsung dari form (sudah tervalidasi)
-            foreach ($semuaJawaban as $kuisoner_id => $opsi_id) {
-                if ($opsi_id) {
+            // Simpan jawaban baru — key=kuisoner_id, value=opsi_id
+            foreach ($semuaJawaban as $kuisonerId => $opsiId) {
+                if ($opsiId) {
                     JawabanSiswa::updateOrCreate([
                         'siswa_id'         => $siswa->id,
-                        'kuisoner_opsi_id' => $opsi_id,
+                        'kuisoner_opsi_id' => $opsiId,
                     ]);
                 }
             }
 
-            // Hitung SAW untuk magang
+            // Hitung SAW magang
             (new SawController())->hitungSAWMagangPublic($siswa->id);
         });
 

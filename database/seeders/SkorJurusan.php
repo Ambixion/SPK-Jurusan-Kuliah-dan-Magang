@@ -5,6 +5,18 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * SkorJurusan: profil tiap jurusan kuliah per kriteria.
+ *
+ * KONSEP: skor ini merepresentasikan "seberapa tinggi tuntutan/kecocokan
+ * jurusan tersebut untuk tiap kriteria".
+ * Jurusan Teknik Informatika → Minat Bidang & Kemampuan TINGGI (butuh minat & skill kuat)
+ * Jurusan Teknik Mesin → Kemampuan TINGGI (butuh skill teknis kuat) tapi beda bidang dari TI
+ *
+ * Matching dengan siswa terjadi di SawController (matching score),
+ * bukan dengan membuat skor jurusan lebih rendah.
+ * Semua jurusan harus punya profil yang REALISTIS dan BERBEDA.
+ */
 class SkorJurusan extends Seeder
 {
     public function run(): void
@@ -18,30 +30,43 @@ class SkorJurusan extends Seeder
 
         if ($jurusans->isEmpty() || $kriterias->isEmpty()) return;
 
+        // Profil tiap jurusan: angka = profil kebutuhan jurusan (bukan ranking)
+        // Semua jurusan nilainya setara, hanya BIDANG yang berbeda.
+        // SAW akan mencocokkan profil ini dengan skor siswa.
         $skorMap = [
-            'Teknik Informatika'        => ['Minat Bidang' => 90, 'Kemampuan' => 88, 'Nilai Akademik' => 85],
-            'Desain Komunikasi Visual'  => ['Minat Bidang' => 85, 'Kemampuan' => 82, 'Nilai Akademik' => 75],
-            'Sistem Informasi'          => ['Minat Bidang' => 80, 'Kemampuan' => 78, 'Nilai Akademik' => 80],
-            'Agribisnis Tanaman Pangan' => ['Minat Bidang' => 70, 'Kemampuan' => 68, 'Nilai Akademik' => 70],
-            'Teknik Mesin'              => ['Minat Bidang' => 65, 'Kemampuan' => 72, 'Nilai Akademik' => 68],
-            'Peternakan'                => ['Minat Bidang' => 60, 'Kemampuan' => 65, 'Nilai Akademik' => 62],
-            'Teknologi Pangan'          => ['Minat Bidang' => 68, 'Kemampuan' => 70, 'Nilai Akademik' => 67],
-            'Akuakultur'                => ['Minat Bidang' => 62, 'Kemampuan' => 64, 'Nilai Akademik' => 60],
+            // Jurusan teknologi → butuh minat & kemampuan di bidang IT
+            'Teknik Informatika'        => ['Minat Bidang' => 85, 'Kemampuan' => 85, 'Nilai Akademik' => 80],
+            'Sistem Informasi'          => ['Minat Bidang' => 80, 'Kemampuan' => 80, 'Nilai Akademik' => 75],
+
+            // Jurusan kreatif → butuh minat seni & kreativitas
+            'Desain Komunikasi Visual'  => ['Minat Bidang' => 85, 'Kemampuan' => 80, 'Nilai Akademik' => 70],
+
+            // Jurusan teknik → butuh kemampuan teknis tinggi
+            'Teknik Mesin'              => ['Minat Bidang' => 85, 'Kemampuan' => 85, 'Nilai Akademik' => 75],
+
+            // Jurusan pertanian
+            'Agribisnis Tanaman Pangan' => ['Minat Bidang' => 80, 'Kemampuan' => 75, 'Nilai Akademik' => 70],
+            'Teknologi Pangan'          => ['Minat Bidang' => 80, 'Kemampuan' => 78, 'Nilai Akademik' => 72],
+
+            // Jurusan peternakan & perikanan
+            'Peternakan'                => ['Minat Bidang' => 80, 'Kemampuan' => 75, 'Nilai Akademik' => 68],
+            'Akuakultur'                => ['Minat Bidang' => 80, 'Kemampuan' => 75, 'Nilai Akademik' => 68],
         ];
 
         $rows = [];
         foreach ($jurusans as $jurusan) {
-            $skor = $skorMap[$jurusan->nama] ?? [];
+            $skor = $skorMap[$jurusan->nama] ?? ['Minat Bidang' => 75, 'Kemampuan' => 75, 'Nilai Akademik' => 70];
             foreach ($kriterias as $kriteria) {
                 $rows[] = [
                     'jurusan_kuliah_id' => $jurusan->id,
                     'kriteria_id'       => $kriteria->id,
-                    'score'             => $skor[$kriteria->nama] ?? 50,
+                    'score'             => $skor[$kriteria->nama] ?? 75,
                     'created_at'        => now(),
                     'updated_at'        => now(),
                 ];
             }
         }
+
         DB::table('skor_jurusan')->insert($rows);
     }
 }

@@ -524,9 +524,9 @@
 
     {{-- MAIN --}}
     <main class="main">
-        @if (session('success'))
+        {{-- @if (session('success'))
             <div class="alert-spk alert-success">{{ session('success') }}</div>
-        @endif
+        @endif --}}
         @if (session('error'))
             <div class="alert-spk alert-error">{{ session('error') }}</div>
         @endif

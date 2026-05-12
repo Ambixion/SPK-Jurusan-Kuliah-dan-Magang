@@ -13,47 +13,53 @@
 <div class="card-main">
     <div class="card-title">Data Diri Siswa</div>
 
-    {{-- Data Siswa (readonly) --}}
+    {{-- Data Siswa readonly --}}
     <div class="form-group">
         <label class="form-label">Nama Siswa</label>
         <input type="text" class="form-input" value="{{ Auth::user()->nama }}" readonly>
     </div>
-
     <div class="form-group">
         <label class="form-label">Jurusan, Kelas, dan Semester</label>
         <input type="text" class="form-input"
-               value="{{ $siswa->jurusan_siswa }}, {{ $siswa->kelas }}, Semester {{ $siswa->semester }}"
+               value="{{ $siswa->jurusan_siswa }}, Kelas {{ $siswa->kelas }}, Semester {{ $siswa->semester }}"
                readonly>
     </div>
-
     <div class="form-group">
         <label class="form-label">Nilai Rata-rata Rapot</label>
         <input type="text" class="form-input" value="{{ $nilaiRata }}" readonly>
     </div>
 
-    {{-- Bidang — dari DB (dinamis) --}}
+    {{-- Skill dari jurusan SMK siswa — OTOMATIS dari DB, tidak hardcode --}}
     <div class="form-group">
         <label class="form-label">
-            Bidang yang Ingin Kamu Eksplorasi
-            <span style="color:rgba(255,255,255,0.4);font-size:11px;margin-left:6px;">
-                (opsional, pilih satu atau lebih)
+            Skill yang Kamu Miliki
+            @if($jurusanSmk)
+            <span style="font-size:11px;color:rgba(255,255,255,0.45);font-weight:400;margin-left:6px;">
+                (dari jurusan {{ $jurusanSmk->nama_jurusan }})
             </span>
+            @endif
         </label>
-        <div class="pills-group">
-            @forelse($bidangs as $bidang)
-            <button type="button"
-                    class="pill pill-default"
-                    data-bidang-id="{{ $bidang->id }}"
-                    data-bidang-nama="{{ $bidang->nama }}"
-                    onclick="toggleBidang(this)">
-                {{ $bidang->nama }}
-            </button>
-            @empty
-            <p style="color:rgba(255,255,255,0.4);font-size:12px;">
-                Belum ada bidang. Admin perlu menambahkan bidang terlebih dahulu.
-            </p>
-            @endforelse
+
+        @if($skillJurusan->isEmpty())
+        <div style="color:rgba(255,255,255,0.4);font-size:12px;padding:10px 0;">
+            Belum ada skill terdaftar untuk jurusan ini.
+            <a href="#" style="color:#818cf8;">Hubungi admin.</a>
         </div>
+        @else
+        <div class="pills-group" id="skillGroup">
+            @foreach($skillJurusan as $skill)
+            <button type="button"
+                    class="pill pill-selected-green"  {{-- default: semua skill jurusan aktif --}}
+                    data-skill-id="{{ $skill->id }}"
+                    onclick="toggleSkill(this)">
+                {{ $skill->jenis_skill }}
+            </button>
+            @endforeach
+        </div>
+        <p style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:6px;">
+            Klik untuk aktifkan/nonaktifkan skill. Soal kuisoner akan disesuaikan.
+        </p>
+        @endif
     </div>
 
     {{-- Info sudah mengisi --}}
@@ -86,22 +92,25 @@
 <script>
 const baseUrl = "{{ route('siswa.pkl.kuisoner') }}";
 
-function toggleBidang(btn) {
+function toggleSkill(btn) {
     btn.classList.toggle('pill-selected-green');
     btn.classList.toggle('pill-default', !btn.classList.contains('pill-selected-green'));
     updateUrl();
 }
 
 function updateUrl() {
-    const bidangIds = [...document.querySelectorAll('[data-bidang-id].pill-selected-green')]
-        .map(b => b.dataset.bidangId);
+    const skillIds = [...document.querySelectorAll('#skillGroup [data-skill-id].pill-selected-green')]
+        .map(b => b.dataset.skillId);
 
     const params = new URLSearchParams();
-    if (bidangIds.length) params.set('bidang_ids', bidangIds.join(','));
+    if (skillIds.length) params.set('skill_ids', skillIds.join(','));
 
     document.getElementById('btnKuisionerPkl').href =
         baseUrl + (params.toString() ? '?' + params.toString() : '');
 }
+
+// Init URL dengan semua skill yang aktif saat load
+updateUrl();
 </script>
 @endpush
 @endsection

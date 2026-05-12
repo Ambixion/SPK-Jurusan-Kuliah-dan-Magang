@@ -2,39 +2,55 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Skill;
 
 class SkillSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         $skills = [
+            // ── RPL ──────────────────────────────────────────────────────────
             'Web Development',
             'Mobile Development',
             'Database Management',
-            'UI/UX Design',
-            'DevOps',
-            'Machine Learning',
-            'Cloud Computing',
-            'Data Analysis',
-            'Network Administration',
-            'Cybersecurity',
-            'Java Development',
             'PHP Development',
             'Python Development',
             'Frontend Development',
             'Backend Development',
+            'UI/UX Design',
+            'Java Development',
+
+            // ── TKJ ──────────────────────────────────────────────────────────
+            'Network Administration',
+            'Cybersecurity',
+            'Cloud Computing',
+            'DevOps',
+
+            // ── Multimedia ───────────────────────────────────────────────────
+            'Desain Grafis',
+            'Animasi 2D/3D',
+            'Pengolahan Audio Video',
+            'Fotografi',
+            'Videografi',
+
+            // ── TBSM ─────────────────────────────────────────────────────────
+            'Tune Up',
+            'Overhaul',
+            'Kelistrikan Kendaraan',
+
+            // ── Agribisnis ───────────────────────────────────────────────────
+            'Manajemen Agribisnis',
+            'Pemasaran Produk Pertanian',
+            'Analisis Keuangan Usaha',
+
+            // ── Umum ─────────────────────────────────────────────────────────
+            'Machine Learning',
+            'Data Analysis',
         ];
 
         foreach ($skills as $skill) {
-            Skill::firstOrCreate(
-                ['jenis_skill' => $skill]
-            );
+            Skill::firstOrCreate(['jenis_skill' => $skill]);
         }
     }
 }

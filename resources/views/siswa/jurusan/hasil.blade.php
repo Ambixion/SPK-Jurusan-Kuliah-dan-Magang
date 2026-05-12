@@ -8,8 +8,6 @@
 @endif
 
 <div class="card-main">
-
-    {{-- Info siswa --}}
     <div class="form-group">
         <label class="form-label">Nama Siswa</label>
         <input type="text" class="form-input" value="{{ Auth::user()->nama }}" readonly>
@@ -24,10 +22,8 @@
     </div>
 
     @if(!$sudahMengisi)
-    {{-- Belum isi kuisoner --}}
     <div style="margin-top:20px;padding:16px 20px;background:rgba(249,115,22,0.15);
-         border:1px solid rgba(249,115,22,0.3);border-radius:12px;
-         display:flex;align-items:center;gap:12px;">
+         border:1px solid rgba(249,115,22,0.3);border-radius:12px;display:flex;align-items:center;gap:12px;">
         <span style="font-size:20px;">⚠️</span>
         <div style="flex:1;">
             <div style="font-weight:700;color:#fdba74;font-size:13px;">Belum mengisi kuisoner</div>
@@ -42,13 +38,13 @@
     </div>
 
     @else
-    {{-- Hasil ranking --}}
     <div style="margin-top:24px;border-top:1px solid rgba(255,255,255,0.1);padding-top:20px;">
         <div class="card-title">List Hasil Program Studi Kuliah</div>
 
         @foreach($hasilJurusan as $hasil)
         @php
-            $persen = round($hasil->score * 100);
+            // score sudah dalam bentuk persentase (0-100) dari SawController
+            $persen    = number_format($hasil->score, 1);
             $rankColor = match($hasil->rank) {
                 1 => '#22c55e', 2 => '#4f6ef7', 3 => '#f59e0b', default => '#6b7280'
             };
@@ -68,7 +64,7 @@
                     {{ $hasil->jurusan->bidang_studi ?? '' }}
                 </div>
             </div>
-            <div style="font-size:22px;font-weight:800;color:{{ $rankColor }};min-width:55px;text-align:right;">
+            <div style="font-size:22px;font-weight:800;color:{{ $rankColor }};min-width:60px;text-align:right;">
                 {{ $persen }}%
             </div>
             <button onclick="showInfo({{ $hasil->jurusan->id }})"
@@ -90,14 +86,15 @@
     @endif
 </div>
 
-{{-- Modal Info --}}
+{{-- Modal Info Jurusan --}}
 <div id="modalInfo" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);
      z-index:999;align-items:center;justify-content:center;">
     <div style="background:#1e2140;border:1px solid rgba(255,255,255,0.15);border-radius:16px;
-                padding:28px;max-width:400px;width:90%;">
+                padding:28px;max-width:420px;width:90%;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
             <div id="mTitle" style="font-size:15px;font-weight:800;color:#fff;"></div>
-            <button onclick="closeModal()" style="background:none;border:none;color:rgba(255,255,255,0.5);font-size:20px;cursor:pointer;">✕</button>
+            <button onclick="closeModal()"
+                    style="background:none;border:none;color:rgba(255,255,255,0.5);font-size:20px;cursor:pointer;">✕</button>
         </div>
         <div id="mBody" style="color:rgba(255,255,255,0.7);font-size:13px;line-height:1.7;"></div>
     </div>
@@ -111,7 +108,7 @@ const jData = {
         nama: "{{ addslashes($h->jurusan->nama) }}",
         deskripsi: "{{ addslashes($h->jurusan->deskripsi ?? '-') }}",
         bidang: "{{ addslashes($h->jurusan->bidang_studi ?? '-') }}",
-        skor: "{{ number_format($h->score, 3) }}"
+        skor: "{{ number_format($h->score, 1) }}%"
     },
     @endforeach
 };
@@ -131,7 +128,9 @@ function showInfo(id) {
     document.getElementById('modalInfo').style.display = 'flex';
 }
 function closeModal() { document.getElementById('modalInfo').style.display = 'none'; }
-document.getElementById('modalInfo').addEventListener('click', function(e) { if(e.target===this) closeModal(); });
+document.getElementById('modalInfo').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+});
 </script>
 @endpush
 @endsection

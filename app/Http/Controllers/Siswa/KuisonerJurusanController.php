@@ -15,94 +15,131 @@ use Illuminate\Support\Facades\DB;
 
 class KuisonerJurusanController extends Controller
 {
-    /**
-     * Landing page — ambil bidang dari database, bukan hardcode
-     */
+    // =========================================================================
+    // LANDING — Bidang & jurusan kuliah dari DB, tidak hardcode
+    // =========================================================================
     public function landing()
     {
         $siswa     = Auth::user()->siswa;
-        $nilaiRata = $siswa->nilai_rata;
+        if (!$siswa) abort(403);
 
-        // Bidang diambil dari DB
+        $nilaiRata = round($siswa->nilaiSiswa()->avg('nilai') ?? 0, 2);
+
+        // Semua bidang dari DB beserta jurusan kuliah yang punya bidang itu
         $bidangs = Bidang::with('jurusanKuliah')->orderBy('nama')->get();
+
+        // Semua jurusan kuliah dari DB beserta bidangnya
+        $jurusanList = JurusanKuliah::with('bidangs')->orderBy('nama')->get();
 
         $sudahMengisi = $siswa->jawabanSiswa()
             ->whereHas('opsi.kuisoner', fn($q) => $q->where('type', 'jurusan'))
             ->exists();
 
-        return view('siswa.jurusan.landing', compact('siswa', 'nilaiRata', 'bidangs', 'sudahMengisi'));
+        return view('siswa.jurusan.landing', compact(
+            'siswa',
+            'nilaiRata',
+            'bidangs',
+            'jurusanList',
+            'sudahMengisi'
+        ));
     }
 
-    /**
-     * Step kuisoner — soal diambil dari DB berdasarkan jurusan + bidang
-     */
+    // =========================================================================
+    // INDEX — Soal dari DB, filter per jurusan kuliah yang dipilih + bidangnya
+    // =========================================================================
     public function index(Request $request)
     {
-        $siswa          = Auth::user()->siswa;
-        $jurusanKuliahId = $request->query('jurusan_kuliah_id');
-        $bidangIds      = $request->query('bidang') ? explode(',', $request->query('bidang')) : [];
+        $siswa = Auth::user()->siswa;
+        if (!$siswa) abort(403);
 
-        // Ambil soal dari DB — dinamis berdasarkan jurusan dan bidang yang dipilih
-        $query = Kuisoner::with('opsi')
+        if (!Kuisoner::where('type', 'jurusan')->exists()) {
+            return redirect()->route('siswa.jurusan')
+                ->with('error', 'Belum ada kuisoner jurusan. Hubungi admin.');
+        }
+
+        $jurusanKuliahId = $request->query('jurusan_kuliah_id');
+        $bidangIds = $request->query('bidang_ids')
+            ? array_filter(explode(',', $request->query('bidang_ids')))
+            : [];
+
+        // Jika jurusan kuliah dipilih tapi tidak ada bidang_ids → ambil bidang dari jurusan itu
+        if ($jurusanKuliahId && empty($bidangIds)) {
+            $jurusan   = JurusanKuliah::with('bidangs')->find($jurusanKuliahId);
+            $bidangIds = $jurusan ? $jurusan->bidangs->pluck('id')->toArray() : [];
+        }
+
+        $query = Kuisoner::with(['opsi' => fn($q) => $q->orderByDesc('nilai'), 'bidang', 'jurusanKuliah', 'kriteria'])
             ->where('type', 'jurusan')
             ->orderBy('urutan');
 
-        // Filter per jurusan kuliah (atau global jika null)
-        if ($jurusanKuliahId) {
-            $query->where(function ($q) use ($jurusanKuliahId) {
-                $q->where('jurusan_kuliah_id', $jurusanKuliahId)
-                  ->orWhereNull('jurusan_kuliah_id');
+        if ($jurusanKuliahId || !empty($bidangIds)) {
+            $query->where(function ($q) use ($jurusanKuliahId, $bidangIds) {
+                // ── Soal global (tidak terikat jurusan maupun bidang) ────────────
+                $q->where(function ($inner) {
+                    $inner->whereNull('jurusan_kuliah_id')
+                        ->whereNull('bidang_id');
+                });
+
+                // ── Soal khusus jurusan kuliah yang dipilih ──────────────────────
+                if ($jurusanKuliahId) {
+                    $q->orWhere(function ($inner) use ($jurusanKuliahId) {
+                        $inner->where('jurusan_kuliah_id', $jurusanKuliahId);
+                    });
+                }
+
+                // ── Soal per bidang yang relevan ─────────────────────────────────
+                if (!empty($bidangIds)) {
+                    $q->orWhere(function ($inner) use ($bidangIds) {
+                        $inner->whereIn('bidang_id', $bidangIds)
+                            ->whereNull('jurusan_kuliah_id'); // bidang global (bukan per-jurusan)
+                    });
+                }
             });
         }
-
-        // Filter per bidang yang dipilih (atau global jika null)
-        if (!empty($bidangIds)) {
-            $query->where(function ($q) use ($bidangIds) {
-                $q->whereIn('bidang_id', $bidangIds)
-                  ->orWhereNull('bidang_id');
-            });
+        // Jika tidak ada filter sama sekali → tampilkan hanya soal global
+        else {
+            $query->whereNull('jurusan_kuliah_id')->whereNull('bidang_id');
         }
 
         $pertanyaan = $query->get();
 
-        // Simpan context ke session
+        // Simpan context ke session agar navigasi antar step tetap konsisten
         session([
             'jurusan_step_context' => [
                 'jurusan_kuliah_id' => $jurusanKuliahId,
-                'bidang_ids'        => $bidangIds,
+                'bidang_ids'        => implode(',', $bidangIds),
             ]
         ]);
 
         if ($pertanyaan->isEmpty()) {
             return redirect()->route('siswa.jurusan')
-                ->with('error', 'Belum ada kuisoner untuk pilihan ini. Hubungi admin.');
+                ->with('error', 'Belum ada soal untuk pilihan ini. Hubungi admin untuk menambahkan kuisoner.');
         }
 
-        // Pecah soal menjadi step-step (@10 soal per step)
-        $chunks   = $pertanyaan->chunk(10);
-        $step     = max(1, (int) $request->query('step', 1));
-        $stepData = $chunks->get($step - 1);
+        $chunks    = $pertanyaan->chunk(10);
+        $step      = max(1, (int) $request->query('step', 1));
+        $stepData  = $chunks->get($step - 1);
         $totalStep = $chunks->count();
 
-        if (!$stepData) {
-            return redirect()->route('siswa.jurusan');
-        }
+        if (!$stepData) return redirect()->route('siswa.jurusan');
 
         return view('siswa.jurusan.step', compact('siswa', 'stepData', 'step', 'totalStep'));
     }
 
-    /**
-     * Store jawaban — tidak ada hardcode sama sekali
-     */
+    // =========================================================================
+    // STORE — Simpan jawaban per step, di step terakhir hitung SAW
+    // =========================================================================
     public function store(Request $request)
     {
         $siswa       = Auth::user()->siswa;
+        if (!$siswa) abort(403);
+
         $currentStep = (int) $request->input('step', 1);
         $totalStep   = (int) $request->input('total_step', 1);
-        $jawaban     = $request->input('jawaban', []);
+        $jawaban     = $request->input('jawaban', []);  // [kuisoner_id => opsi_id]
+        $soalIds     = $request->input('soal_ids', []);
 
         // Validasi semua soal di step ini dijawab
-        $soalIds = $request->input('soal_ids', []);
         $belumDijawab = array_diff($soalIds, array_keys($jawaban));
         if (!empty($belumDijawab)) {
             return back()
@@ -110,16 +147,14 @@ class KuisonerJurusanController extends Controller
                 ->with('error', 'Harap jawab semua pertanyaan sebelum lanjut.');
         }
 
-        // Simpan jawaban step ini ke session
-        $sessionKey = "jurusan_jawaban_step{$currentStep}";
-        session([$sessionKey => $jawaban]);
+        session(["jurusan_jawaban_step{$currentStep}" => $jawaban]);
 
-        // Kalau belum step terakhir → lanjut ke step berikutnya
         if ($currentStep < $totalStep) {
-            $context = session('jurusan_step_context', []);
-            return redirect()->route('siswa.jurusan.kuisoner', array_merge($context, [
-                'step' => $currentStep + 1,
-            ]));
+            $ctx = session('jurusan_step_context', []);
+            return redirect()->route('siswa.jurusan.kuisoner', array_merge(
+                ['step' => $currentStep + 1],
+                $ctx
+            ));
         }
 
         // ── STEP TERAKHIR: Gabungkan semua jawaban & simpan ──────────────────
@@ -129,19 +164,17 @@ class KuisonerJurusanController extends Controller
         }
 
         DB::transaction(function () use ($siswa, $semuaJawaban) {
-            // Hapus jawaban lama type jurusan
             $opsiJurusan = KuisonerOpsi::whereHas('kuisoner', fn($q) => $q->where('type', 'jurusan'))
                 ->pluck('id');
             JawabanSiswa::where('siswa_id', $siswa->id)
                 ->whereIn('kuisoner_opsi_id', $opsiJurusan)
                 ->delete();
 
-            // Simpan jawaban baru — opsi_id langsung dari form (sudah valid)
-            foreach ($semuaJawaban as $kuisoner_id => $opsi_id) {
-                if ($opsi_id) {
+            foreach ($semuaJawaban as $kuisonerId => $opsiId) {
+                if ($opsiId) {
                     JawabanSiswa::updateOrCreate([
                         'siswa_id'         => $siswa->id,
-                        'kuisoner_opsi_id' => $opsi_id,
+                        'kuisoner_opsi_id' => $opsiId,
                     ]);
                 }
             }
@@ -149,13 +182,12 @@ class KuisonerJurusanController extends Controller
             (new SawController())->hitungSAWJurusanPublic($siswa->id);
         });
 
-        // Bersihkan session
         for ($i = 1; $i <= $totalStep; $i++) {
             session()->forget("jurusan_jawaban_step{$i}");
         }
         session()->forget('jurusan_step_context');
 
         return redirect()->route('siswa.jurusan.hasil')
-            ->with('success', 'Kuisoner berhasil diisi! Berikut hasil rekomendasi jurusan kuliah.');
+            ->with('success', 'Kuisoner berhasil diisi! Berikut hasil rekomendasi jurusan kuliah Anda.');
     }
 }

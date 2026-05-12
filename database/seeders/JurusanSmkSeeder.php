@@ -3,38 +3,56 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
+use App\Models\JurusanSmk;
+use App\Models\Skill;
 
 class JurusanSmkSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::table('jurusan_smk')->insert([
-            [
-                'nama_jurusan' => 'Multimedia',
-                'created_at' => now(),
-                'updated_at' => now(),
+        // Definisi jurusan SMK beserta skill-nya
+        $jurusanData = [
+            'Multimedia' => [
+                'Desain Grafis',
+                'Animasi 2D/3D',
+                'Pengolahan Audio Video',
+                'Fotografi',
+                'Videografi',
             ],
-            [
-                'nama_jurusan' => 'TKJ',
-                'created_at' => now(),
-                'updated_at' => now(),
+            'RPL' => [
+                'Web Development',
+                'Mobile Development',
+                'Database Management',
+                'UI/UX Design',
+                'PHP Development',
+                'Python Development',
+                'Frontend Development',
+                'Backend Development',
             ],
-            [
-                'nama_jurusan' => 'RPL',
-                'created_at' => now(),
-                'updated_at' => now(),
+            'TKJ' => [
+                'Network Administration',
+                'Cybersecurity',
+                'Cloud Computing',
+                'DevOps',
             ],
-            [
-                'nama_jurusan' => 'TBSM',
-                'created_at' => now(),
-                'updated_at' => now(),
+            'TBSM' => [
+                'Tune Up',
+                'Overhaul',
+                'Kelistrikan Kendaraan',
             ],
-            [
-                'nama_jurusan' => 'Agribisnis',
-                'created_at' => now(),
-                'updated_at' => now(),
+            'Agribisnis' => [
+                'Manajemen Agribisnis',
+                'Pemasaran Produk Pertanian',
+                'Analisis Keuangan Usaha',
             ],
-        ]);
+        ];
+
+        foreach ($jurusanData as $namaJurusan => $skillList) {
+            $jurusan = JurusanSmk::firstOrCreate(['nama_jurusan' => $namaJurusan]);
+
+            // Assign skill ke jurusan ini
+            $skillIds = Skill::whereIn('jenis_skill', $skillList)->pluck('id');
+            $jurusan->skills()->sync($skillIds);
+        }
     }
 }
