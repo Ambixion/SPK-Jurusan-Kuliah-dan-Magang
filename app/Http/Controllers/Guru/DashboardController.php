@@ -24,10 +24,7 @@ class DashboardController extends Controller
             'siswa_belum_pilih_magang' => Siswa::whereDoesntHave('hasilMagang')->count(),
         ];
 
-        $siswaTerbaru = Siswa::with(['user', 'jurusanSmk', 'hasilJurusan', 'hasilMagang'])
-            ->latest()
-            ->take(10)
-            ->get();
+
 
         $hasilSpk = Siswa::with([
             'user',
@@ -41,7 +38,7 @@ class DashboardController extends Controller
 
         $jurusanSmk = JurusanSmk::orderBy('nama_jurusan', 'asc')->get();
 
-        return view('guru.dashboard', compact('data', 'siswaTerbaru', 'hasilSpk', 'jurusanSmk'));
+        return view('guru.dashboard', compact('data', 'hasilSpk'));
     }
     
 }

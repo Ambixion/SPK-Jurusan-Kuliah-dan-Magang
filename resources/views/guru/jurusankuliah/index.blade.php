@@ -270,10 +270,11 @@
                     <span>Dashboard Guru</span>
                 </a>
 
-                <a href="{{ route('guru.siswa.index') }}" class="menu-item">
-                    <div class="menu-icon red">👔</div>
-                    <span>Tambah Data Siswa</span>
-                </a>
+                 <a href="{{ route('guru.siswa.index') }}" class="menu-item {{ request()->routeIs('guru.siswa.*') ? 'active' : '' }}">
+        <div class="menu-icon red">👔</div>
+        <span>Data Siswa</span>
+    </a>
+
 
                 <a href="{{ route('guru.tempat_magang') }}" class="menu-item">
                     <div class="menu-icon purple">🏢</div>
