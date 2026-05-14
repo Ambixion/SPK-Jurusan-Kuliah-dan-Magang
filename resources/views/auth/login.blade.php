@@ -46,14 +46,14 @@
                 <div class="form-group">+
                     <div class="input-wrapper">
                         <input
-                        type="email"
-                        name="email"
+                        type="text"
+                        name="login"
                         id="email"
-                        placeholder="email@school.kaliber.ac.id"
-                        value="{{ old('email') }}"
+                        placeholder="Email atau Nama Pengguna"
+                        value="{{ old('login') }}"
                         autocomplete="email"
                         autofocus
-                        class="{{ $errors->has('email') ? 'is-invalid' : '' }}"
+                        class="{{ $errors->has('login') ? 'is-invalid' : '' }}"
                         required
                         >
                         <span class="input-icon">
@@ -63,7 +63,7 @@
                             </svg>
                         </span>
                     </div>
-                    @error('email')
+                    @error('login')
                     <p class="field-error">{{ $message }}</p>
                     @enderror
                 </div>
@@ -75,7 +75,7 @@
                         type="password"
                         name="password"
                         id="password"
-                        placeholder="password"
+                        placeholder="Password"
                             autocomplete="current-password"
                             class="{{ $errors->has('password') ? 'is-invalid' : '' }}"
                             required

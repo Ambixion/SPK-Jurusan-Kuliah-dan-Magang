@@ -380,24 +380,31 @@ body {
 
 /* ── RESPONSIVE ──────────────────────────────── */
 @media (max-width: 768px) {
+    body {
+        overflow-y: hidden;
+    }
     .wrapper {
         flex-direction: column;
         overflow-y: auto;
         min-height: 100vh;
     }
     .left {
-        flex: 0 0 45vh;
+        /* flex: 0 0 45vh; */
+        display: none;
     }
     .logo-circle {
         width: 180px;
         height: 180px;
+        display: none;
     }
     .logo-svg {
         width: 160px;
         height: 160px;
+        display: none;
     }
     .school-name {
         font-size: 1rem;
+        display: none;
     }
     .right {
         flex: 1;
