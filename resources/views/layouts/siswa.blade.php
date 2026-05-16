@@ -41,7 +41,10 @@
             display: flex;
         }
 
-        /* ── SIDEBAR ── */
+        /* ─────────────────────────────
+   SIDEBAR
+───────────────────────────── */
+
         .sidebar {
             width: var(--sidebar-w);
             background: var(--bg-sidebar);
@@ -172,7 +175,10 @@
             background: rgba(239, 68, 68, 0.28);
         }
 
-        /* ── MAIN CONTENT ── */
+        /* ─────────────────────────────
+   MAIN
+───────────────────────────── */
+
         .main {
             margin-left: var(--sidebar-w);
             flex: 1;
@@ -189,7 +195,55 @@
             text-transform: uppercase;
         }
 
-        /* ── CARD ── */
+        .desktop-only {
+            display: block;
+        }
+
+        /* ─────────────────────────────
+   TOPBAR MOBILE
+───────────────────────────── */
+
+        .topbar-mobile {
+            display: none;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: #4f6ef7;
+            color: #fff;
+            border: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            font-size: 20px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        /* .menu-toggle.hide {
+            display: none;
+        } */
+
+        .mobile-app-title {
+            font-size: 15px;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: .5px;
+            text-transform: uppercase;
+            line-height: 1.2;
+        }
+
+        .mobile-app-sub {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 2px;
+            font-weight: 500;
+        }
+
+        /* ─────────────────────────────
+   CARD
+───────────────────────────── */
+
         .card-main {
             background: linear-gradient(135deg, #2a2f6e 0%, #1e2255 60%, #252870 100%);
             border-radius: 16px;
@@ -204,7 +258,10 @@
             margin-bottom: 24px;
         }
 
-        /* ── FORM ── */
+        /* ─────────────────────────────
+   FORM
+───────────────────────────── */
+
         .form-group {
             margin-bottom: 18px;
         }
@@ -240,7 +297,10 @@
             background: rgba(255, 255, 255, 0.88);
         }
 
-        /* ── PILLS / TAGS ── */
+        /* ─────────────────────────────
+   PILLS
+───────────────────────────── */
+
         .pills-group {
             display: flex;
             flex-wrap: wrap;
@@ -280,7 +340,10 @@
             border-color: #22c55e;
         }
 
-        /* ── STAT BOXES ── */
+        /* ─────────────────────────────
+   STAT
+───────────────────────────── */
+
         .stat-box {
             background: rgba(255, 255, 255, 0.07);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -313,7 +376,10 @@
             color: #fdba74;
         }
 
-        /* ── BTN ── */
+        /* ─────────────────────────────
+   BUTTON
+───────────────────────────── */
+
         .btn-primary-spk {
             background: linear-gradient(135deg, #4f6ef7, #7c3aed);
             color: #fff;
@@ -337,7 +403,10 @@
             transform: translateY(-1px);
         }
 
-        /* ── PROFILE HEADER CARD ── */
+        /* ─────────────────────────────
+   PROFILE
+───────────────────────────── */
+
         .profile-header {
             background: linear-gradient(135deg, #3730a3, #4f46e5);
             border-radius: 12px;
@@ -397,7 +466,10 @@
             border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
-        /* ── INFO GRID ── */
+        /* ─────────────────────────────
+   INFO
+───────────────────────────── */
+
         .info-section {
             margin-top: 20px;
         }
@@ -440,9 +512,13 @@
             font-weight: 800;
         }
 
+        /* ─────────────────────────────
+   GRID
+───────────────────────────── */
+
         .grid-2 {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(2, 1fr);
             gap: 16px;
         }
 
@@ -452,7 +528,10 @@
             gap: 12px;
         }
 
-        /* ── ALERT ── */
+        /* ─────────────────────────────
+   ALERT
+───────────────────────────── */
+
         .alert-spk {
             padding: 12px 18px;
             border-radius: 10px;
@@ -473,15 +552,202 @@
             border: 1px solid rgba(239, 68, 68, .25);
         }
 
-        /* ── BOTTOM RIGHT BTN ── */
+        /* ─────────────────────────────
+   BOTTOM BUTTON
+───────────────────────────── */
+
         .btn-bottom-right {
             display: flex;
             justify-content: flex-end;
             margin-top: 24px;
         }
+
+        /* ─────────────────────────────
+   TABLET
+───────────────────────────── */
+
+        @media (max-width: 992px) {
+
+            .main {
+                padding: 24px;
+            }
+
+            .grid-4 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* ─────────────────────────────
+   MOBILE
+───────────────────────────── */
+
+        @media (max-width: 768px) {
+
+            body {
+                flex-direction: column;
+            }
+
+            .desktop-only {
+                display: none;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform .3s ease;
+                width: 240px;
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .main {
+                margin-left: 0;
+                width: 100%;
+                padding: 16px;
+            }
+
+            /* TOPBAR */
+
+            .topbar-mobile {
+                display: flex;
+                align-items: center;
+                gap: 14px;
+                background: rgba(19, 21, 42, 0.95);
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                padding: 14px 16px;
+                border-radius: 16px;
+                margin-bottom: 20px;
+                position: sticky;
+                top: 10px;
+                z-index: 90;
+                backdrop-filter: blur(12px);
+            }
+
+            .menu-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .page-title {
+                font-size: 18px;
+                margin-bottom: 20px;
+            }
+
+            .card-main {
+                padding: 20px;
+                border-radius: 14px;
+            }
+
+            .card-title {
+                font-size: 16px;
+            }
+
+            /* GRID MOBILE */
+
+            .grid-2 {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+
+            .grid-4 {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+
+            .profile-header {
+                flex-direction: column;
+                align-items: flex-start;
+                text-align: left;
+            }
+
+            .profile-avatar {
+                width: 52px;
+                height: 52px;
+                font-size: 22px;
+            }
+
+            .profile-name {
+                font-size: 18px;
+            }
+
+            .profile-sub {
+                font-size: 12px;
+            }
+
+            .info-row {
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .info-val {
+                max-width: 100%;
+                text-align: left;
+            }
+
+            .btn-bottom-right {
+                justify-content: stretch;
+            }
+
+            .btn-primary-spk {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .form-input {
+                padding: 12px 16px;
+                font-size: 13px;
+            }
+
+            .stat-value {
+                font-size: 22px;
+            }
+
+            .sidebar-user-name {
+                font-size: 11px;
+            }
+
+            .nav-item {
+                font-size: 11px;
+            }
+        }
+
+        /* EXTRA SMALL */
+
+        @media (max-width: 480px) {
+
+            .grid-2,
+            .grid-4 {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
     @stack('styles')
 </head>
+
+<script>
+    function toggleSidebar() {
+        const sidebar = document.querySelector('.sidebar');
+
+        // buka/tutup sidebar saja
+        sidebar.classList.toggle('show');
+    }
+
+    // Tutup sidebar ketika klik halaman
+    document.addEventListener('click', function(event) {
+        const sidebar = document.querySelector('.sidebar');
+        const toggle = document.querySelector('.menu-toggle');
+
+        if (
+            sidebar.classList.contains('show') &&
+            !sidebar.contains(event.target) &&
+            !toggle.contains(event.target)
+        ) {
+            sidebar.classList.remove('show');
+        }
+    });
+</script>
 
 <body>
 
@@ -527,6 +793,24 @@
         {{-- @if (session('success'))
             <div class="alert-spk alert-success">{{ session('success') }}</div>
         @endif --}}
+        <div class="topbar-mobile">
+
+            <button class="menu-toggle" onclick="toggleSidebar()">
+                ☰
+            </button>
+
+            <div>
+                <div class="mobile-app-title">
+                    SPK SMK 5 JEMBER
+                </div>
+
+                <div class="mobile-app-sub">
+                    Sistem Pendukung Keputusan
+                </div>
+            </div>
+
+        </div>
+
         @if (session('error'))
             <div class="alert-spk alert-error">{{ session('error') }}</div>
         @endif
