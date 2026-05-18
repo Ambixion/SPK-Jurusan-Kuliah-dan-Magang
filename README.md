@@ -215,3 +215,5 @@ Project ini dibuat untuk kebutuhan:
 * Pengembangan sistem pendukung keputusan
 
 Silakan gunakan dan kembangkan project ini sesuai kebutuhan.
+
+mantap
