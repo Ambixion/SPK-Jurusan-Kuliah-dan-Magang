@@ -58,7 +58,7 @@ pipeline {
                     docker container run \
                         --detach \
                         --name spk_app \
-                        --network spk_network \
+                        --network sistem-pengambil-keputusan-pemilihan-jurusan-kuliah-dan-magang_spk_network \
                         --restart unless-stopped \
                         --workdir /var/www \
                         ${APP_NAME}:latest

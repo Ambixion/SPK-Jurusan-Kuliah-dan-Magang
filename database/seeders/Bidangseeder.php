@@ -9,7 +9,7 @@ use App\Models\Skill;
 use App\Models\TempatMagang;
 use Illuminate\Database\Seeder;
 
-class BidangSeeder extends Seeder
+class Bidangseeder extends Seeder
 {
     public function run(): void
     {
