@@ -1,406 +1,99 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Pemilihan PKL</title>
+@extends('layouts.guru')
 
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+@section('title', 'Data Pemilihan PKL')
 
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+@section('content')
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: #05051f;
-            color: white;
-        }
+    <h1 class="page-title">
+        Data Pemilihan PKL
+    </h1>
 
-        .wrapper {
-            display: flex;
-            min-height: 100vh;
-        }
+    {{-- STAT --}}
+    <div class="grid-3-pkl">
 
-        .sidebar {
-            width: 310px;
-            background: #070720;
-            min-height: 100vh;
-            padding: 35px 34px;
-            position: fixed;
-            left: 0;
-            top: 0;
-            border-right: 2px solid rgba(255,255,255,0.08);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .profile {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            margin-bottom: 45px;
-        }
-
-        .avatar {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: #b8dff2;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 26px;
-        }
-
-        .profile-name {
-            font-weight: 700;
-            font-size: 15px;
-        }
-
-        .profile-role {
-            font-size: 13px;
-            color: #d6d6e7;
-        }
-
-        .menu {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .menu-item {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 13px 14px;
-            border-radius: 10px;
-            color: white;
-            text-decoration: none;
-            background: #151541;
-            border: 2px solid rgba(255,255,255,0.18);
-            font-weight: 600;
-            transition: 0.25s;
-        }
-
-        .menu-item:hover,
-        .menu-item.active {
-            background: #222264;
-            transform: translateX(5px);
-        }
-
-        .menu-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 7px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 23px;
-        }
-
-        .icon-yellow { background: #e6b800; }
-        .icon-red { background: #e21414; }
-        .icon-purple { background: #4141bb; }
-        .icon-green { background: #43c23f; }
-
-        .logout-btn {
-            background: #4444b7;
-            color: white;
-            border: none;
-            border-radius: 22px;
-            padding: 12px 32px;
-            font-family: 'Poppins', sans-serif;
-            cursor: pointer;
-            transition: 0.25s;
-        }
-
-        .logout-btn:hover {
-            background: #5757d8;
-        }
-
-        .main {
-            margin-left: 310px;
-            width: calc(100% - 310px);
-            padding: 42px 78px;
-        }
-
-        .title {
-            font-size: 34px;
-            font-weight: 800;
-            margin-bottom: 35px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .stat-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 22px;
-            margin-bottom: 28px;
-        }
-
-        .stat-card {
-            background: linear-gradient(135deg, #3f3fc4, #5c5cff);
-            padding: 22px 26px;
-            border-radius: 10px;
-            min-height: 120px;
-        }
-
-        .stat-title {
-            font-size: 18px;
-            margin-bottom: 12px;
-        }
-
-        .stat-value {
-            font-size: 28px;
-            font-weight: 700;
-            color: #94d1d3;
-        }
-
-        .card {
-            background: #242467;
-            border-radius: 12px;
-            padding: 26px;
-        }
-
-        .section-title {
-            font-size: 24px;
-            font-weight: 800;
-            margin-bottom: 22px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .toolbar {
-            display: grid;
-            grid-template-columns: 1.5fr 1fr;
-            gap: 18px;
-            margin-bottom: 22px;
-        }
-
-        .input,
-        .select {
-            height: 46px;
-            border: none;
-            border-radius: 24px;
-            background: #5656ea;
-            color: white;
-            padding: 0 18px;
-            font-family: 'Poppins', sans-serif;
-            outline: none;
-            font-size: 14px;
-        }
-
-        .input::placeholder {
-            color: white;
-            opacity: 0.95;
-        }
-
-        .select {
-            cursor: pointer;
-            appearance: none;
-            background-image: linear-gradient(45deg, transparent 50%, #ffffff 50%),
-                              linear-gradient(135deg, #ffffff 50%, transparent 50%);
-            background-position: calc(100% - 22px) 19px, calc(100% - 16px) 19px;
-            background-size: 6px 6px, 6px 6px;
-            background-repeat: no-repeat;
-        }
-
-        .select option {
-            background: #242467;
-            color: white;
-        }
-
-        .table {
-            width: 100%;
-            border-collapse: collapse;
-            background: #343493;
-        }
-
-        .table th,
-        .table td {
-            border: 1px solid rgba(0,0,0,0.25);
-            padding: 14px 16px;
-            text-align: center;
-            font-size: 14px;
-        }
-
-        .table th {
-            background: #303083;
-            font-weight: 700;
-        }
-
-        .table td {
-            font-weight: 500;
-        }
-
-        .table td.text-left {
-            text-align: left;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 6px 14px;
-            border-radius: 18px;
-            font-size: 13px;
-            font-weight: 700;
-        }
-
-        .badge-success {
-            background: rgba(67, 194, 63, 0.25);
-            color: #b6ffb4;
-        }
-
-        .badge-warning {
-            background: rgba(230, 184, 0, 0.25);
-            color: #ffe58a;
-        }
-
-        .empty-row {
-            padding: 30px !important;
-            color: #d6d6e7 !important;
-        }
-
-        .pagination {
-            margin-top: 20px;
-        }
-
-        .pagination nav {
-            color: white;
-        }
-
-        @media(max-width: 1200px) {
-            .stat-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .toolbar {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media(max-width: 900px) {
-            .sidebar {
-                position: relative;
-                width: 100%;
-                min-height: auto;
-            }
-
-            .wrapper {
-                flex-direction: column;
-            }
-
-            .main {
-                margin-left: 0;
-                width: 100%;
-                padding: 30px 20px;
-            }
-
-            .card {
-                overflow-x: auto;
-            }
-
-            .table {
-                min-width: 950px;
-            }
-        }
-    </style>
-</head>
-<body>
-
-<div class="wrapper">
-    <aside class="sidebar">
-        <div>
-            <div class="profile">
-                <div class="avatar">👨‍🏫</div>
-                <div>
-                    <div class="profile-name">{{ Auth::user()->nama ?? Auth::user()->name ?? 'Guru' }}</div>
-                    <div class="profile-role">Teacher</div>
-                </div>
+        <div class="stat-box">
+            <div class="stat-label-sm">
+                Total Tempat Magang
             </div>
 
-            <nav class="menu">
-                <a href="{{ route('guru.dashboard') }}" class="menu-item">
-                    <div class="menu-icon icon-yellow">👤</div>
-                    <span>Dashboard Guru</span>
-                </a>
-
-                <a href="{{ route('guru.siswa.index') }}" class="menu-item">
-                    <div class="menu-icon icon-red">👔</div>
-                    <span>Tambah Data Siswa</span>
-                </a>
-
-                <a href="{{ route('guru.tempat_magang') }}" class="menu-item active">
-                    <div class="menu-icon icon-purple">🏢</div>
-                    <span>Data Pemilihan PKL</span>
-                </a>
-
-                <a href="{{ route('guru.jurusan_kuliah') }}" class="menu-item">
-                    <div class="menu-icon icon-green">🏫</div>
-                    <span>Data Pemilihan Prodi</span>
-                </a>
-            </nav>
+            <div class="stat-value blue">
+                {{ $tempatMagang->total() }}
+            </div>
         </div>
 
-        <form action="{{ route('logout') }}" method="POST">
-            @csrf
-            <button type="submit" class="logout-btn">Log out</button>
-        </form>
-    </aside>
-
-    <main class="main">
-        <h1 class="title">Data Pemilihan PKL</h1>
-
-        <section class="stat-grid">
-            <div class="stat-card">
-                <div class="stat-title">Total Tempat Magang</div>
-                <div class="stat-value">{{ $tempatMagang->total() }} Tempat</div>
+        <div class="stat-box">
+            <div class="stat-label-sm">
+                Total Bidang
             </div>
 
-            <div class="stat-card">
-                <div class="stat-title">Total Bidang</div>
-                <div class="stat-value">
-                    {{ $tempatMagang->pluck('bidang')->filter()->unique()->count() }} Bidang
+            <div class="stat-value green">
+                {{ $tempatMagang->pluck('bidang')->filter()->unique()->count() }}
+            </div>
+        </div>
+
+        <div class="stat-box">
+            <div class="stat-label-sm">
+                Total Kuota
+            </div>
+
+            <div class="stat-value orange">
+                {{ $tempatMagang->sum('kuota') }}
+            </div>
+        </div>
+
+    </div>
+
+    {{-- CARD --}}
+    <div class="card-main pkl-card">
+
+        <div class="card-title">
+            List Tempat Magang
+        </div>
+
+        {{-- FILTER --}}
+        <div class="toolbar-pkl">
+
+            <div class="search-box">
+
+                <div class="search-icon">
+                    🔍
                 </div>
-            </div>
 
-            <div class="stat-card">
-                <div class="stat-title">Total Kuota</div>
-                <div class="stat-value">
-                    {{ $tempatMagang->sum('kuota') }} Kuota
-                </div>
-            </div>
-        </section>
-
-        <section class="card">
-            <h2 class="section-title">List Tempat Magang</h2>
-
-            <div class="toolbar">
                 <input
                     type="text"
                     id="searchInput"
-                    class="input"
-                    placeholder="🔍 Cari nama tempat magang / bidang"
+                    class="search-input"
+                    placeholder="Cari tempat magang..."
                 >
 
-                <select id="bidangFilter" class="select">
-                    <option value="">Semua Bidang</option>
-
-                    @foreach($tempatMagang->pluck('bidang')->filter()->unique() as $bidang)
-                        <option value="{{ $bidang }}">{{ $bidang }}</option>
-                    @endforeach
-                </select>
             </div>
 
-            <table class="table" id="magangTable">
+            <select id="bidangFilter" class="filter-select">
+
+                <option value="">
+                    Semua Bidang
+                </option>
+
+                @foreach($tempatMagang->pluck('bidang')->filter()->unique() as $bidang)
+
+                    <option value="{{ $bidang }}">
+                        {{ $bidang }}
+                    </option>
+
+                @endforeach
+
+            </select>
+
+        </div>
+
+        {{-- TABLE --}}
+        <div class="table-scroll">
+
+            <table class="student-table" id="magangTable">
+
                 <thead>
                     <tr>
-                        <th>No.</th>
+                        <th style="width:70px;">No</th>
                         <th>Nama Tempat Magang</th>
                         <th>Bidang</th>
                         <th>Kuota</th>
@@ -410,7 +103,9 @@
                 </thead>
 
                 <tbody>
+
                     @forelse($tempatMagang as $item)
+
                         @php
                             $nama = $item->nama ?? '-';
                             $bidang = $item->bidang ?? '-';
@@ -423,59 +118,411 @@
                             data-nama="{{ strtolower($nama) }}"
                             data-bidang="{{ strtolower($bidang) }}"
                         >
-                            <td>{{ $tempatMagang->firstItem() + $loop->index }}</td>
-                            <td class="text-left">{{ $nama }}</td>
-                            <td>{{ $bidang }}</td>
+
                             <td>
-                                @if($kuota > 0)
-                                    <span class="badge badge-success">{{ $kuota }} Orang</span>
-                                @else
-                                    <span class="badge badge-warning">Belum Ada</span>
-                                @endif
+                                {{ $tempatMagang->firstItem() + $loop->index }}
                             </td>
-                            <td>{{ $kontak }}</td>
+
+                            <td class="text-left table-title">
+                                {{ $nama }}
+                            </td>
+
+                            <td>
+                                <span class="badge-success">
+                                    {{ $bidang }}
+                                </span>
+                            </td>
+
+                            <td>
+
+                                @if($kuota > 0)
+
+                                    <span class="badge-success">
+                                        {{ $kuota }} Orang
+                                    </span>
+
+                                @else
+
+                                    <span class="badge-warning">
+                                        Belum Ada
+                                    </span>
+
+                                @endif
+
+                            </td>
+
+                            <td>
+                                {{ $kontak }}
+                            </td>
+
                             <td class="text-left">
                                 {{ \Illuminate\Support\Str::limit($deskripsi, 80) }}
                             </td>
+
                         </tr>
+
                     @empty
+
                         <tr>
-                            <td colspan="6" class="empty-row">Belum ada data tempat magang.</td>
+
+                            <td colspan="6" class="empty-data">
+
+                                Belum ada data tempat magang.
+
+                            </td>
+
                         </tr>
+
                     @endforelse
+
                 </tbody>
+
             </table>
 
-            <div class="pagination">
-                {{ $tempatMagang->links() }}
-            </div>
-        </section>
-    </main>
-</div>
+        </div>
 
+        {{-- PAGINATION --}}
+        <div class="pagination-wrap">
+            {{ $tempatMagang->links() }}
+        </div>
+
+    </div>
+
+@endsection
+
+@push('styles')
+<style>
+
+    /* =========================================
+       GRID STAT
+    ========================================= */
+
+    .grid-3-pkl {
+
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+
+        gap: 14px;
+
+        margin-bottom: 20px;
+    }
+
+    /* =========================================
+       CARD
+    ========================================= */
+
+    .pkl-card {
+
+        display: flex;
+        flex-direction: column;
+
+        gap: 18px;
+
+        overflow: hidden;
+    }
+
+    /* =========================================
+       FILTER
+    ========================================= */
+
+    .toolbar-pkl {
+
+        display: grid;
+        grid-template-columns: 1fr 220px;
+
+        gap: 14px;
+    }
+
+    .search-box {
+        position: relative;
+    }
+
+    .search-icon {
+
+        position: absolute;
+
+        left: 16px;
+        top: 50%;
+
+        transform: translateY(-50%);
+
+        font-size: 13px;
+
+        color: rgba(255,255,255,.45);
+
+        pointer-events: none;
+    }
+
+    .search-input,
+    .filter-select {
+
+        width: 100%;
+        height: 50px;
+
+        border-radius: 14px;
+
+        border: 1px solid rgba(255,255,255,.08);
+
+        background: rgba(255,255,255,.06);
+
+        color: white;
+
+        outline: none;
+
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 500;
+
+        transition: .25s ease;
+
+        backdrop-filter: blur(10px);
+    }
+
+    .search-input {
+
+        padding-left: 44px;
+        padding-right: 14px;
+    }
+
+    .filter-select {
+
+        padding: 0 16px;
+
+        cursor: pointer;
+
+        appearance: none;
+
+        background-image:
+            linear-gradient(45deg, transparent 50%, rgba(255,255,255,.7) 50%),
+            linear-gradient(135deg, rgba(255,255,255,.7) 50%, transparent 50%);
+
+        background-position:
+            calc(100% - 20px) 22px,
+            calc(100% - 14px) 22px;
+
+        background-size:
+            6px 6px,
+            6px 6px;
+
+        background-repeat: no-repeat;
+    }
+
+    .filter-select option {
+        background: #1f2244;
+        color: white;
+    }
+
+    .search-input::placeholder {
+        color: rgba(255,255,255,.45);
+    }
+
+    .search-input:focus,
+    .filter-select:focus {
+
+        border-color: rgba(79,110,247,.7);
+
+        box-shadow:
+            0 0 0 4px rgba(79,110,247,.15);
+
+        background: rgba(255,255,255,.08);
+    }
+
+    /* =========================================
+       TABLE
+    ========================================= */
+
+    .table-scroll {
+
+        width: 100%;
+
+        overflow-x: auto;
+
+        border-radius: 14px;
+
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255,255,255,.2) transparent;
+    }
+
+    .table-scroll::-webkit-scrollbar {
+        height: 7px;
+    }
+
+    .table-scroll::-webkit-scrollbar-thumb {
+
+        background: rgba(255,255,255,.2);
+
+        border-radius: 20px;
+    }
+
+    .student-table {
+
+        width: 100%;
+        min-width: 980px;
+
+        border-collapse: collapse;
+    }
+
+    .student-table thead th {
+
+        position: sticky;
+        top: 0;
+
+        z-index: 5;
+    }
+
+    .table-title {
+        font-weight: 700;
+    }
+
+    .text-left {
+        text-align: left !important;
+    }
+
+    .empty-data {
+
+        padding: 40px !important;
+
+        color: rgba(255,255,255,.6);
+    }
+
+    /* =========================================
+       PAGINATION
+    ========================================= */
+
+    .pagination-wrap {
+
+        margin-top: 4px;
+    }
+
+    .pagination-wrap nav {
+        color: white;
+    }
+
+    /* =========================================
+       MOBILE
+    ========================================= */
+
+    @media (max-width: 768px) {
+
+        .grid-3-pkl {
+
+            grid-template-columns: repeat(2, 1fr);
+
+            gap: 12px;
+        }
+
+        .toolbar-pkl {
+
+            grid-template-columns: 1fr 145px;
+
+            gap: 10px;
+        }
+
+        .search-input,
+        .filter-select {
+
+            height: 44px;
+
+            font-size: 12px;
+
+            border-radius: 12px;
+        }
+
+        .search-input {
+            padding-left: 40px;
+        }
+
+        .search-icon {
+
+            left: 14px;
+
+            font-size: 12px;
+        }
+
+        .student-table {
+
+            min-width: 900px;
+        }
+
+        .pagination-wrap {
+
+            overflow-x: auto;
+        }
+    }
+
+    @media (max-width: 480px) {
+
+        .grid-3-pkl {
+
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .toolbar-pkl {
+
+            grid-template-columns: 1fr 120px;
+        }
+
+        .stat-value {
+
+            font-size: 18px;
+        }
+    }
+
+</style>
+@endpush
+
+@push('scripts')
 <script>
-    const searchInput = document.getElementById('searchInput');
-    const bidangFilter = document.getElementById('bidangFilter');
-    const rows = document.querySelectorAll('#magangTable tbody tr');
+
+    const searchInput =
+        document.getElementById('searchInput');
+
+    const bidangFilter =
+        document.getElementById('bidangFilter');
+
+    const rows =
+        document.querySelectorAll('#magangTable tbody tr');
 
     function filterTable() {
-        const search = searchInput.value.toLowerCase();
-        const bidangValue = bidangFilter.value.toLowerCase();
+
+        const search =
+            searchInput.value.toLowerCase();
+
+        const bidangValue =
+            bidangFilter.value.toLowerCase();
 
         rows.forEach(row => {
-            const nama = row.dataset.nama || '';
-            const bidang = row.dataset.bidang || '';
 
-            const matchSearch = nama.includes(search) || bidang.includes(search);
-            const matchBidang = bidangValue === '' || bidang === bidangValue;
+            const nama =
+                row.dataset.nama || '';
 
-            row.style.display = matchSearch && matchBidang ? '' : 'none';
+            const bidang =
+                row.dataset.bidang || '';
+
+            const matchSearch =
+                nama.includes(search) ||
+                bidang.includes(search);
+
+            const matchBidang =
+                bidangValue === '' ||
+                bidang === bidangValue;
+
+            row.style.display =
+                matchSearch && matchBidang
+                ? ''
+                : 'none';
         });
     }
 
-    searchInput.addEventListener('input', filterTable);
-    bidangFilter.addEventListener('change', filterTable);
-</script>
+    searchInput.addEventListener(
+        'input',
+        filterTable
+    );
 
-</body>
-</html>
+    bidangFilter.addEventListener(
+        'change',
+        filterTable
+    );
+
+</script>
+@endpush

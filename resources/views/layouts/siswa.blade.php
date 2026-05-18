@@ -805,7 +805,7 @@
                 </div>
 
                 <div class="mobile-app-sub">
-                    Sistem Pendukung Keputusan
+                    Siswa
                 </div>
             </div>
 
