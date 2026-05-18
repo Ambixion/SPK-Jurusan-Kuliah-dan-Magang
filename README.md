@@ -216,4 +216,3 @@ Project ini dibuat untuk kebutuhan:
 
 Silakan gunakan dan kembangkan project ini sesuai kebutuhan.
 
-mantap
