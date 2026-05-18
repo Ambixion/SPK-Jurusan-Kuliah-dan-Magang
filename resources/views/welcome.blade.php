@@ -88,7 +88,7 @@
 
             <div class="flex items-center gap-3">
 
-                <a href="/login" class="px-5 md:px-8 py-2 rounded-full text-sm font-semibold transition shadow-md"
+                <a href="{{ route('login') }}" class="px-5 md:px-8 py-2 rounded-full text-sm font-semibold transition shadow-md"
                     style="background-color: #393A97; color: white;">
                     Login
                 </a>

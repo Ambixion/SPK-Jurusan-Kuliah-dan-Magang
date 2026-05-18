@@ -3,7 +3,7 @@
 @section('page-title', 'Tambah Tempat Magang')
 
 @section('content')
-<div style="max-width:680px;">
+<div style="max-width:760px;">
     <div class="card-dark">
         <form method="POST" action="{{ route('admin.tempat_magang.store') }}">
             @csrf
@@ -46,23 +46,7 @@
                 @error('bidang')<div style="color:#f87171;font-size:0.8rem;margin-top:4px;">{{ $message }}</div>@enderror
             </div>
 
-            <div class="row g-3 mb-4">
-                <div class="col-md-6">
-                    <label class="form-label-custom">Latitude <span style="color:#f87171">*</span></label>
-                    <input type="number" step="0.00000001" name="latitude"
-                        class="form-control form-control-dark @error('latitude') is-invalid @enderror"
-                        value="{{ old('latitude') }}" placeholder="-8.1234">
-                    @error('latitude')<div style="color:#f87171;font-size:0.8rem;margin-top:4px;">{{ $message }}</div>@enderror
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label-custom">Longitude <span style="color:#f87171">*</span></label>
-                    <input type="number" step="0.00000001" name="longitude"
-                        class="form-control form-control-dark @error('longitude') is-invalid @enderror"
-                        value="{{ old('longitude') }}" placeholder="113.1234">
-                    @error('longitude')<div style="color:#f87171;font-size:0.8rem;margin-top:4px;">{{ $message }}</div>@enderror
-                </div>
-            </div>
-
+            @include('admin.tempat_magang.partials.location-map')
             <div class="row g-3 mb-4">
                 <div class="col-md-6">
                     <label class="form-label-custom">Kuota <span style="color:#f87171">*</span></label>

@@ -34,12 +34,8 @@ Route::get('/', function () {
             default => redirect()->route('login'),
         };
     }
-    return redirect()->route('login');
-})->name('root');
-
-Route::get("/", function () {
     return view('welcome');
-});
+})->name('root');
 
 // ── AUTH ──────────────────────────────────────────────────────────────────────
 Route::middleware('guest')->group(function () {

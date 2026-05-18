@@ -106,6 +106,41 @@
         const wrapper = document.getElementById('dashboard-detail-wrapper');
         if (!wrapper) return;
 
+        function setupSkillToggleButtons() {
+            document.querySelectorAll('.skill-toggle-btn').forEach(btn => {
+                // Remove existing listener to avoid duplicates
+                btn.removeEventListener('click', handleSkillToggle);
+                // Add new listener
+                btn.addEventListener('click', handleSkillToggle);
+            });
+        }
+
+        function handleSkillToggle(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const container = this.closest('.skill-container');
+            const items = container.querySelectorAll('.skill-item');
+            const isExpanded = this.dataset.expanded === 'true';
+            
+            items.forEach(item => {
+                const skillIndex = parseInt(item.dataset.skillIndex);
+                if (isExpanded) {
+                    item.style.display = skillIndex >= 3 ? 'none' : 'inline-flex';
+                } else {
+                    item.style.display = 'inline-flex';
+                }
+            });
+            
+            if (isExpanded) {
+                this.dataset.expanded = 'false';
+                this.textContent = '+' + (items.length - 3) + ' lainnya';
+            } else {
+                this.dataset.expanded = 'true';
+                this.textContent = 'Tampilkan lebih sedikit';
+            }
+        }
+
         function ajaxLoad(url, pushState = true) {
             if (!url) return;
             fetch(url, {
@@ -118,6 +153,7 @@
                 .then(function (data) {
                     if (data && typeof data.html === 'string') {
                         wrapper.innerHTML = data.html;
+                        setupSkillToggleButtons();
                         if (pushState && window.history && window.history.pushState) {
                             window.history.pushState({dashboardDetail: true}, '', url);
                         }
@@ -151,6 +187,11 @@
         window.addEventListener('popstate', function () {
             const currentUrl = window.location.href;
             ajaxLoad(currentUrl, false);
+        });
+
+        // Setup on initial page load
+        document.addEventListener('DOMContentLoaded', function() {
+            setupSkillToggleButtons();
         });
     })();
 </script>

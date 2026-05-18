@@ -85,12 +85,22 @@ class UserController extends Controller
                 : []),
         ]);
 
-        // update profil siswa
+        // Handle siswa profile
         if ($request->role === 'siswa') {
             Siswa::updateOrCreate(
                 ['users_id' => $user->id],
                 ['jurusan_smk_id' => $request->jurusan_smk_id]
             );
+            // Remove guru profile if exists
+            Guru::where('users_id', $user->id)->delete();
+        } elseif ($request->role === 'guru') {
+            // Create guru profile if doesn't exist
+            Guru::updateOrCreate(
+                ['users_id' => $user->id],
+                []
+            );
+            // Remove siswa profile if exists
+            Siswa::where('users_id', $user->id)->delete();
         }
 
         return redirect()->route('admin.users.index')
@@ -100,6 +110,14 @@ class UserController extends Controller
     public function destroy(string $id)
     {
         $user = User::findOrFail($id);
+        
+        // Delete related guru profile
+        Guru::where('users_id', $user->id)->delete();
+        
+        // Delete related siswa profile
+        Siswa::where('users_id', $user->id)->delete();
+        
+        // Delete user
         $user->delete();
 
         return redirect()->route('admin.users.index')

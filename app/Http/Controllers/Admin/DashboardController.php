@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Guru;
 use App\Models\JurusanKuliah;
 use App\Models\JurusanSmk;
 use App\Models\Kriteria;
@@ -16,7 +15,7 @@ class DashboardController extends Controller
 {
     public function index(Request $request) {
         $total_siswa = Siswa::count();
-        $total_guru = Guru::count();
+        $total_guru = User::where('role', 'guru')->count();
         $total_jurusan = JurusanKuliah::count();
         $total_jurusan_smk = JurusanSmk::count();
         $total_tempat_magang = TempatMagang::count();
@@ -122,11 +121,11 @@ class DashboardController extends Controller
                     break;
                 case 'guru':
                     $detailTitle = 'Detail Guru (10 terbaru)';
-                    $detailItems = Guru::query()
-                        ->with('user')
+                    $detailItems = User::query()
+                        ->where('role', 'guru')
                         ->when($q !== '', function ($query) use ($q) {
-                            $query->whereHas('user', function ($userQuery) use ($q) {
-                                $userQuery->where('nama', 'like', "%{$q}%")
+                            $query->where(function ($sub) use ($q) {
+                                $sub->where('nama', 'like', "%{$q}%")
                                     ->orWhere('email', 'like', "%{$q}%");
                             });
                         })

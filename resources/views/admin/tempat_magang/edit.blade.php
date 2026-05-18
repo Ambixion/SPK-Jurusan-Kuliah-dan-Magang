@@ -3,7 +3,7 @@
 @section('page-title', 'Edit Tempat Magang')
 
 @section('content')
-<div style="max-width:680px;">
+<div style="max-width:760px;">
     <div class="card-dark">
         <form method="POST" action="{{ route('admin.tempat_magang.update', $tempat->id) }}">
             @csrf @method('PUT')
@@ -45,22 +45,10 @@
                 @error('bidang')<div style="color:#f87171;font-size:0.8rem;margin-top:4px;">{{ $message }}</div>@enderror
             </div>
 
-            <div class="row g-3 mb-4">
-                <div class="col-md-6">
-                    <label class="form-label-custom">Latitude <span style="color:#f87171">*</span></label>
-                    <input type="number" step="0.00000001" name="latitude"
-                        class="form-control form-control-dark @error('latitude') is-invalid @enderror"
-                        value="{{ old('latitude', $tempat->latitude) }}">
-                    @error('latitude')<div style="color:#f87171;font-size:0.8rem;margin-top:4px;">{{ $message }}</div>@enderror
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label-custom">Longitude <span style="color:#f87171">*</span></label>
-                    <input type="number" step="0.00000001" name="longitude"
-                        class="form-control form-control-dark @error('longitude') is-invalid @enderror"
-                        value="{{ old('longitude', $tempat->longitude) }}">
-                    @error('longitude')<div style="color:#f87171;font-size:0.8rem;margin-top:4px;">{{ $message }}</div>@enderror
-                </div>
-            </div>
+            @include('admin.tempat_magang.partials.location-map', [
+                'latitude' => $tempat->latitude,
+                'longitude' => $tempat->longitude,
+            ])
 
             <div class="row g-3 mb-4">
                 <div class="col-md-6">

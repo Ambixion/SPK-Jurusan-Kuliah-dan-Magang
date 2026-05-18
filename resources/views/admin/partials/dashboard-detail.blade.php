@@ -97,11 +97,16 @@
                             @elseif($detailKey === 'jurusan_smk')
                                 <td data-label="{{ $headers[1] ?? 'Nama Jurusan' }}"><strong>{{ $row->nama_jurusan }}</strong></td>
                                 <td data-label="{{ $headers[2] ?? 'Skill Terkait' }}">
-                                    @forelse($row->skills as $skill)
-                                        <span class="badge-custom badge-magang" style="margin:2px;">{{ $skill->jenis_skill }}</span>
-                                    @empty
-                                        <span style="color:#4a5568;font-size:0.8rem;">Belum ada skill</span>
-                                    @endforelse
+                                    <div class="skill-container" style="display:flex;flex-wrap:wrap;gap:6px;">
+                                        @forelse($row->skills as $i => $skill)
+                                            <span class="badge-custom badge-magang skill-item" style="margin:0;display:{{ $i < 3 ? 'inline-flex' : 'none' }};" data-skill-index="{{ $i }}">{{ $skill->jenis_skill }}</span>
+                                        @empty
+                                            <span style="color:#4a5568;font-size:0.8rem;">Belum ada skill</span>
+                                        @endforelse
+                                        @if($row->skills->count() > 3)
+                                            <button type="button" class="skill-toggle-btn" style="padding:4px 12px;font-size:0.75rem;background:#5b6af0;color:#fff;border:none;border-radius:4px;cursor:pointer;" onclick="toggleSkills(this)">+{{ $row->skills->count() - 3 }} lainnya</button>
+                                        @endif
+                                    </div>
                                 </td>
                             @elseif($detailKey === 'tempat_magang')
                                 <td data-label="{{ $headers[1] ?? 'Nama Tempat' }}"><strong>{{ $row->nama }}</strong></td>
@@ -109,11 +114,16 @@
                                 <td data-label="{{ $headers[3] ?? 'Kuota' }}"><span class="badge-custom badge-magang">{{ $row->kuota }}</span></td>
                                 <td data-label="{{ $headers[4] ?? 'Kontak' }}" style="color:#8892a4;">{{ $row->kontak ?: '-' }}</td>
                                 <td data-label="{{ $headers[5] ?? 'Skill' }}">
-                                    @forelse($row->skills as $skill)
-                                        <span class="badge-custom badge-magang" style="margin:2px;">{{ $skill->jenis_skill }}</span>
-                                    @empty
-                                        <span style="color:#4a5568;font-size:0.8rem;">Belum ada skill</span>
-                                    @endforelse
+                                    <div class="skill-container" style="display:flex;flex-wrap:wrap;gap:6px;">
+                                        @forelse($row->skills as $i => $skill)
+                                            <span class="badge-custom badge-magang skill-item" style="margin:0;display:{{ $i < 3 ? 'inline-flex' : 'none' }};" data-skill-index="{{ $i }}">{{ $skill->jenis_skill }}</span>
+                                        @empty
+                                            <span style="color:#4a5568;font-size:0.8rem;">Belum ada skill</span>
+                                        @endforelse
+                                        @if($row->skills->count() > 3)
+                                            <button type="button" class="skill-toggle-btn" style="padding:4px 12px;font-size:0.75rem;background:#5b6af0;color:#fff;border:none;border-radius:4px;cursor:pointer;" onclick="toggleSkills(this)">+{{ $row->skills->count() - 3 }} lainnya</button>
+                                        @endif
+                                    </div>
                                 </td>
                             @elseif($detailKey === 'users')
                                 <td data-label="{{ $headers[1] ?? 'Nama' }}"><strong>{{ $row->nama }}</strong></td>
@@ -128,8 +138,8 @@
                                 </td>
                                 <td data-label="{{ $headers[3] ?? 'Email' }}" style="color:#8892a4;">{{ $row->user->email ?? '-' }}</td>
                             @elseif($detailKey === 'guru')
-                                <td data-label="{{ $headers[1] ?? 'Nama' }}"><strong>{{ $row->user->nama ?? '-' }}</strong></td>
-                                <td data-label="{{ $headers[2] ?? 'Email' }}" style="color:#8892a4;">{{ $row->user->email ?? '-' }}</td>
+                                <td data-label="{{ $headers[1] ?? 'Nama' }}"><strong>{{ $row->nama ?? '-' }}</strong></td>
+                                <td data-label="{{ $headers[2] ?? 'Email' }}" style="color:#8892a4;">{{ $row->email ?? '-' }}</td>
                             @endif
                         </tr>
                     @endforeach
