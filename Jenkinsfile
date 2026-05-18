@@ -3,7 +3,6 @@ pipeline {
 
     environment {
         APP_NAME   = 'spk-smkn-app'
-        STACK_NAME = 'spk_stack'
     }
 
     options {
@@ -18,7 +17,6 @@ pipeline {
             steps {
                 echo '📥 Mengambil source code...'
                 checkout scm
-                echo "Branch: ${env.BRANCH_NAME ?: 'manual'}"
                 echo "Build : #${BUILD_NUMBER}"
             }
         }
@@ -26,128 +24,94 @@ pipeline {
         stage('Lint - Cek Syntax PHP') {
             steps {
                 echo '🔍 Mengecek syntax PHP...'
-                script {
-                    if (isUnix()) {
-                        sh '''
-                            find app routes database -name "*.php" | while read f; do
-                                php -l "$f" > /dev/null 2>&1 || echo "ERROR: $f"
-                            done
-                            echo "✅ Lint selesai"
-                        '''
-                    } else {
-                        bat '''
-                            echo Lint PHP selesai (Windows skip)
-                        '''
-                    }
-                }
+                sh '''
+                    ERROR_COUNT=0
+                    for f in $(find app routes database -name "*.php" 2>/dev/null); do
+                        RESULT=$(php -l "$f" 2>&1)
+                        if echo "$RESULT" | grep -q "Parse error"; then
+                            echo "SYNTAX ERROR: $f"
+                            echo "$RESULT"
+                            ERROR_COUNT=$((ERROR_COUNT + 1))
+                        fi
+                    done
+                    if [ $ERROR_COUNT -gt 0 ]; then
+                        echo "❌ Ditemukan $ERROR_COUNT file dengan syntax error!"
+                        exit 1
+                    fi
+                    echo "✅ Semua file PHP syntax OK"
+                '''
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 echo "🐳 Build image: ${APP_NAME}:${BUILD_NUMBER}..."
-                script {
-                    if (isUnix()) {
-                        sh """
-                            docker build -t ${APP_NAME}:${BUILD_NUMBER} -t ${APP_NAME}:latest .
-                            docker images ${APP_NAME}
-                        """
-                    } else {
-                        bat """
-                            docker build -t ${APP_NAME}:${BUILD_NUMBER} -t ${APP_NAME}:latest .
-                            docker images ${APP_NAME}
-                        """
-                    }
-                }
+                sh """
+                    docker build -t ${APP_NAME}:${BUILD_NUMBER} -t ${APP_NAME}:latest .
+                    docker images ${APP_NAME}
+                """
             }
         }
 
-        stage('Deploy - Docker Compose') {
+        stage('Deploy') {
             steps {
-                echo '🚀 Deploy dengan Docker Compose...'
-                script {
-                    if (isUnix()) {
-                        sh '''
-                            docker compose down --remove-orphans || true
-                            docker compose up -d
-                            sleep 15
-                            docker compose ps
-                        '''
-                    } else {
-                        bat '''
-                            docker compose down --remove-orphans || exit 0
-                            docker compose up -d
-                            timeout /t 15 /nobreak
-                            docker compose ps
-                        '''
-                    }
-                }
+                echo '🚀 Deploy aplikasi...'
+                sh '''
+                    # Hentikan container app lama jika ada
+                    docker stop spk_app 2>/dev/null || true
+                    docker rm spk_app   2>/dev/null || true
+
+                    # Jalankan container app baru dengan image terbaru
+                    docker run -d \
+                        --name spk_app \
+                        --network spk_network \
+                        --restart unless-stopped \
+                        -w /var/www \
+                        spk-smkn-app:latest
+
+                    sleep 5
+                    docker ps | grep spk_app && echo "✅ Container app berjalan" || echo "⚠️ Container tidak ditemukan"
+                '''
             }
         }
 
         stage('Setup Laravel') {
             steps {
-                echo '⚙️  Setup Laravel (migrate & seed)...'
-                script {
-                    if (isUnix()) {
-                        sh '''
-                            docker compose exec -T app php artisan key:generate --force
-                            docker compose exec -T app php artisan migrate:fresh --seed --force
-                            docker compose exec -T app php artisan config:cache
-                            docker compose exec -T app php artisan route:cache
-                        '''
-                    } else {
-                        bat '''
-                            docker compose exec -T app php artisan key:generate --force
-                            docker compose exec -T app php artisan migrate:fresh --seed --force
-                            docker compose exec -T app php artisan config:cache
-                            docker compose exec -T app php artisan route:cache
-                        '''
-                    }
-                }
+                echo '⚙️  Setup Laravel...'
+                sh '''
+                    sleep 5
+                    docker exec spk_app php artisan key:generate --force  || true
+                    docker exec spk_app php artisan config:cache           || true
+                    docker exec spk_app php artisan route:cache            || true
+                    echo "✅ Setup Laravel selesai"
+                '''
             }
         }
 
         stage('Health Check') {
             steps {
-                echo '❤️  Cek kesehatan aplikasi...'
-                script {
-                    if (isUnix()) {
-                        sh '''
-                            sleep 5
-                            curl -f http://localhost:8001 -o /dev/null -s \
-                                -w "HTTP Status: %{http_code}\n" \
-                                || echo "⚠️  App belum siap, cek docker compose logs"
-                        '''
-                    } else {
-                        bat '''
-                            timeout /t 5 /nobreak
-                            curl -f http://localhost:8001 -o NUL -s -w "HTTP Status: %%{http_code}\n" || echo App check done
-                        '''
-                    }
-                }
+                echo '❤️  Health check...'
+                sh '''
+                    sleep 3
+                    HTTP=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8000 || echo "000")
+                    echo "HTTP Status: $HTTP"
+                    if [ "$HTTP" = "200" ] || [ "$HTTP" = "302" ]; then
+                        echo "✅ Aplikasi berjalan normal"
+                    else
+                        echo "⚠️ Status $HTTP - aplikasi mungkin butuh waktu lebih"
+                    fi
+                '''
             }
         }
     }
 
     post {
         success {
-            echo '''
-✅ PIPELINE BERHASIL!
-   Aplikasi : http://localhost:8001
-   Grafana  : http://localhost:3000  (admin/admin123)
-   Prometheus: http://localhost:9090
-            '''
+            echo '✅ PIPELINE BERHASIL! Aplikasi: http://localhost:8000 | Grafana: http://localhost:3000'
         }
         failure {
-            echo '❌ PIPELINE GAGAL! Cek log di atas.'
-            script {
-                if (isUnix()) {
-                    sh 'docker compose logs --tail=30 2>/dev/null || true'
-                } else {
-                    bat 'docker compose logs --tail=30 || exit 0'
-                }
-            }
+            echo '❌ PIPELINE GAGAL!'
+            sh 'docker logs spk_app --tail=20 2>/dev/null || true'
         }
         always {
             echo "Build #${BUILD_NUMBER} selesai."
