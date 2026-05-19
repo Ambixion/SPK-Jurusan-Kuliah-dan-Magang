@@ -10,7 +10,7 @@
 
     <div class="card-main page-table-card">
 
-        <div class="toolbar-filter">
+        <div class="table-tools">
 
             <div class="search-box">
 
@@ -41,10 +41,6 @@
                 </option>
 
             </select>
-
-        </div>
-
-        <div class="table-tools">
 
             <select id="jurusanFilter" class="filter-select">
 
@@ -102,7 +98,6 @@
                                 $nilaiRata = $siswa->nilaiSiswa->first()->nilai ?? '-';
                                 $noTelp = $siswa->no_telp ?? '-';
                                 $alamat = $siswa->alamat ?? '-';
-
                                 $sudahMengisi = $siswa->hasilJurusan->count() > 0 || $siswa->hasilMagang->count() > 0;
                             @endphp
 
@@ -140,6 +135,7 @@
                                 <td>
                                     <div class="action-group">
 
+                                        {{-- TOMBOL SHOW --}}
                                         <button type="button" class="action-btn show-btn open-show-modal"
                                             data-nama="{{ $namaSiswa }}" data-email="{{ $emailSiswa }}"
                                             data-nisn="{{ $nisnSiswa }}" data-kelas="{{ $kelasSiswa }}"
@@ -147,11 +143,10 @@
                                             data-no-telp="{{ $noTelp }}" data-alamat="{{ $alamat }}"
                                             data-nilai="{{ $nilaiRata }}"
                                             data-status="{{ $sudahMengisi ? 'Sudah Mengisi' : 'Belum Mengisi' }}">
-
                                             Show
-
                                         </button>
 
+                                        {{-- TOMBOL EDIT --}}
                                         <button type="button" class="action-btn open-edit-modal"
                                             data-nama="{{ $namaSiswa }}" data-email="{{ $siswa->user->email ?? '' }}"
                                             data-nisn="{{ $siswa->nisn ?? '' }}" data-kelas="{{ $siswa->kelas ?? '' }}"
@@ -161,23 +156,18 @@
                                             data-alamat="{{ $siswa->alamat ?? '' }}"
                                             data-nilai="{{ $siswa->nilaiSiswa->first()->nilai ?? '' }}"
                                             data-action="{{ route('guru.siswa.update', $siswa->id) }}">
-
                                             Edit
-
                                         </button>
 
+                                        {{-- FORM HAPUS --}}
                                         <form action="{{ route('guru.siswa.destroy', $siswa->id) }}" method="POST"
                                             onsubmit="return confirm('Yakin ingin menghapus data siswa ini?')">
-
                                             @csrf
                                             @method('DELETE')
 
                                             <button type="submit" class="action-btn delete-btn">
-
                                                 Hapus
-
                                             </button>
-
                                         </form>
 
                                     </div>
@@ -188,11 +178,9 @@
                         @empty
 
                             <tr>
-
                                 <td colspan="6" class="empty-data">
                                     Belum ada data siswa.
                                 </td>
-
                             </tr>
                         @endforelse
 
@@ -206,14 +194,20 @@
 
     </div>
 
+
+    {{-- ============================================================
+         MODAL SHOW / DETAIL SISWA
+    ============================================================ --}}
     <div class="modal-overlay" id="showModal">
         <div class="modal-card">
+
             <div class="modal-header">
                 <h2 class="modal-title">Detail Data Siswa</h2>
                 <button type="button" class="modal-close" id="closeShowModal">×</button>
             </div>
 
             <div class="detail-grid">
+
                 <div class="detail-item">
                     <span>Nama Siswa</span>
                     <strong id="showNama">-</strong>
@@ -263,17 +257,31 @@
                     <span>Alamat</span>
                     <strong id="showAlamat">-</strong>
                 </div>
+
             </div>
 
-            {{-- <div class="modal-actions">
-                <button type="button" class="action-btn btn-cancel" id="cancelShowModal">Kembali</button>
-            </div> --}}
+            {{--
+                Tombol Kembali WAJIB ada (tidak boleh di-comment).
+                JS di layouts.guru mereferensikan id="cancelShowModal".
+                Jika elemen ini tidak ada, addEventListener akan throw error
+                dan seluruh JS modal di halaman ini ikut gagal.
+            --}}
+            <div class="modal-actions">
+                <button type="button" class="action-btn btn-cancel" id="cancelShowModal">
+                    Kembali
+                </button>
+            </div>
+
         </div>
     </div>
 
-    {{-- MODAL TAMBAH SISWA --}}
+
+    {{-- ============================================================
+         MODAL TAMBAH SISWA
+    ============================================================ --}}
     <div class="modal-overlay" id="createModal">
         <div class="modal-card">
+
             <div class="modal-header">
                 <h2 class="modal-title">Tambah Data Siswa</h2>
                 <button type="button" class="modal-close" id="closeCreateModal">×</button>
@@ -283,6 +291,7 @@
                 @csrf
 
                 <div class="modal-form-grid">
+
                     <div class="form-group">
                         <label>Nama Siswa</label>
                         <input type="text" name="nama" value="{{ old('nama') }}"
@@ -298,13 +307,15 @@
                     <div class="form-group">
                         <label>NISN</label>
                         <input type="text" name="nisn" value="{{ old('nisn') }}"
-                            placeholder="Masukkan NISN siswa">
+                            placeholder="Masukkan NISN siswa" inputmode="numeric" pattern="[0-9]*"
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                     </div>
 
                     <div class="form-group">
                         <label>No. Telepon</label>
                         <input type="text" name="no_telp" value="{{ old('no_telp') }}"
-                            placeholder="Contoh: 085712345678">
+                            placeholder="Contoh: 085712345678" inputmode="numeric" pattern="[0-9]*"
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                     </div>
 
                     <div class="form-group">
@@ -334,7 +345,6 @@
                         <label>Jurusan Siswa</label>
                         <select name="jurusan_smk_id" required>
                             <option value="">Pilih Jurusan</option>
-
                             @foreach ($jurusanSmk as $jurusan)
                                 <option value="{{ $jurusan->id }}"
                                     {{ old('jurusan_smk_id') == $jurusan->id ? 'selected' : '' }}>
@@ -355,6 +365,7 @@
                         <input type="text" name="alamat" value="{{ old('alamat') }}"
                             placeholder="Masukkan alamat siswa">
                     </div>
+
                 </div>
 
                 <div class="help">
@@ -362,16 +373,38 @@
                 </div>
 
                 <div class="modal-actions">
-                    <button type="button" class="action-btn submit-btn">Simpan Data</button>
+
+                    {{--
+                        type="submit" WAJIB — tanpa ini tombol tidak akan
+                        mengirim form meskipun berada di dalam <form>.
+                    --}}
+                    <button type="submit" class="action-btn submit-btn">
+                        Simpan Data
+                    </button>
+
+                    {{--
+                        id="cancelCreateModal" WAJIB ada.
+                        JS di layouts.guru mereferensikan elemen ini.
+                        Tanpanya addEventListener akan throw error.
+                    --}}
+                    <button type="button" class="action-btn btn-cancel" id="cancelCreateModal">
+                        Kembali
+                    </button>
 
                 </div>
+
             </form>
+
         </div>
     </div>
 
-    {{-- MODAL EDIT SISWA --}}
+
+    {{-- ============================================================
+         MODAL EDIT SISWA
+    ============================================================ --}}
     <div class="modal-overlay" id="editModal">
         <div class="modal-card">
+
             <div class="modal-header">
                 <h2 class="modal-title">Edit Data Siswa</h2>
                 <button type="button" class="modal-close" id="closeEditModal">×</button>
@@ -382,6 +415,7 @@
                 @method('PUT')
 
                 <div class="modal-form-grid">
+
                     <div class="form-group">
                         <label>Nama Siswa</label>
                         <input type="text" name="nama" id="editNama" placeholder="Masukkan nama siswa" required>
@@ -394,12 +428,16 @@
 
                     <div class="form-group">
                         <label>NISN</label>
-                        <input type="text" name="nisn" id="editNisn" placeholder="Masukkan NISN siswa">
+                        <input type="text" name="nisn" id="editNisn" placeholder="Masukkan NISN siswa"
+                            inputmode="numeric" pattern="[0-9]*"
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                     </div>
 
                     <div class="form-group">
                         <label>No. Telepon</label>
-                        <input type="text" name="no_telp" id="editNoTelp" placeholder="Contoh: 085712345678">
+                        <input type="text" name="no_telp" id="editNoTelp" placeholder="Contoh: 085712345678"
+                            inputmode="numeric" pattern="[0-9]*"
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                     </div>
 
                     <div class="form-group">
@@ -429,7 +467,6 @@
                         <label>Jurusan Siswa</label>
                         <select name="jurusan_smk_id" id="editJurusan" required>
                             <option value="">Pilih Jurusan</option>
-
                             @foreach ($jurusanSmk as $jurusan)
                                 <option value="{{ $jurusan->id }}">
                                     {{ $jurusan->nama_jurusan }}
@@ -448,17 +485,31 @@
                         <label>Alamat</label>
                         <input type="text" name="alamat" id="editAlamat" placeholder="Masukkan alamat siswa">
                     </div>
+
                 </div>
 
                 <div class="modal-actions">
-                    <button type="button" class="action-btn submit-btn">Simpan Perubahan</button>
+
+                    {{--
+                        type="submit" WAJIB — tanpa ini form edit tidak akan terkirim.
+                    --}}
+                    <button type="submit" class="action-btn submit-btn">
+                        Simpan Perubahan
+                    </button>
+
+                    {{--
+                        id="cancelEditModal" WAJIB ada.
+                        JS di layouts.guru mereferensikan elemen ini.
+                    --}}
+                    <button type="button" class="action-btn btn-cancel" id="cancelEditModal">
+                        Kembali
+                    </button>
 
                 </div>
+
             </form>
+
         </div>
     </div>
 
 @endsection
-
-
-

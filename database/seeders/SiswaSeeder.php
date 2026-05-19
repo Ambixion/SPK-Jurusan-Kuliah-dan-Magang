@@ -33,7 +33,7 @@ class SiswaSeeder extends Seeder
                 'users_id'       => $user->id,
                 'jurusan_smk_id' => $jurusanIds->random(),
                 'nisn'           => $nisn,
-                'kelas'          => 'XII',
+                'kelas'          => '12',
                 'semester'       => 6,
                 'no_telp'        => '08123456789',
                 'alamat'         => 'Jember',

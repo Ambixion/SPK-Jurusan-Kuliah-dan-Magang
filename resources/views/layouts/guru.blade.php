@@ -450,11 +450,15 @@
     ========================================================= */
         .table-tools {
             display: grid;
-            grid-template-columns: 1.5fr 1fr 1fr auto;
+
+            grid-template-columns:
+                minmax(260px, 1.5fr) 180px 220px auto;
 
             gap: 14px;
 
             margin-bottom: 20px;
+
+            align-items: center;
         }
 
         .toolbar-filter {
@@ -568,8 +572,17 @@
         }
 
         .submit-btn {
+            width: 100%;
+            height: 50px;
+
             background: rgba(34, 197, 94, .18);
             color: #86efac;
+            font-size: 14px;
+            font-weight: 700;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         /* =========================================================
@@ -792,6 +805,30 @@
             border-radius: 18px;
 
             padding: 24px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, .2) transparent;
+        }
+
+        .modal-card::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .modal-card::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .modal-card::-webkit-scrollbar-thumb {
+            border-radius: 20px;
+
+            background: linear-gradient(135deg,
+                    rgba(79, 110, 247, .75),
+                    rgba(124, 58, 237, .75));
+        }
+
+        .modal-card::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg,
+                    rgba(79, 110, 247, 1),
+                    rgba(124, 58, 237, 1));
         }
 
         .modal-header {
@@ -1184,8 +1221,8 @@
 
     <script>
         /* =========================================================
-                                                                                   SIDEBAR MOBILE
-                                                                                ========================================================= */
+                                                                                                       SIDEBAR MOBILE
+                                                                                                    ========================================================= */
 
         function toggleSidebar() {
 
