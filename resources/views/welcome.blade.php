@@ -75,7 +75,7 @@
                 <img src="{{ asset('images/landing page/logo.png') }}" alt="Logo SMK Negeri 5 Jember"
                     class="w-10 h-10 md:w-12 md:h-12 object-contain">
                 <span class="font-bold tracking-wider text-sm uppercase leading-tight text-white">
-                    SMK NEGERI 5<br>JEMBER TEST
+                    SMK NEGERI 5<br>JEMBER
                 </span>
             </div>
 
