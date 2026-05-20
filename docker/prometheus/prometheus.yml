@@ -35,8 +35,5 @@ scrape_configs:
   # Laravel App (PHP-FPM status jika diaktifkan)
   - job_name: 'php-fpm'
     static_configs:
-      - targets: ['app:9000']
-    metrics_path: /status
+      - targets: ['spk_php_fpm_exporter:9253']
     scrape_interval: 30s
-    params:
-      format: ['openmetrics']
