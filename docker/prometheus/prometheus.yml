@@ -35,5 +35,5 @@ scrape_configs:
   # Laravel App (PHP-FPM status jika diaktifkan)
   - job_name: 'php-fpm'
     static_configs:
-      - targets: ['spk_php_fpm_exporter:9253']
+      - targets: ['php_fpm_exporter:9253']
     scrape_interval: 30s
