@@ -134,6 +134,19 @@ services:
     depends_on:
       - nginx
 
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: jenkins
+    restart: unless-stopped
+    ports:
+      - "8081:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - spk_network
+
 networks:
   spk_network:
     driver: bridge
@@ -142,3 +155,4 @@ volumes:
   spk_db_data:
   spk_prometheus_data:
   spk_grafana_data:
+  jenkins_home:
