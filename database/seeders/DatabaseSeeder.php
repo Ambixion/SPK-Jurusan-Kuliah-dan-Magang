@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
             KriteriaSeeder::class,          // 6. Kriteria SAW
             SkorJurusan::class,             // 7. Skor Jurusan
             SkorMagangSeeder::class,        // 8. Skor Magang
-            BidangSeeder::class,            // 9. Bidang + relasi
+            Bidangseeder::class,            // 9. Bidang + relasi
             KuisonerDinamisSeeder::class,   // 10. Kuisoner dinamis
             SiswaSeeder::class,             // 11. Siswa (setelah jurusan SMK)
             NilaiSeeder::class,             // 12. Nilai rapot siswa ← BARU
