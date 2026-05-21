@@ -209,9 +209,45 @@ class SawController extends Controller
         }
 
         $matriks = [];
+        // --- Distance & lokasi preference setup --------------------------------
+        $latSekolah = -8.1584;
+        $lngSekolah = 113.7225;
+
+        // cari kriteria 'jarak' jika ada (case-insensitive)
+        $kriteriaJarak = $kriterias->first(fn($k) => str_contains(strtolower($k->nama), 'jarak'));
+
         foreach ($tempatMagangs as $tempat) {
             $skillTempat  = $tempat->skills->pluck('id')->toArray();
             $bidangTempat = $tempat->bidangs->pluck('id')->toArray();
+            // Default multiplier (1 = no penalty)
+            $lokasiMultiplier = 1.0;
+
+            // Jika koordinat tempat tersedia dan bukan nol → hitung jarak
+            if ($tempat->latitude !== null && $tempat->longitude !== null && (float)$tempat->latitude !== 0.0 && (float)$tempat->longitude !== 0.0) {
+                $jarakKm = $this->hitungJarakKm((float) $latSekolah, (float) $lngSekolah, (float) $tempat->latitude, (float) $tempat->longitude);
+
+                // preferensi lokasi siswa
+                $pref = $siswa->preferensi_lokasi ?? 'bebas';
+                $radiusLimit = 15.0; // km
+                $isInCity = $jarakKm <= $radiusLimit;
+
+                if ($pref === 'dalam_kota' && !$isInCity) {
+                    $lokasiMultiplier = 0.3;
+                } elseif ($pref === 'luar_kota' && $isInCity) {
+                    $lokasiMultiplier = 0.3;
+                } else {
+                    $lokasiMultiplier = 1.0;
+                }
+
+                // Jika ada kriteria jarak → hitung skor jarak dan masukkan ke matriks
+                if ($kriteriaJarak) {
+                    $skorJarak = max(0, 100 - ($jarakKm * 2));
+                    $matriks[$tempat->id][$kriteriaJarak->id] = max(0, $skorJarak * $lokasiMultiplier);
+                }
+            } else {
+                // koordinat tidak tersedia → tidak ada penalti lokasi
+                $lokasiMultiplier = 1.0;
+            }
 
             // Hitung skill match score (0-100)
             if (!empty($skillSiswa) && !empty($skillTempat)) {
@@ -229,6 +265,11 @@ class SawController extends Controller
             }
 
             foreach ($kriterias as $k) {
+                // kriteria jarak sudah dihitung di atas
+                if ($kriteriaJarak && $k->id === $kriteriaJarak->id) {
+                    continue;
+                }
+
                 $skorM  = $tempat->skorMagang->firstWhere('kriteria_id', $k->id);
                 $profil = $skorM ? (float) $skorM->score : 75.0;
 
@@ -243,6 +284,9 @@ class SawController extends Controller
                     $match    = max(0.05, 1 - ($selisih / 100));
                     $nilai    = $profil * $match;
                 }
+
+                // Terapkan multiplier lokasi (pengaruh preferensi siswa)
+                $nilai = $nilai * $lokasiMultiplier;
 
                 $matriks[$tempat->id][$k->id] = max(0, $nilai);
             }
@@ -279,6 +323,25 @@ class SawController extends Controller
             }
         }
         return $result;
+    }
+
+    /**
+     * Hitung jarak antara dua koordinat (latitude/longitude) dalam kilometer.
+     * Menggunakan formula Haversine.
+     */
+    private function hitungJarakKm(float $lat1, float $lng1, float $lat2, float $lng2): float
+    {
+        $earthRadius = 6371.0; // km
+        $dLat = deg2rad($lat2 - $lat1);
+        $dLon = deg2rad($lng2 - $lng1);
+
+        $a = sin($dLat / 2) * sin($dLat / 2)
+            + cos(deg2rad($lat1)) * cos(deg2rad($lat2))
+            * sin($dLon / 2) * sin($dLon / 2);
+
+        $c = 2 * atan2(sqrt($a), sqrt(max(0, 1 - $a)));
+
+        return $earthRadius * $c;
     }
 
     private function preferensi(array $norm, $kriterias): array
