@@ -53,8 +53,7 @@ pipeline {
             steps {
                 echo '🚀 Build and Deploy via Docker Compose'
                 sh """
-                    cd ~/SPK-Jurusan-Kuliah-dan-Magang
-                    git pull origin main
+                    pwd
                     docker compose up -d --build
                     docker compose ps
                     echo "✅ Deploy selesai"
