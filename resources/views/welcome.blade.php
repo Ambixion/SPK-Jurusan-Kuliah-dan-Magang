@@ -13,6 +13,16 @@
             scroll-behavior: smooth;
         }
 
+        html,
+body {
+    overflow-x: hidden;
+    max-width: 100%;
+}
+
+* {
+    box-sizing: border-box;
+}
+
         body {
             font-family: 'Poppins', sans-serif;
             margin: 0;
@@ -64,17 +74,17 @@
     </style>
 </head>
 
-<body class="bg-gradient-custom text-white selection:bg-purple-500">
+<body class="bg-gradient-custom text-white selection:bg-purple-500 overflow-x-hidden">
 
     <div class="grid-pattern">
         <!-- Navbar -->
         <nav id="navbar"
-            class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-5 md:px-10 py-3 md:py-4 transition-all duration-300"
+            class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-5 md:px-10 py-3 md:py-4 transition-all duration-300 overflow-hidden"
             style="background-color: #242562;">
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2 min-w-0">
                 <img src="{{ asset('images/landing page/logo.png') }}" alt="Logo SMK Negeri 5 Jember"
-                    class="w-10 h-10 md:w-12 md:h-12 object-contain">
-                <span class="font-bold tracking-wider text-sm uppercase leading-tight text-white">
+                     class="w-9 h-9 md:w-12 md:h-12 object-contain flex-shrink-0">
+                <span class="font-bold tracking-wider text-sm uppercase leading-tight text-white truncate">
                     SMK NEGERI 5<br>JEMBER
                 </span>
             </div>
@@ -86,23 +96,24 @@
                 <a href="#contact" class="text-white hover:text-yellow-400 transition">Contact</a>
             </div>
 
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2 flex-shrink-0">
 
-                <a href="{{ route('login') }}" class="px-5 md:px-8 py-2 rounded-full text-sm font-semibold transition shadow-md"
-                    style="background-color: #393A97; color: white;">
-                    Login
-                </a>
+    <a href="{{ route('login') }}"
+        class="px-4 md:px-8 py-2 rounded-full text-xs md:text-sm font-semibold transition shadow-md"
+        style="background-color: #393A97; color: white;">
+        Login
+    </a>
 
-                <button id="hamburger" class="md:hidden text-white text-3xl">
-                    ☰
-                </button>
+    <button id="hamburger" class="md:hidden text-white text-2xl leading-none">
+        ☰
+    </button>
 
-            </div>
+</div>
 
         </nav>
 
         <div id="mobileMenu"
-            class="hidden md:hidden fixed top-0 right-0 z-40 w-64 h-screen text-white px-6 py-28 shadow-2xl"
+            class="hidden md:hidden fixed top-0 right-0 z-40 w-[80vw] w-64 h-screen text-white px-6 py-28 shadow-2xl"
             style="background-color: #242562;">
             <div class="flex flex-col gap-5 text-base font-medium">
                 <a href="#" class="hover:text-yellow-400 transition">Home</a>
@@ -239,11 +250,11 @@
                 <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
 
                     <!-- SPK PKL -->
-                    <div class="glass-card px-8 py-6 flex items-center gap-6" data-aos="fade-right">
+                    <div class="glass-card px-6 py-6 flex flex-col md:flex-row items-center md:items-center gap-4 md:gap-6 text-center md:text-left" data-aos="fade-right">
                         <img src="{{ asset('images/landing page/image 15.png') }}"
-                            alt="SPK Pemilihan Tempat Praktek Kerja Lapangan" class="w-28 h-28 object-contain">
+                            alt="SPK Pemilihan Tempat Praktek Kerja Lapangan" class="w-24 h-24 md:w-28 md:h-28 object-contain">
 
-                        <div>
+                        <div class="w-full">
                             <h4 class="font-bold uppercase mb-2 text-base leading-tight">
                                 SPK Pemilihan Tempat<br>
                                 Praktek Kerja Lapangan
@@ -257,11 +268,11 @@
                     </div>
 
                     <!-- SPK Jurusan Kuliah -->
-                    <div class="glass-card px-8 py-6 flex items-center gap-6" data-aos="fade-left">
+                    <div class="glass-card px-6 py-6 flex flex-col md:flex-row items-center md:items-center gap-4 md:gap-6 text-center md:text-left" data-aos="fade-left">
                         <img src="{{ asset('images/landing page/image 14.png') }}" alt="SPK Pemilihan Jurusan Kuliah"
-                            class="w-28 h-28 object-contain">
+                            class="w-24 h-24 md:w-28 md:h-28 object-contain">
 
-                        <div>
+                        <div class="w-full">
                             <h4 class="font-bold uppercase mb-2 text-base leading-tight">
                                 SPK Pemilihan Jurusan<br>
                                 Kuliah
@@ -274,11 +285,11 @@
                     </div>
 
                     <!-- Dashboard Guru -->
-                    <div class="glass-card px-8 py-6 flex items-center gap-6" data-aos="fade-right">
+                    <div class="glass-card px-6 py-6 flex flex-col md:flex-row items-center md:items-center gap-4 md:gap-6 text-center md:text-left" data-aos="fade-right">
                         <img src="{{ asset('images/landing page/image 17.png') }}" alt="Dashboard Guru"
-                            class="w-28 h-28 object-contain">
+                            class="w-24 h-24 md:w-28 md:h-28 object-contain">
 
-                        <div>
+                        <div class="w-full">
                             <h4 class="font-bold uppercase mb-2 text-base leading-tight">
                                 Dashboard<br>
                                 Guru
@@ -291,7 +302,7 @@
                     </div>
 
                     <!-- Dashboard Admin -->
-                    <div class="glass-card px-8 py-6 flex items-center gap-6" data-aos="fade-left">
+                    <div class="glass-card px-6 py-6 flex flex-col md:flex-row items-center md:items-center gap-4 md:gap-6 text-center md:text-left" data-aos="fade-right">
                         <img src="{{ asset('images/landing page/image 18.png') }}" alt="Dashboard Admin"
                             class="w-28 h-28 object-contain">
 
@@ -342,7 +353,7 @@
             <!-- Kontak -->
             <div>
                 <h5 class="font-bold text-2xl mb-5 border-b border-white/20 pb-3 inline-block">
-                    Kontak Resmi SMK N 5 Jember
+                    Kontak Resmi SMKN 5 Jember
                 </h5>
 
                 <div class="mt-6 space-y-5 text-base leading-relaxed">
