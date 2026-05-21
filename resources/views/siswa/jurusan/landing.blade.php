@@ -90,12 +90,12 @@
                         class="pill pill-default"
                         data-bidang-id="{{ $bidang->id }}"
                         onclick="toggleBidang(this)"
-                        style="display:none;">  {{-- Muncul saat pilih jurusan --}}
+                        style="display:inline-flex;">
                     {{ $bidang->nama }}
                 </button>
                 @endforeach
             </div>
-            <p id="infoBidang" style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:6px;display:none;">
+            <p id="infoBidang" style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:6px;display:block;">
                 Klik bidang untuk aktifkan/nonaktifkan.
             </p>
             @endif
@@ -180,37 +180,29 @@ function pilihJurusan(btn) {
         btn.classList.add('pill-selected-blue');
         selectedJurusanId = btn.dataset.jurusanId;
 
-        // Tampilkan bidang yang relevan dengan jurusan ini
+        // Highlight bidang yang relevan dengan jurusan ini
         const bidangIds = btn.dataset.bidangIds
             ? btn.dataset.bidangIds.split(',').filter(Boolean)
             : [];
-        tampilkanBidang(bidangIds);
+        highlightBidang(bidangIds);
     } else {
         selectedJurusanId = null;
-        tampilkanBidang([]); // sembunyikan semua bidang
+        highlightBidang([]); // Tampilkan semua bidang tanpa highlight
     }
 
     updateUrl();
 }
 
-function tampilkanBidang(bidangIds) {
+function highlightBidang(bidangIds) {
     const pills = document.querySelectorAll('#bidangGroup [data-bidang-id]');
     const info  = document.getElementById('infoBidang');
 
-    if (bidangIds.length === 0) {
-        pills.forEach(b => { b.style.display = 'none'; b.classList.remove('pill-selected-green'); b.classList.add('pill-default'); });
-        if (info) info.style.display = 'none';
-        return;
-    }
-
     pills.forEach(btn => {
-        if (bidangIds.includes(btn.dataset.bidangId)) {
-            btn.style.display = 'inline-flex';
-            // Auto-aktifkan bidang yang sesuai jurusan
+        btn.style.display = 'inline-flex';
+        if (bidangIds.length > 0 && bidangIds.includes(btn.dataset.bidangId)) {
             btn.classList.add('pill-selected-green');
             btn.classList.remove('pill-default');
         } else {
-            btn.style.display = 'none';
             btn.classList.remove('pill-selected-green');
             btn.classList.add('pill-default');
         }
