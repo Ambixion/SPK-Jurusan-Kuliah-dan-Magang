@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Skill;
 
 class Siswa extends Model
 {
@@ -31,6 +32,11 @@ class Siswa extends Model
     public function jurusanSmk()
     {
         return $this->belongsTo(JurusanSmk::class, 'jurusan_smk_id');
+    }
+
+    public function skillTambahan()
+    {
+        return $this->belongsToMany(Skill::class, 'siswa_skill');
     }
 
     public function skorSiswa()

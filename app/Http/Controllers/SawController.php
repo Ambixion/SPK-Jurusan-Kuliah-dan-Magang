@@ -172,7 +172,7 @@ class SawController extends Controller
     {
         $kriterias     = Kriteria::where('jenis', 'magang')->get();
         $tempatMagangs = TempatMagang::with(['skorMagang', 'skills', 'bidangs'])->get();
-        $siswa         = Siswa::with(['jurusanSmk.skills', 'jurusanSmk.bidangs'])->find($siswaId);
+        $siswa         = Siswa::with(['jurusanSmk.skills', 'jurusanSmk.bidangs', 'skillTambahan'])->find($siswaId);
 
         if ($kriterias->isEmpty() || $tempatMagangs->isEmpty() || !$siswa) return;
 
@@ -181,7 +181,9 @@ class SawController extends Controller
         ));
 
         // Skill & bidang jurusan SMK siswa
-        $skillSiswa  = $siswa->jurusanSmk ? $siswa->jurusanSmk->skills->pluck('id')->toArray() : [];
+        $skillJurusan   = $siswa->jurusanSmk ? $siswa->jurusanSmk->skills->pluck('id')->toArray() : [];
+        $skillTambahan  = $siswa->skillTambahan->pluck('id')->toArray();
+        $skillSiswa     = array_unique(array_merge($skillJurusan, $skillTambahan));
         $bidangSiswa = $siswa->jurusanSmk ? $siswa->jurusanSmk->bidangs->pluck('id')->toArray() : [];
 
         // Skor jawaban kuisoner magang per kriteria (0-100)

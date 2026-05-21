@@ -8,6 +8,7 @@ use App\Models\Bidang;
 use App\Models\JawabanSiswa;
 use App\Models\Kuisoner;
 use App\Models\KuisonerOpsi;
+use App\Models\Skill;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -32,8 +33,11 @@ class KuisonerPklController extends Controller
 
         // Jika tidak ada skill di jurusan → tampilkan semua skill sebagai fallback
         if ($skillJurusan->isEmpty()) {
-            $skillJurusan = \App\Models\Skill::orderBy('jenis_skill')->get();
+            $skillJurusan = Skill::orderBy('jenis_skill')->get();
         }
+
+        $semuaSkill = Skill::orderBy('jenis_skill')->get();
+        $skillTambahan = $siswa->skillTambahan->pluck('id')->toArray();
 
         $sudahMengisi = JawabanSiswa::where('siswa_id', $siswa->id)
             ->whereHas('opsi.kuisoner', fn($q) => $q->where('type', 'magang'))
@@ -44,6 +48,8 @@ class KuisonerPklController extends Controller
             'nilaiRata',
             'jurusanSmk',
             'skillJurusan',
+            'semuaSkill',
+            'skillTambahan',
             'sudahMengisi'
         ));
     }
@@ -64,6 +70,24 @@ class KuisonerPklController extends Controller
         $siswa->save();
 
         return back()->with('success', 'Preferensi lokasi berhasil disimpan.');
+    }
+
+    // =========================================================================
+    // UPDATE SKILL TAMBAHAN — Simpan skill tambahan siswa
+    // =========================================================================
+    public function updateSkillTambahan(Request $request)
+    {
+        $siswa = Auth::user()->siswa;
+        if (!$siswa) abort(403);
+
+        $skillIds = $request->input('skill_ids', []);
+        if (!is_array($skillIds)) {
+            $skillIds = explode(',', (string) $skillIds);
+        }
+
+        $siswa->skillTambahan()->sync($skillIds);
+
+        return back()->with('success', 'Skill berhasil diperbarui.');
     }
 
     // =========================================================================

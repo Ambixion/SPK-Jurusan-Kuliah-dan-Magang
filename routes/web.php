@@ -121,6 +121,7 @@ Route::middleware(['auth', 'role:siswa'])
 
         // Preferensi lokasi siswa untuk PKL
         Route::post('/pkl/preferensi',  [KuisonerPklController::class, 'updatePreferensi'])->name('pkl.preferensi');
+        Route::post('/pkl/skill',       [KuisonerPklController::class, 'updateSkillTambahan'])->name('pkl.skill.update');
 
         // Hasil PKL
         Route::get('/pkl/hasil',        [HasilPklController::class, 'index'])->name('pkl.hasil');

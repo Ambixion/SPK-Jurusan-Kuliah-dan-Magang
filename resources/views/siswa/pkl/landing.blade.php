@@ -77,6 +77,30 @@
         @endif
     </div>
 
+    <div class="form-group">
+        <label class="form-label">Tambahkan Skill Lain yang Kamu Kuasai (Opsional)</label>
+        <form id="skillTambahanForm" method="POST" action="{{ route('siswa.pkl.skill.update') }}">
+            @csrf
+            <div class="pills-group" id="skillTambahanGroup">
+                @php
+                    $skillJurusanIds = $skillJurusan->pluck('id')->toArray();
+                @endphp
+                @foreach($semuaSkill->whereNotIn('id', $skillJurusanIds) as $skill)
+                <button type="button"
+                        class="pill {{ in_array($skill->id, $skillTambahan) ? 'pill-selected-green' : 'pill-default' }}"
+                        data-skill-id="{{ $skill->id }}">
+                    {{ $skill->jenis_skill }}
+                </button>
+                @endforeach
+            </div>
+            <div id="skillTambahanInputs"></div>
+            <button type="submit" class="btn-primary-spk" style="margin-top:10px;">Simpan Skill Tambahan</button>
+        </form>
+        <p style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:6px;">
+            Pilih skill tambahan yang tidak ada di jurusanmu untuk membantu rekomendasi PKL.
+        </p>
+    </div>
+
     {{-- Info sudah mengisi --}}
     @if($sudahMengisi)
     <div style="display:flex;justify-content:space-between;align-items:center;
@@ -147,6 +171,38 @@ updateUrl();
             prefForm.submit();
         });
     });
+})();
+
+// Skill tambahan: sinkronisasi hidden inputs
+(function () {
+    const form = document.getElementById('skillTambahanForm');
+    const container = document.getElementById('skillTambahanInputs');
+    if (!form || !container) return;
+
+    function syncInputs() {
+        container.innerHTML = '';
+        const selected = [...document.querySelectorAll('#skillTambahanGroup .pill-selected-green')]
+            .map(btn => btn.dataset.skillId);
+        selected.forEach(id => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'skill_ids[]';
+            input.value = id;
+            container.appendChild(input);
+        });
+    }
+
+    document.querySelectorAll('#skillTambahanGroup .pill').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            btn.classList.toggle('pill-selected-green');
+            btn.classList.toggle('pill-default');
+        });
+    });
+
+    form.addEventListener('submit', function () {
+        syncInputs();
+    });
+    syncInputs();
 })();
 </script>
 @endpush
