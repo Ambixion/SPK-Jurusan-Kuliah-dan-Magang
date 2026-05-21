@@ -16,6 +16,7 @@ class Siswa extends Model
         'semester',
         'no_telp',
         'alamat',
+        'preferensi_lokasi',
     ];
 
     // =====================================================================

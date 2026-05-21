@@ -29,6 +29,21 @@
         <input type="text" class="form-input" value="{{ $nilaiRata }}" readonly>
     </div>
 
+    <div class="form-group">
+        <label class="form-label">Preferensi Lokasi Tempat PKL</label>
+
+        <form id="preferensiForm" method="POST" action="{{ route('siswa.pkl.preferensi') }}">
+            @csrf
+            <input type="hidden" name="preferensi_lokasi" id="preferensi_input" value="{{ $siswa->preferensi_lokasi ?? 'bebas' }}">
+
+            <div class="pills-group" id="preferensiGroup">
+                <button type="button" class="pill {{ ($siswa->preferensi_lokasi ?? 'bebas') === 'dalam_kota' ? 'pill-selected-green' : 'pill-default' }}" data-value="dalam_kota">Dalam Kota</button>
+                <button type="button" class="pill {{ ($siswa->preferensi_lokasi ?? 'bebas') === 'luar_kota' ? 'pill-selected-green' : 'pill-default' }}" data-value="luar_kota">Luar Kota</button>
+                <button type="button" class="pill {{ ($siswa->preferensi_lokasi ?? 'bebas') === 'bebas' ? 'pill-selected-green' : 'pill-default' }}" data-value="bebas">Bebas</button>
+            </div>
+        </form>
+    </div>
+
     {{-- Skill dari jurusan SMK siswa — OTOMATIS dari DB, tidak hardcode --}}
     <div class="form-group">
         <label class="form-label">
@@ -111,6 +126,28 @@ function updateUrl() {
 
 // Init URL dengan semua skill yang aktif saat load
 updateUrl();
+
+// Preferensi lokasi: kirim form saat pilih
+(function () {
+    const prefGroup = document.getElementById('preferensiGroup');
+    const prefInput = document.getElementById('preferensi_input');
+    const prefForm = document.getElementById('preferensiForm');
+    if (!prefGroup || !prefInput || !prefForm) return;
+    prefGroup.querySelectorAll('.pill').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            // toggle visuals
+            prefGroup.querySelectorAll('.pill').forEach(function (b) {
+                b.classList.remove('pill-selected-green');
+                b.classList.add('pill-default');
+            });
+            btn.classList.remove('pill-default');
+            btn.classList.add('pill-selected-green');
+
+            prefInput.value = btn.dataset.value;
+            prefForm.submit();
+        });
+    });
+})();
 </script>
 @endpush
 @endsection

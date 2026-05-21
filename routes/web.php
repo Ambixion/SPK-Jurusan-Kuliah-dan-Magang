@@ -119,6 +119,9 @@ Route::middleware(['auth', 'role:siswa'])
         Route::get('/pkl/kuisoner',     [KuisonerPklController::class, 'index'])->name('pkl.kuisoner');
         Route::post('/pkl/kuisoner',    [KuisonerPklController::class, 'store'])->name('pkl.store');
 
+        // Preferensi lokasi siswa untuk PKL
+        Route::post('/pkl/preferensi',  [KuisonerPklController::class, 'updatePreferensi'])->name('pkl.preferensi');
+
         // Hasil PKL
         Route::get('/pkl/hasil',        [HasilPklController::class, 'index'])->name('pkl.hasil');
 

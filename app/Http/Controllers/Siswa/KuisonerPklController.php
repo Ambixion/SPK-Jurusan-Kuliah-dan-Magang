@@ -49,6 +49,24 @@ class KuisonerPklController extends Controller
     }
 
     // =========================================================================
+    // UPDATE PREFERENSI LOKASI — Simpan preferensi lokasi siswa (dalam_kota|luar_kota|bebas)
+    // =========================================================================
+    public function updatePreferensi(Request $request)
+    {
+        $siswa = Auth::user()->siswa;
+        if (!$siswa) abort(403);
+
+        $data = $request->validate([
+            'preferensi_lokasi' => 'required|in:dalam_kota,luar_kota,bebas',
+        ]);
+
+        $siswa->preferensi_lokasi = $data['preferensi_lokasi'];
+        $siswa->save();
+
+        return back()->with('success', 'Preferensi lokasi berhasil disimpan.');
+    }
+
+    // =========================================================================
     // INDEX — Ambil soal PKL dari DB berdasarkan skill jurusan SMK siswa
     // =========================================================================
     public function index(Request $request)
