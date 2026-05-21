@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         APP_NAME = 'spk-smkn-app'
+        PATH = "/usr/bin:/usr/local/bin:${env.PATH}"
     }
 
     options {
@@ -50,20 +51,12 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                echo '🚀 Deploy container baru...'
+                echo '🚀 Build and Deploy via Docker Compose'
                 sh """
-                    docker container stop spk_app 2>/dev/null || true
-                    docker container rm   spk_app 2>/dev/null || true
-
-                    docker container run \
-                        --detach \
-                        --name spk_app \
-                        --network sistem-pengambil-keputusan-pemilihan-jurusan-kuliah-dan-magang_spk_network \
-                        --restart unless-stopped \
-                        --workdir /var/www \
-                        ${APP_NAME}:latest
-
-                    docker container ls --filter name=spk_app
+                    cd ~/SPK-Jurusan-Kuliah-dan-Magang
+                    git pull origin main
+                    docker compose up -d --build
+                    docker compose ps
                     echo "✅ Deploy selesai"
                 """
             }
