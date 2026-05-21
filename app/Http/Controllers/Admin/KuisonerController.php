@@ -13,16 +13,23 @@ use Illuminate\Http\Request;
 
 class KuisonerController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $kuisoner = Kuisoner::with(['opsi', 'jurusanKuliah', 'bidang', 'skill', 'kriteria'])
+        $jenis = $request->query('jenis', 'keduanya');
+
+        $query = Kuisoner::with(['opsi', 'jurusanKuliah', 'bidang', 'skill', 'kriteria'])
             ->orderBy('type')
             ->orderBy('jurusan_kuliah_id')
             ->orderBy('skill_id')
-            ->orderBy('urutan')
-            ->paginate(20);
+            ->orderBy('urutan');
 
-        return view('admin.kuisoner.index', compact('kuisoner'));
+        if ($jenis !== 'keduanya') {
+            $query->where('type', $jenis);
+        }
+
+        $kuisoner = $query->paginate(20)->appends($request->query());
+
+        return view('admin.kuisoner.index', compact('kuisoner', 'jenis'));
     }
 
     public function create()
