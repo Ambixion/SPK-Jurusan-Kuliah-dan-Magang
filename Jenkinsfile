@@ -1,4 +1,5 @@
 pipeline {
+
     agent any
 
     environment {
@@ -15,76 +16,120 @@ pipeline {
     stages {
 
         stage('Checkout') {
+
             steps {
+
                 echo "📥 Checkout — Build #${BUILD_NUMBER}"
+
                 checkout scm
+
                 sh 'git log -1 --oneline'
+
                 echo '✅ Checkout selesai'
             }
         }
 
-        stage('Lint') {
-            steps {
-                echo '🔍 Lint PHP via container yang sudah berjalan...'
-                sh '''
-                    if docker ps --format "{{.Names}}" | grep -q "spk_app"; then
-                        docker exec spk_app php -r "echo 'PHP OK: ' . PHP_VERSION . PHP_EOL;"
-                        echo "✅ Lint selesai"
-                    else
-                        echo "⚠️ Container spk_app belum jalan, lint dilewati"
-                    fi
-                '''
-            }
-        }
-
         stage('Build') {
+
             steps {
+
                 echo "🐳 Build Docker image..."
+
                 sh """
-                    cd \${WORKSPACE}
-                    docker image build --tag ${APP_NAME}:${BUILD_NUMBER} --tag ${APP_NAME}:latest --file Dockerfile .
-                    docker image ls ${APP_NAME}
-                    echo "✅ Build selesai"
+                    cd ${WORKSPACE}
+
+                    docker build \
+                    -t ${APP_NAME}:${BUILD_NUMBER} \
+                    -t ${APP_NAME}:latest \
+                    -f Dockerfile .
                 """
+
+                echo '✅ Build selesai'
             }
         }
 
         stage('Deploy') {
+
             steps {
-                echo '🚀 Build and Deploy via Docker Compose'
+
+                echo '🚀 Deploy aplikasi...'
+
                 sh """
-                    pwd
-                    docker compose up -d --build
-                    docker compose ps
-                    echo "✅ Deploy selesai"
+                    cd ${WORKSPACE}
+
+                    docker compose -p spk down --remove-orphans || true
+
+                    docker compose -p spk up -d --build
                 """
+
+                echo '✅ Deploy selesai'
             }
         }
 
-        stage('Artisan') {
+        stage('Wait Container') {
+
             steps {
-                echo '⚙️ Setup Laravel...'
+
+                echo '⏳ Menunggu container siap...'
+
                 sh '''
-                    sleep 8
-                    docker container exec spk_app php artisan key:generate --force  && echo "key:generate ✅" || true
-                    docker container exec spk_app php artisan config:cache           && echo "config:cache ✅"  || true
-                    docker container exec spk_app php artisan route:cache            && echo "route:cache ✅"   || true
-                    echo "✅ Artisan selesai"
+                    sleep 20
+                '''
+            }
+        }
+
+        stage('Laravel Setup') {
+
+            steps {
+
+                echo '⚙️ Setup Laravel...'
+
+                sh '''
+
+                    docker compose -p spk exec -T app sh -c "
+                        if [ ! -f .env ]; then
+                            cp .env.example .env
+                        fi
+                    "
+
+                    docker compose -p spk exec -T app php artisan key:generate --force || true
+
+                    docker compose -p spk exec -T app php artisan config:clear || true
+                    docker compose -p spk exec -T app php artisan cache:clear || true
+                    docker compose -p spk exec -T app php artisan route:clear || true
+                    docker compose -p spk exec -T app php artisan view:clear || true
+
+                    docker compose -p spk exec -T app php artisan migrate --force || true
+
+                    docker compose -p spk exec -T app php artisan db:seed --force || true
+
+                    docker compose -p spk exec -T app php artisan config:cache || true
+                    docker compose -p spk exec -T app php artisan route:cache || true
+
+                    echo "✅ Laravel setup selesai"
                 '''
             }
         }
 
         stage('Health Check') {
+
             steps {
-                echo '❤️ Health check...'
+
+                echo '❤️ Health check aplikasi...'
+
                 sh '''
-                    sleep 3
-                    HTTP=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8000 2>/dev/null || echo "000")
-                    echo "HTTP Status: $HTTP"
+
+                    sleep 10
+
+                    HTTP=$(curl -s -o /dev/null -w "%{http_code}" http://localhost || echo "000")
+
+                    echo "HTTP STATUS: $HTTP"
+
                     if [ "$HTTP" = "200" ] || [ "$HTTP" = "302" ]; then
-                        echo "✅ Aplikasi OK di http://localhost:8000"
+                        echo "✅ Aplikasi berjalan normal"
                     else
-                        echo "⚠️ Status: $HTTP"
+                        echo "❌ Aplikasi gagal diakses"
+                        exit 1
                     fi
                 '''
             }
@@ -92,15 +137,30 @@ pipeline {
     }
 
     post {
+
         success {
-            echo "✅ PIPELINE #${BUILD_NUMBER} BERHASIL! App: http://localhost:8000 | Grafana: http://localhost:3000"
+
+            echo "✅ PIPELINE #${BUILD_NUMBER} BERHASIL"
+
+            echo "🌐 App      : http://localhost"
+            echo "📊 Grafana : http://localhost:3000"
+            echo "📈 Prometheus : http://localhost:9090"
         }
+
         failure {
+
             echo "❌ PIPELINE #${BUILD_NUMBER} GAGAL"
-            sh 'docker container logs spk_app --tail 20 2>/dev/null || true'
+
+            sh '''
+                docker compose -p spk logs app --tail=50 || true
+            '''
         }
+
         always {
-            sh 'docker container ls --filter name=spk_ --format "{{.Names}}: {{.Status}}" 2>/dev/null || true'
+
+            sh '''
+                docker compose -p spk ps || true
+            '''
         }
     }
 }
