@@ -146,6 +146,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /usr/bin/docker:/usr/bin/docker
       - /usr/libexec/docker/cli-plugins:/usr/libexec/docker/cli-plugins
+      - ~/SPK-Jurusan-Kuliah-dan-Magang:/var/jenkins_home/SPK-Jurusan-Kuliah-dan-Magang
     networks:
       - spk_network
 
