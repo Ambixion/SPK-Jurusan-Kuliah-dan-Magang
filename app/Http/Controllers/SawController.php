@@ -68,7 +68,12 @@ class SawController extends Controller
         foreach (Kriteria::where('jenis', $type)->get() as $k) {
             if (!empty($nilaiPerKriteria[$k->id])) {
                 $rata = array_sum($nilaiPerKriteria[$k->id]) / count($nilaiPerKriteria[$k->id]);
-                $skor = round(($rata / 5) * 100);
+                if ($rata === 0.0) {
+                    // Jika semua jawaban valid ada tapi nilainya 0, beri skor minimal 1
+                    $skor = 1;
+                } else {
+                    $skor = round(($rata / 5) * 100);
+                }
             } elseif (str_contains(strtolower($k->nama), 'akademik')) {
                 $skor = $nilaiAkademik;
             } else {
@@ -315,13 +320,16 @@ class SawController extends Controller
         $result = [];
         foreach ($kriterias as $k) {
             $kolom  = array_column($matriks, $k->id) ?: [0];
-            $maxVal = max($kolom) ?: 1;
+            $maxVal = max($kolom);
             $minPos = min(array_filter($kolom, fn($v) => $v > 0) ?: [1]);
             foreach ($matriks as $altId => $row) {
                 $val = $row[$k->id] ?? 0;
-                $result[$altId][$k->id] = $k->type === 'benefit'
-                    ? ($maxVal > 0 ? $val / $maxVal : 0)
-                    : ($val   > 0 ? $minPos / $val  : 0);
+                if ($k->type === 'benefit') {
+                    // Kolom zero → normalisasi = 0, alternatif tidak dihukum
+                    $result[$altId][$k->id] = $maxVal > 0 ? $val / $maxVal : 0;
+                } else {
+                    $result[$altId][$k->id] = $val > 0 ? $minPos / $val : 0;
+                }
             }
         }
         return $result;
@@ -348,11 +356,17 @@ class SawController extends Controller
 
     private function preferensi(array $norm, $kriterias): array
     {
+        $totalWeight = $kriterias->sum('weight');
+        if ($totalWeight == 0) {
+            return [];
+        }
+
         $result = [];
         foreach ($norm as $altId => $row) {
             $total = 0;
             foreach ($kriterias as $k) {
-                $total += (float) $k->weight * ($row[$k->id] ?? 0);
+                $normalizedWeight = $k->weight / $totalWeight;
+                $total += $normalizedWeight * ($row[$k->id] ?? 0);
             }
             $result[$altId] = $total;
         }
