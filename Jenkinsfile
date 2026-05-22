@@ -45,7 +45,7 @@ pipeline {
                     cd ${WORKSPACE}
 
                     # Hapus container lama yang mungkin tidak ikut down
-                    docker ps -aq --filter "name=spk_" | grep -v spk_jenkins | xargs docker rm -f || true
+                    docker compose -f docker-compose.app.yml down || true
 
                     # Pastikan network sudah ada (external network)
                     docker network inspect spk_network >/dev/null 2>&1 || \
@@ -53,7 +53,7 @@ pipeline {
 
                     docker compose -p spk down --remove-orphans || true
 
-                    docker compose -p spk up -d --build
+                    docker compose -f docker-compose.app.yml up -d || true
                 """
                 echo '✅ Deploy selesai'
             }
