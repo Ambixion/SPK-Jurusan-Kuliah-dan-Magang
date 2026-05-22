@@ -45,6 +45,9 @@ pipeline {
                     export COMPOSE_PROJECT_NAME=spk
                     cd ${WORKSPACE}
 
+                    sudo apt-get update
+                    sudo apt-get install docker-compose-plugin
+
                     # Hapus container lama yang mungkin tidak ikut down
                     docker compose --help
                     docker compose down
