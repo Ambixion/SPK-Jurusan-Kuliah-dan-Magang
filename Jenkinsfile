@@ -112,7 +112,8 @@ pipeline {
                 sh '''
                     sleep 10
 
-                    HTTP=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:80 || echo "000")
+                    # Curl dari app container ke nginx (internal network)
+                    HTTP=$(docker compose -p spk exec -T app sh -c "curl -s -o /dev/null -w '%{http_code}' http://nginx" || echo "000")
                     echo "HTTP STATUS: $HTTP"
 
                     if [ "$HTTP" = "200" ] || [ "$HTTP" = "302" ]; then
