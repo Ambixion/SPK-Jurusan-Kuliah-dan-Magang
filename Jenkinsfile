@@ -46,7 +46,8 @@ pipeline {
                     cd ${WORKSPACE}
 
                     # Hapus container lama yang mungkin tidak ikut down
-                    docker compose down --remove-orphans || true
+                    docker --help
+                    docker compose down
 
                     # Pastikan network sudah ada (external network)
                     docker network inspect spk_network >/dev/null 2>&1 || \
