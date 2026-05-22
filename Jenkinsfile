@@ -3,6 +3,7 @@ pipeline {
     agent any
 
     environment {
+        export COMPOSE_PROJECT_NAME=spk
         APP_NAME = 'spk-smkn-app'
         PATH = "/usr/bin:/usr/local/bin:${env.PATH}"
     }
@@ -45,7 +46,7 @@ pipeline {
                     cd ${WORKSPACE}
 
                     # Hapus container lama yang mungkin tidak ikut down
-                    docker compose -p spk down --remove-orphans || true
+                    docker compose down --remove-orphans || true
 
                     # Pastikan network sudah ada (external network)
                     docker network inspect spk_network >/dev/null 2>&1 || \
