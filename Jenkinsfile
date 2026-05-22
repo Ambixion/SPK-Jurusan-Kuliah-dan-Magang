@@ -3,7 +3,6 @@ pipeline {
     agent any
 
     environment {
-        export COMPOSE_PROJECT_NAME=spk
         APP_NAME = 'spk-smkn-app'
         PATH = "/usr/bin:/usr/local/bin:${env.PATH}"
     }
@@ -43,6 +42,7 @@ pipeline {
             steps {
                 echo '🚀 Deploy aplikasi...'
                 sh """
+                    export COMPOSE_PROJECT_NAME=spk
                     cd ${WORKSPACE}
 
                     # Hapus container lama yang mungkin tidak ikut down
