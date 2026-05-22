@@ -1,6 +1,6 @@
 global:
   scrape_interval: 15s       # mengambil matrics setiap 15 detik sekali
-  evaluation_interval: 15s   # Evaluasi rules setiap 15 detik
+  evaluation_interval: 15s   # mengevaluasi rules setiap 15 detik
   scrape_timeout: 10s
 
 # Alerting rules (opsional, bisa dikembangkan)
