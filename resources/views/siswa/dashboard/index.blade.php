@@ -48,7 +48,7 @@
         </div>
         <div class="stat-box">
             <div class="stat-label-sm">Rata-rata Rapot</div>
-            <div class="stat-value orange">{{ number_format($nilaiRata, 1) }}</div>
+            <div class="stat-value orange">{{ number_format($nilaiRata, 2) }}</div>
         </div>
     </div>
 

@@ -18,7 +18,7 @@ class DashboardController extends Controller
         }
 
         // Hitung nilai rata-rata lewat relasi (bukan DB::table langsung)
-        $nilaiRata = $siswa->nilaiSiswa()->avg('nilai') ?? 0;
+        $nilaiRata = round($siswa->nilaiSiswa()->avg('nilai')??0,2);
 
         $hasilJurusan = HasilJurusan::with('jurusan')
             ->where('siswa_id', $siswa->id)
