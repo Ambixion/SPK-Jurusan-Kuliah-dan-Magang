@@ -38,6 +38,8 @@ RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache \
 COPY docker/php/local.ini /usr/local/etc/php/conf.d/local.ini
 # Copy php-fpm status config into image so runtime bind-mount not required
 COPY docker/php/status.conf /usr/local/etc/php-fpm.d/status.conf
+# Copy php-fpm pool config (www.conf) into image to avoid runtime bind-mount issues
+COPY docker/php/www.conf /usr/local/etc/php-fpm.d/www.conf
 
 EXPOSE 9000
 
