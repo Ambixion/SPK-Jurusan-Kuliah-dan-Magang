@@ -1,0 +1,23 @@
+name: spk-infra
+
+services:
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: spk_jenkins
+    restart: unless-stopped
+    ports:
+      - "8081:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_kelompok10:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/bin/docker:/usr/bin/docker
+    networks:
+      - spk_network
+
+networks:
+  spk_network:
+    external: true
+
+volumes:
+  jenkins_kelompok10:

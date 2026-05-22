@@ -1,8 +1,10 @@
 pipeline {
+
     agent any
 
     environment {
         APP_NAME = 'spk-smkn-app'
+        PATH = "/usr/bin:/usr/local/bin:${env.PATH}"
     }
 
     options {
@@ -22,77 +24,88 @@ pipeline {
             }
         }
 
-        stage('Lint') {
-            steps {
-                echo '🔍 Lint PHP via container yang sudah berjalan...'
-                sh '''
-                    if docker ps --format "{{.Names}}" | grep -q "spk_app"; then
-                        docker exec spk_app php -r "echo 'PHP OK: ' . PHP_VERSION . PHP_EOL;"
-                        echo "✅ Lint selesai"
-                    else
-                        echo "⚠️ Container spk_app belum jalan, lint dilewati"
-                    fi
-                '''
-            }
-        }
-
         stage('Build') {
             steps {
                 echo "🐳 Build Docker image..."
                 sh """
-                    cd \${WORKSPACE}
-                    docker image build --tag ${APP_NAME}:${BUILD_NUMBER} --tag ${APP_NAME}:latest --file Dockerfile .
-                    docker image ls ${APP_NAME}
-                    echo "✅ Build selesai"
+                    cd ${WORKSPACE}
+                    docker build \
+                        -t ${APP_NAME}:${BUILD_NUMBER} \
+                        -t ${APP_NAME}:latest \
+                        -f Dockerfile .
                 """
+                echo '✅ Build selesai'
             }
         }
 
         stage('Deploy') {
             steps {
-                echo '🚀 Deploy container baru...'
+                echo '🚀 Deploy aplikasi...'
                 sh """
-                    docker container stop spk_app 2>/dev/null || true
-                    docker container rm   spk_app 2>/dev/null || true
+                    cd ${WORKSPACE}
 
-                    docker container run \
-                        --detach \
-                        --name spk_app \
-                        --network sistem-pengambil-keputusan-pemilihan-jurusan-kuliah-dan-magang_spk_network \
-                        --restart unless-stopped \
-                        --workdir /var/www \
-                        ${APP_NAME}:latest
+                    # Hapus container lama yang mungkin tidak ikut down
+                    docker compose -f docker-compose.app.yml down || true
 
-                    docker container ls --filter name=spk_app
-                    echo "✅ Deploy selesai"
+                    # Pastikan network sudah ada (external network)
+                    docker network inspect spk_network >/dev/null 2>&1 || \
+                        docker network create spk_network
+
+                    docker compose -p spk down --remove-orphans || true
+
+                    docker compose -f docker-compose.app.yml up -d || true
                 """
+                echo '✅ Deploy selesai'
             }
         }
 
-        stage('Artisan') {
+        stage('Wait Container') {
+            steps {
+                echo '⏳ Menunggu container siap...'
+                sh 'sleep 20'
+            }
+        }
+
+        stage('Laravel Setup') {
             steps {
                 echo '⚙️ Setup Laravel...'
                 sh '''
-                    sleep 8
-                    docker container exec spk_app php artisan key:generate --force  && echo "key:generate ✅" || true
-                    docker container exec spk_app php artisan config:cache           && echo "config:cache ✅"  || true
-                    docker container exec spk_app php artisan route:cache            && echo "route:cache ✅"   || true
-                    echo "✅ Artisan selesai"
+                    docker compose -p spk exec -T app sh -c "
+                        if [ ! -f .env ]; then
+                            cp .env.example .env
+                        fi
+                    "
+
+                    docker compose -p spk exec -T app php artisan key:generate --force || true
+                    docker compose -p spk exec -T app php artisan config:clear || true
+                    docker compose -p spk exec -T app php artisan cache:clear || true
+                    docker compose -p spk exec -T app php artisan route:clear || true
+                    docker compose -p spk exec -T app php artisan view:clear || true
+                    docker compose -p spk exec -T app php artisan migrate --force || true
+                    docker compose -p spk exec -T app php artisan db:seed --force || true
+                    docker compose -p spk exec -T app php artisan config:cache || true
+                    docker compose -p spk exec -T app php artisan route:cache || true
+
+                    echo "✅ Laravel setup selesai"
                 '''
             }
         }
 
         stage('Health Check') {
             steps {
-                echo '❤️ Health check...'
+                echo '❤️ Health check aplikasi...'
                 sh '''
-                    sleep 3
-                    HTTP=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8000 2>/dev/null || echo "000")
-                    echo "HTTP Status: $HTTP"
+                    sleep 10
+
+                    HTTP=$(curl -s -o /dev/null -w "%{http_code}" http://localhost || echo "000")
+                    echo "HTTP STATUS: $HTTP"
+
                     if [ "$HTTP" = "200" ] || [ "$HTTP" = "302" ]; then
-                        echo "✅ Aplikasi OK di http://localhost:8000"
+                        echo "✅ Aplikasi berjalan normal"
                     else
-                        echo "⚠️ Status: $HTTP"
+                        echo "❌ Aplikasi gagal diakses, cek logs:"
+                        docker compose -p spk logs app --tail=30 || true
+                        exit 1
                     fi
                 '''
             }
@@ -101,14 +114,20 @@ pipeline {
 
     post {
         success {
-            echo "✅ PIPELINE #${BUILD_NUMBER} BERHASIL! App: http://localhost:8000 | Grafana: http://localhost:3000"
+            echo "✅ PIPELINE #${BUILD_NUMBER} BERHASIL"
+            echo "🌐 App        : http://localhost"
+            echo "📊 Grafana    : http://localhost:3000"
+            echo "📈 Prometheus : http://localhost:9090"
         }
         failure {
             echo "❌ PIPELINE #${BUILD_NUMBER} GAGAL"
-            sh 'docker container logs spk_app --tail 20 2>/dev/null || true'
+            sh '''
+                docker compose -p spk logs app --tail=50 || true
+                docker compose -p spk ps || true
+            '''
         }
         always {
-            sh 'docker container ls --filter name=spk_ --format "{{.Names}}: {{.Status}}" 2>/dev/null || true'
+            sh 'docker compose -p spk ps || true'
         }
     }
 }

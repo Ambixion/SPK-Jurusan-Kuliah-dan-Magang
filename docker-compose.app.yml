@@ -1,3 +1,5 @@
+name: spk
+
 services:
 
   db:
@@ -6,7 +8,7 @@ services:
     restart: unless-stopped
     environment:
       MYSQL_DATABASE: spk_smkn
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       MYSQL_ALLOW_EMPTY_PASSWORD: "no"
     ports:
       - "3307:3306"
@@ -16,7 +18,7 @@ services:
     networks:
       - spk_network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u", "root", "-proot"]
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p$$MYSQL_ROOT_PASSWORD"]
       interval: 10s
       timeout: 10s
       retries: 10
@@ -78,10 +80,10 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=admin123
-      - GF_USERS_ALLOW_SIGN_UP=false
-      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin123
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_PATHS_PROVISIONING: /etc/grafana/provisioning
     volumes:
       - spk_grafana_data:/var/lib/grafana
       - ./docker/grafana/provisioning:/etc/grafana/provisioning
@@ -98,7 +100,7 @@ services:
       - "--mysqld.address=db:3306"
       - "--mysqld.username=root"
     environment:
-      - MYSQLD_EXPORTER_PASSWORD=root
+      MYSQLD_EXPORTER_PASSWORD: ${DB_ROOT_PASSWORD}
     ports:
       - "9104:9104"
     networks:
@@ -119,7 +121,6 @@ services:
       - spk_network
     depends_on:
       - app
-      - nginx
 
   nginx_exporter:
     image: nginx/nginx-prometheus-exporter:latest
@@ -134,25 +135,11 @@ services:
     depends_on:
       - nginx
 
-  jenkins:
-    image: jenkins/jenkins:lts
-    container_name: jenkins
-    restart: unless-stopped
-    ports:
-      - "8081:8080"
-      - "50000:50000"
-    volumes:
-      - jenkins_home:/var/jenkins_home
-      - /var/run/docker.sock:/var/run/docker.sock
-    networks:
-      - spk_network
-
 networks:
   spk_network:
-    driver: bridge
+    external: true
 
 volumes:
   spk_db_data:
   spk_prometheus_data:
   spk_grafana_data:
-  jenkins_home:
