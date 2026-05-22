@@ -46,7 +46,7 @@ pipeline {
                     cd ${WORKSPACE}
 
                     # Hapus container lama yang mungkin tidak ikut down
-                    docker --help
+                    docker-compose --help
                     docker compose down
 
                     # Pastikan network sudah ada (external network)
