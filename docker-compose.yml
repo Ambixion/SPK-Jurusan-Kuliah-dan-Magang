@@ -65,7 +65,7 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./docker/prometheus:/etc/prometheus
       - spk_prometheus_data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
