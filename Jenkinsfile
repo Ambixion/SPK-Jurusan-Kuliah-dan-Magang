@@ -48,8 +48,8 @@ pipeline {
                     docker ps -aq --filter "name=spk_" | grep -v spk_jenkins | xargs docker rm -f || true
 
                     # Pastikan network sudah ada (external network)
-                    docker network inspect spk_spk_network >/dev/null 2>&1 || \
-                        docker network create spk_spk_network
+                    docker network inspect spk_network >/dev/null 2>&1 || \
+                        docker network create spk_network
 
                     docker compose -p spk down --remove-orphans || true
 
