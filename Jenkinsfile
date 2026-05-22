@@ -5,8 +5,6 @@ pipeline {
     environment {
         APP_NAME = 'spk-smkn-app'
         PATH = "/usr/bin:/usr/local/bin:${env.PATH}"
-        COMPOSE_PROJECT_NAME = 'spk'
-        COMPOSE_FILE = 'docker-compose.app.yml'
     }
 
     options {
@@ -47,15 +45,15 @@ pipeline {
                     cd ${WORKSPACE}
 
                     # Hapus container lama yang mungkin tidak ikut down
-                    docker compose down
+                    docker compose -p spk down --remove-orphans || true
 
                     # Pastikan network sudah ada (external network)
                     docker network inspect spk_network >/dev/null 2>&1 || \
                         docker network create spk_network
 
-                    docker compose down --remove-orphans || true
+                    docker compose -p spk down --remove-orphans || true
 
-                    docker compose up -d
+                    docker compose -p spk up -d --build
                 """
                 echo '✅ Deploy selesai'
             }
@@ -72,21 +70,21 @@ pipeline {
             steps {
                 echo '⚙️ Setup Laravel...'
                 sh '''
-                    docker compose exec -T app sh -c "
+                    docker compose -p spk exec -T app sh -c "
                         if [ ! -f .env ]; then
                             cp .env.example .env
                         fi
                     "
 
-                    docker compose exec -T app php artisan key:generate --force || true
-                    docker compose exec -T app php artisan config:clear || true
-                    docker compose exec -T app php artisan cache:clear || true
-                    docker compose exec -T app php artisan route:clear || true
-                    docker compose exec -T app php artisan view:clear || true
-                    docker compose exec -T app php artisan migrate --force || true
-                    docker compose exec -T app php artisan db:seed --force || true
-                    docker compose exec -T app php artisan config:cache || true
-                    docker compose exec -T app php artisan route:cache || true
+                    docker compose -p spk exec -T app php artisan key:generate --force || true
+                    docker compose -p spk exec -T app php artisan config:clear || true
+                    docker compose -p spk exec -T app php artisan cache:clear || true
+                    docker compose -p spk exec -T app php artisan route:clear || true
+                    docker compose -p spk exec -T app php artisan view:clear || true
+                    docker compose -p spk exec -T app php artisan migrate --force || true
+                    docker compose -p spk exec -T app php artisan db:seed --force || true
+                    docker compose -p spk exec -T app php artisan config:cache || true
+                    docker compose -p spk exec -T app php artisan route:cache || true
 
                     echo "✅ Laravel setup selesai"
                 '''
@@ -106,7 +104,7 @@ pipeline {
                         echo "✅ Aplikasi berjalan normal"
                     else
                         echo "❌ Aplikasi gagal diakses, cek logs:"
-                        docker compose logs app --tail=30 || true
+                        docker compose -p spk logs app --tail=30 || true
                         exit 1
                     fi
                 '''
@@ -124,12 +122,12 @@ pipeline {
         failure {
             echo "❌ PIPELINE #${BUILD_NUMBER} GAGAL"
             sh '''
-                docker compose logs app --tail=50 || true
-                docker compose ps || true
+                docker compose -p spk logs app --tail=50 || true
+                docker compose -p spk ps || true
             '''
         }
         always {
-            sh 'docker compose ps || true'
+            sh 'docker compose -p spk ps || true'
         }
     }
 }
