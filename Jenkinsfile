@@ -42,15 +42,11 @@ pipeline {
             steps {
                 echo '🚀 Deploy aplikasi...'
                 sh """
-                    export COMPOSE_PROJECT_NAME=spk
                     cd ${WORKSPACE}
 
-                    apt-get update
-                    apt-get install docker-compose-plugin
-
                     # Hapus container lama yang mungkin tidak ikut down
-                    docker compose --help
-                    docker compose down
+                    docker compose -p spk down --remove-orphans || true
+
 
                     # Pastikan network sudah ada (external network)
                     docker network inspect spk_network >/dev/null 2>&1 || \
