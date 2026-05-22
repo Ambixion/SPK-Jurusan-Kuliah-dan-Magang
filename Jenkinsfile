@@ -47,7 +47,7 @@ pipeline {
                     cd ${WORKSPACE}
 
                     # Hapus container lama yang mungkin tidak ikut down
-                    docker compose -f docker-compose.app.yml down || true
+                    docker compose down
 
                     # Pastikan network sudah ada (external network)
                     docker network inspect spk_network >/dev/null 2>&1 || \
