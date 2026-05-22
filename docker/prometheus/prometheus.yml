@@ -1,5 +1,5 @@
 global:
-  scrape_interval: 15s       # Ambil metrics setiap 15 detik
+  scrape_interval: 15s       # mengambil matrics setiap 15 detik sekali
   evaluation_interval: 15s   # Evaluasi rules setiap 15 detik
   scrape_timeout: 10s
 
