@@ -76,15 +76,22 @@ pipeline {
                             cp .env.example .env
                         fi
 
-                        sed -i 's/^DB_CONNECTION=.*/DB_CONNECTION=mysql/' .env
-                        sed -i 's/^DB_HOST=.*/DB_HOST=db/' .env
-                        sed -i 's/^DB_PORT=.*/DB_PORT=3306/' .env
-                        sed -i 's/^DB_DATABASE=.*/DB_DATABASE=spk_smkn/' .env
-                        sed -i 's/^DB_USERNAME=.*/DB_USERNAME=root/' .env
-                        sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD=rootpassword123/' .env
+                        sed -i 's/^DB_CONNECTION=.*/DB_CONNECTION=mysql/' .env || true
+                        sed -i 's/^# *DB_HOST=.*/DB_HOST=db/' .env || true
+                        sed -i 's/^DB_HOST=.*/DB_HOST=db/' .env || true
+                        sed -i 's/^# *DB_PORT=.*/DB_PORT=3306/' .env || true
+                        sed -i 's/^DB_PORT=.*/DB_PORT=3306/' .env || true
+                        sed -i 's/^# *DB_DATABASE=.*/DB_DATABASE=spk_smkn/' .env || true
+                        sed -i 's/^DB_DATABASE=.*/DB_DATABASE=spk_smkn/' .env || true
+                        sed -i 's/^# *DB_USERNAME=.*/DB_USERNAME=root/' .env || true
+                        sed -i 's/^DB_USERNAME=.*/DB_USERNAME=root/' .env || true
+                        sed -i 's/^# *DB_PASSWORD=.*/DB_PASSWORD=rootpassword123/' .env || true
+                        sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD=rootpassword123/' .env || true
+
+                        sed -n '1,240p' .env
                     "
 
-                    docker compose -p spk exec -T app sh -c "cd /var/www && php artisan key:generate --force"
+                    docker compose -p spk exec -T app sh -c "cd /var/www && php artisan key:generate --force" || true
                     docker compose -p spk exec -T app sh -c "cd /var/www && php artisan config:clear"
                     docker compose -p spk exec -T app sh -c "cd /var/www && php artisan cache:clear" || true
                     docker compose -p spk exec -T app sh -c "cd /var/www && php artisan route:clear"
