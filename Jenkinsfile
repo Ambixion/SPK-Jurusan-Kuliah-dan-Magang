@@ -88,21 +88,17 @@ pipeline {
             steps {
                 echo '⚙️ Setup Laravel...'
                 sh '''
-                    docker compose -p spk exec -T app sh -c "
-                        if [ ! -f .env ]; then
-                            cp .env.example .env
-                        fi
-                    "
+                    docker compose -p spk exec -T app sh -c "cd /var/www && pwd && ls -la && if [ ! -f .env ]; then cp .env.example .env; fi"
 
-                    docker compose -p spk exec -T app php artisan key:generate --force || true
-                    docker compose -p spk exec -T app php artisan config:clear || true
-                    docker compose -p spk exec -T app php artisan cache:clear || true
-                    docker compose -p spk exec -T app php artisan route:clear || true
-                    docker compose -p spk exec -T app php artisan view:clear || true
-                    docker compose -p spk exec -T app php artisan migrate --force || true
-                    docker compose -p spk exec -T app php artisan db:seed --force || true
-                    docker compose -p spk exec -T app php artisan config:cache || true
-                    docker compose -p spk exec -T app php artisan route:cache || true
+                    docker compose -p spk exec -T app sh -c "cd /var/www && php artisan key:generate --force" || true
+                    docker compose -p spk exec -T app sh -c "cd /var/www && php artisan config:clear" || true
+                    docker compose -p spk exec -T app sh -c "cd /var/www && php artisan cache:clear" || true
+                    docker compose -p spk exec -T app sh -c "cd /var/www && php artisan route:clear" || true
+                    docker compose -p spk exec -T app sh -c "cd /var/www && php artisan view:clear" || true
+                    docker compose -p spk exec -T app sh -c "cd /var/www && php artisan migrate --force" || true
+                    docker compose -p spk exec -T app sh -c "cd /var/www && php artisan db:seed --force" || true
+                    docker compose -p spk exec -T app sh -c "cd /var/www && php artisan config:cache" || true
+                    docker compose -p spk exec -T app sh -c "cd /var/www && php artisan route:cache" || true
 
                     echo "✅ Laravel setup selesai"
                 '''
