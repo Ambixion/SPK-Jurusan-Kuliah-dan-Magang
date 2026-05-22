@@ -32,9 +32,6 @@ services:
     container_name: spk_app
     restart: unless-stopped
     working_dir: /var/www
-    volumes:
-      - .:/var/www
-      # Use configs baked into image to avoid host-file bind-mount issues on CI
     networks:
       - spk_network
     depends_on:
@@ -50,8 +47,6 @@ services:
     restart: unless-stopped
     ports:
       - "80:80"
-    volumes:
-      - .:/var/www
     networks:
       spk_network:
         aliases:
