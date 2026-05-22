@@ -5,6 +5,7 @@ pipeline {
     environment {
         APP_NAME = 'spk-smkn-app'
         PATH = "/usr/bin:/usr/local/bin:${env.PATH}"
+        DB_ROOT_PASSWORD = 'rootpassword123'
     }
 
     options {
@@ -44,32 +45,12 @@ pipeline {
                 sh """
                     cd ${WORKSPACE}
 
-                    echo '--- Debug: list docker directories ---'
-                    ls -la docker || true
-                    echo '--- Debug: docker/prometheus ---'
-                    ls -la docker/prometheus || true
-                    if [ -f docker/prometheus/prometheus.yml ]; then
-                        echo 'prometheus.yml exists:'
-                        sed -n '1,120p' docker/prometheus/prometheus.yml || true
-                    else
-                        echo 'WARNING: docker/prometheus/prometheus.yml NOT FOUND'
-                    fi
-
-                    echo '--- Debug: docker/php ---'
-                    ls -la docker/php || true
-                    echo '--- Debug: file types ---'
-                    file docker/php/local.ini || true
-                    file docker/php/status.conf || true
-
-                    # Hapus container lama yang mungkin tidak ikut down
+                    # Hapus container lama
                     docker compose -p spk down --remove-orphans || true
 
-
-                    # Pastikan network sudah ada (external network)
+                    # Pastikan network sudah ada
                     docker network inspect spk_network >/dev/null 2>&1 || \
                         docker network create spk_network
-
-                    docker compose -p spk down --remove-orphans || true
 
                     docker compose -p spk up -d --build
                 """
@@ -88,17 +69,30 @@ pipeline {
             steps {
                 echo '⚙️ Setup Laravel...'
                 sh '''
-                    docker compose -p spk exec -T app sh -c "cd /var/www && pwd && ls -la && if [ ! -f .env ]; then cp .env.example .env; fi"
+                    docker compose -p spk exec -T app sh -c "
+                        cd /var/www
 
-                    docker compose -p spk exec -T app sh -c "cd /var/www && php artisan key:generate --force" || true
-                    docker compose -p spk exec -T app sh -c "cd /var/www && php artisan config:clear" || true
+                        if [ ! -f .env ]; then
+                            cp .env.example .env
+                        fi
+
+                        sed -i 's/^DB_CONNECTION=.*/DB_CONNECTION=mysql/' .env
+                        sed -i 's/^DB_HOST=.*/DB_HOST=db/' .env
+                        sed -i 's/^DB_PORT=.*/DB_PORT=3306/' .env
+                        sed -i 's/^DB_DATABASE=.*/DB_DATABASE=spk_smkn/' .env
+                        sed -i 's/^DB_USERNAME=.*/DB_USERNAME=root/' .env
+                        sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD=rootpassword123/' .env
+                    "
+
+                    docker compose -p spk exec -T app sh -c "cd /var/www && php artisan key:generate --force"
+                    docker compose -p spk exec -T app sh -c "cd /var/www && php artisan config:clear"
                     docker compose -p spk exec -T app sh -c "cd /var/www && php artisan cache:clear" || true
-                    docker compose -p spk exec -T app sh -c "cd /var/www && php artisan route:clear" || true
-                    docker compose -p spk exec -T app sh -c "cd /var/www && php artisan view:clear" || true
-                    docker compose -p spk exec -T app sh -c "cd /var/www && php artisan migrate --force" || true
+                    docker compose -p spk exec -T app sh -c "cd /var/www && php artisan route:clear"
+                    docker compose -p spk exec -T app sh -c "cd /var/www && php artisan view:clear"
+                    docker compose -p spk exec -T app sh -c "cd /var/www && php artisan migrate --force"
                     docker compose -p spk exec -T app sh -c "cd /var/www && php artisan db:seed --force" || true
-                    docker compose -p spk exec -T app sh -c "cd /var/www && php artisan config:cache" || true
-                    docker compose -p spk exec -T app sh -c "cd /var/www && php artisan route:cache" || true
+                    docker compose -p spk exec -T app sh -c "cd /var/www && php artisan config:cache"
+                    docker compose -p spk exec -T app sh -c "cd /var/www && php artisan route:cache"
 
                     echo "✅ Laravel setup selesai"
                 '''
@@ -111,13 +105,14 @@ pipeline {
                 sh '''
                     sleep 10
 
-                    HTTP=$(curl -s -o /dev/null -w "%{http_code}" http://localhost || echo "000")
+                    HTTP=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:80 || echo "000")
                     echo "HTTP STATUS: $HTTP"
 
                     if [ "$HTTP" = "200" ] || [ "$HTTP" = "302" ]; then
                         echo "✅ Aplikasi berjalan normal"
                     else
                         echo "❌ Aplikasi gagal diakses, cek logs:"
+                        docker compose -p spk logs nginx --tail=30 || true
                         docker compose -p spk logs app --tail=30 || true
                         exit 1
                     fi

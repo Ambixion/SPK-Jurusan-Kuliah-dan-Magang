@@ -8,7 +8,7 @@ services:
     restart: unless-stopped
     environment:
       MYSQL_DATABASE: spk_smkn
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword123}
       MYSQL_ALLOW_EMPTY_PASSWORD: "no"
     ports:
       - "3307:3306"
@@ -32,6 +32,8 @@ services:
     container_name: spk_app
     restart: unless-stopped
     working_dir: /var/www
+    volumes:
+      - ./docker/php/www.conf:/usr/local/etc/php-fpm.d/www.conf
     networks:
       - spk_network
     depends_on:
@@ -61,7 +63,7 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - ./docker/prometheus:/etc/prometheus
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - spk_prometheus_data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
@@ -96,7 +98,7 @@ services:
       - "--mysqld.address=db:3306"
       - "--mysqld.username=root"
     environment:
-      MYSQLD_EXPORTER_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQLD_EXPORTER_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword123}
     ports:
       - "9104:9104"
     networks:
