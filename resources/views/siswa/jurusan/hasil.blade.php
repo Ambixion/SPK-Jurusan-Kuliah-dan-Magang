@@ -75,7 +75,12 @@
         </div>
         @endforeach
 
-        <div style="display:flex;justify-content:flex-end;margin-top:14px;">
+        <div style="display:flex;justify-content:space-between;gap:10px;margin-top:14px;">
+            <a href="{{ route('siswa.jurusan') }}"
+               style="background:rgba(255,255,255,0.1);color:#fff;padding:9px 20px;border-radius:20px;
+                      font-size:12px;font-weight:700;text-decoration:none;border:1px solid rgba(255,255,255,0.2);">
+                Kembali
+            </a>
             <a href="{{ route('siswa.jurusan') }}"
                style="background:rgba(255,255,255,0.1);color:#fff;padding:9px 20px;border-radius:20px;
                       font-size:12px;font-weight:700;text-decoration:none;border:1px solid rgba(255,255,255,0.2);">
