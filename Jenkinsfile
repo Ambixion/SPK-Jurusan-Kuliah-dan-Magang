@@ -44,8 +44,9 @@ pipeline {
                 sh """
                     cd ${WORKSPACE}
 
-                    echo '--- Debug: list docker/prometheus ---'
+                    echo '--- Debug: list docker directories ---'
                     ls -la docker || true
+                    echo '--- Debug: docker/prometheus ---'
                     ls -la docker/prometheus || true
                     if [ -f docker/prometheus/prometheus.yml ]; then
                         echo 'prometheus.yml exists:'
@@ -53,6 +54,12 @@ pipeline {
                     else
                         echo 'WARNING: docker/prometheus/prometheus.yml NOT FOUND'
                     fi
+
+                    echo '--- Debug: docker/php ---'
+                    ls -la docker/php || true
+                    echo '--- Debug: file types ---'
+                    file docker/php/local.ini || true
+                    file docker/php/status.conf || true
 
                     # Hapus container lama yang mungkin tidak ikut down
                     docker compose -p spk down --remove-orphans || true
