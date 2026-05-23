@@ -49,7 +49,7 @@ pipeline {
                     sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD=rootpassword123/' $WORKSPACE/.env || true
 
                     # Jika APP_KEY belum terisi, generate di host workspace sebelum build image
-                    if ! grep -q '^APP_KEY=.\+' $WORKSPACE/.env 2>/dev/null; then
+                    if ! grep -q '^APP_KEY=.' $WORKSPACE/.env 2>/dev/null; then
                         docker run --rm -v $WORKSPACE:/var/www -w /var/www php:8.2-fpm php artisan key:generate --force
                     fi
 
