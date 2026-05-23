@@ -48,20 +48,25 @@ pipeline {
                     sed -i 's/^# *DB_PASSWORD=.*/DB_PASSWORD=rootpassword123/' $WORKSPACE/.env || true
                     sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD=rootpassword123/' $WORKSPACE/.env || true
 
-                    # Jika APP_KEY belum terisi, build image dulu agar artisan dan dependensi tersedia
+                    if ! grep -q '^APP_KEY=.\+' $WORKSPACE/.env 2>/dev/null; then
+                        echo '🔐 Generating APP_KEY before image build'
+                        APP_KEY=$(docker run --rm php:8.2-cli php -r "echo 'base64:'.base64_encode(random_bytes(32));")
+                        if [ -z "$APP_KEY" ]; then
+                            echo 'ERROR: gagal membuat APP_KEY' >&2
+                            exit 1
+                        fi
+
+                        if grep -q '^APP_KEY=' $WORKSPACE/.env 2>/dev/null; then
+                            sed -i "s#^APP_KEY=.*#APP_KEY=$APP_KEY#" $WORKSPACE/.env
+                        else
+                            printf '\nAPP_KEY=%s\n' "$APP_KEY" >> $WORKSPACE/.env
+                        fi
+                    fi
+
                     docker build \
                         -t $APP_NAME:$BUILD_NUMBER \
                         -t $APP_NAME:latest \
                         -f Dockerfile .
-
-                    if ! grep -q '^APP_KEY=.' $WORKSPACE/.env 2>/dev/null; then
-                        docker run --rm -v $WORKSPACE:/var/www -w /var/www $APP_NAME:$BUILD_NUMBER php artisan key:generate --force
-                        # Build ulang image agar APP_KEY yang baru ada masuk ke image
-                        docker build \
-                            -t $APP_NAME:$BUILD_NUMBER \
-                            -t $APP_NAME:latest \
-                            -f Dockerfile .
-                    fi
                 '''
                 echo '✅ Build selesai'
             }
