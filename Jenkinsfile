@@ -28,33 +28,11 @@ pipeline {
         stage('Build') {
             steps {
                 echo "🐳 Build Docker image..."
-                sh """
-                    cd ${WORKSPACE}
-                    docker build \
-                        -t ${APP_NAME}:${BUILD_NUMBER} \
-                        -t ${APP_NAME}:latest \
-                        -f Dockerfile .
-                """
-                echo '✅ Build selesai'
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                echo '🚀 Deploy aplikasi...'
                 sh '''
                     cd $WORKSPACE
 
-                    # Hapus container lama
-                    docker compose -p spk down --remove-orphans || true
-
-                    # Pastikan network sudah ada
-                    docker network inspect spk_network >/dev/null 2>&1 || \
-                        docker network create spk_network
-
-                    # Pastikan .env ada di host workspace dan APP_KEY tersedia
+                    # Pastikan .env tersedia sebelum build agar aplikasi dapat memuat APP_KEY
                     if [ ! -f $WORKSPACE/.env ]; then
-                        echo ".env tidak ditemukan di workspace — membuat dari .env.example"
                         cp $WORKSPACE/.env.example $WORKSPACE/.env || true
                         sed -i 's/^DB_CONNECTION=.*/DB_CONNECTION=mysql/' $WORKSPACE/.env || true
                         sed -i 's/^# *DB_HOST=.*/DB_HOST=db/' $WORKSPACE/.env || true
@@ -69,14 +47,32 @@ pipeline {
                         sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD=rootpassword123/' $WORKSPACE/.env || true
                     fi
 
-                    # Jika APP_KEY kosong atau tidak ada, generate key menggunakan image yang sudah dibuild
-                    APPKEY=$(grep '^APP_KEY=' $WORKSPACE/.env | cut -d'=' -f2- || true)
-                    if [ -z "$APPKEY" ]; then
-                        echo "APP_KEY kosong — generate menggunakan image $APP_NAME:$BUILD_NUMBER"
+                    docker build \
+                        -t $APP_NAME:$BUILD_NUMBER \
+                        -t $APP_NAME:latest \
+                        -f Dockerfile .
+
+                    # Pastikan APP_KEY sudah ada di .env sebelum deploy
+                    if ! grep -q '^APP_KEY=.' $WORKSPACE/.env 2>/dev/null; then
                         docker run --rm -v $WORKSPACE:/var/www -w /var/www $APP_NAME:$BUILD_NUMBER php artisan key:generate --force || true
                     fi
+                '''
+                echo '✅ Build selesai'
+            }
+        }
 
-                    docker compose -p spk up -d --build
+        stage('Deploy') {
+            steps {
+                echo '🚀 Deploy aplikasi...'
+                sh '''
+                    cd $WORKSPACE
+
+                    # Pastikan network sudah ada
+                    docker network inspect spk_network >/dev/null 2>&1 || \
+                        docker network create spk_network
+
+                    # Deploy ulang hanya service app agar stack lainnya tetap berjalan
+                    docker compose -p spk up -d --build app
                 '''
                 echo '✅ Deploy selesai'
             }
@@ -121,19 +117,11 @@ pipeline {
                     docker compose -p spk exec -T app sh -c "cd /var/www && php artisan route:clear"
                     docker compose -p spk exec -T app sh -c "cd /var/www && php artisan view:clear"
 
-                    # Enter maintenance mode before running migrations to avoid inconsistent state
-                    docker compose -p spk exec -T app sh -c "cd /var/www && php artisan down --message='Maintenance for deploy #${BUILD_NUMBER}' || true"
-
-                    # Run migrations and seeds while in maintenance mode
                     docker compose -p spk exec -T app sh -c "cd /var/www && php artisan migrate --force"
                     docker compose -p spk exec -T app sh -c "cd /var/www && php artisan db:seed --force" || true
 
-                    # Clear and cache configs/routes after migrations
                     docker compose -p spk exec -T app sh -c "cd /var/www && php artisan config:cache"
                     docker compose -p spk exec -T app sh -c "cd /var/www && php artisan route:cache"
-
-                    # Exit maintenance mode when setup finished
-                    docker compose -p spk exec -T app sh -c "cd /var/www && php artisan up" || true
 
                     echo "✅ Laravel setup selesai"
                 '''
