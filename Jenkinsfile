@@ -34,27 +34,34 @@ pipeline {
                     # Pastikan .env tersedia sebelum build agar aplikasi dapat memuat APP_KEY
                     if [ ! -f $WORKSPACE/.env ]; then
                         cp $WORKSPACE/.env.example $WORKSPACE/.env || true
-                        sed -i 's/^DB_CONNECTION=.*/DB_CONNECTION=mysql/' $WORKSPACE/.env || true
-                        sed -i 's/^# *DB_HOST=.*/DB_HOST=db/' $WORKSPACE/.env || true
-                        sed -i 's/^DB_HOST=.*/DB_HOST=db/' $WORKSPACE/.env || true
-                        sed -i 's/^# *DB_PORT=.*/DB_PORT=3306/' $WORKSPACE/.env || true
-                        sed -i 's/^DB_PORT=.*/DB_PORT=3306/' $WORKSPACE/.env || true
-                        sed -i 's/^# *DB_DATABASE=.*/DB_DATABASE=spk_smkn/' $WORKSPACE/.env || true
-                        sed -i 's/^DB_DATABASE=.*/DB_DATABASE=spk_smkn/' $WORKSPACE/.env || true
-                        sed -i 's/^# *DB_USERNAME=.*/DB_USERNAME=root/' $WORKSPACE/.env || true
-                        sed -i 's/^DB_USERNAME=.*/DB_USERNAME=root/' $WORKSPACE/.env || true
-                        sed -i 's/^# *DB_PASSWORD=.*/DB_PASSWORD=rootpassword123/' $WORKSPACE/.env || true
-                        sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD=rootpassword123/' $WORKSPACE/.env || true
                     fi
 
+                    sed -i 's/^DB_CONNECTION=.*/DB_CONNECTION=mysql/' $WORKSPACE/.env || true
+                    sed -i 's/^# *DB_HOST=.*/DB_HOST=db/' $WORKSPACE/.env || true
+                    sed -i 's/^DB_HOST=.*/DB_HOST=db/' $WORKSPACE/.env || true
+                    sed -i 's/^# *DB_PORT=.*/DB_PORT=3306/' $WORKSPACE/.env || true
+                    sed -i 's/^DB_PORT=.*/DB_PORT=3306/' $WORKSPACE/.env || true
+                    sed -i 's/^# *DB_DATABASE=.*/DB_DATABASE=spk_smkn/' $WORKSPACE/.env || true
+                    sed -i 's/^DB_DATABASE=.*/DB_DATABASE=spk_smkn/' $WORKSPACE/.env || true
+                    sed -i 's/^# *DB_USERNAME=.*/DB_USERNAME=root/' $WORKSPACE/.env || true
+                    sed -i 's/^DB_USERNAME=.*/DB_USERNAME=root/' $WORKSPACE/.env || true
+                    sed -i 's/^# *DB_PASSWORD=.*/DB_PASSWORD=rootpassword123/' $WORKSPACE/.env || true
+                    sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD=rootpassword123/' $WORKSPACE/.env || true
+
+                    # Build pertama kali untuk membuat image yang dapat menjalankan artisan
                     docker build \
                         -t $APP_NAME:$BUILD_NUMBER \
                         -t $APP_NAME:latest \
                         -f Dockerfile .
 
-                    # Pastikan APP_KEY sudah ada di .env sebelum deploy
+                    # Jika APP_KEY belum terisi, generate menggunakan image hasil build pertama
                     if ! grep -q '^APP_KEY=.' $WORKSPACE/.env 2>/dev/null; then
                         docker run --rm -v $WORKSPACE:/var/www -w /var/www $APP_NAME:$BUILD_NUMBER php artisan key:generate --force || true
+                        # Build ulang image agar .env dengan APP_KEY ikut ter-copy
+                        docker build \
+                            -t $APP_NAME:$BUILD_NUMBER \
+                            -t $APP_NAME:latest \
+                            -f Dockerfile .
                     fi
                 '''
                 echo '✅ Build selesai'
@@ -71,8 +78,8 @@ pipeline {
                     docker network inspect spk_network >/dev/null 2>&1 || \
                         docker network create spk_network
 
-                    # Deploy ulang hanya service app agar stack lainnya tetap berjalan
-                    docker compose -p spk up -d --build app
+                    # Deploy ulang hanya service app dengan 2 replica untuk tetap melayani saat update
+                    docker compose -p spk up -d --no-deps --build --scale app=2 app
                 '''
                 echo '✅ Deploy selesai'
             }
