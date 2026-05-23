@@ -48,15 +48,20 @@ pipeline {
                     sed -i 's/^# *DB_PASSWORD=.*/DB_PASSWORD=rootpassword123/' $WORKSPACE/.env || true
                     sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD=rootpassword123/' $WORKSPACE/.env || true
 
-                    # Jika APP_KEY belum terisi, generate di host workspace sebelum build image
-                    if ! grep -q '^APP_KEY=.' $WORKSPACE/.env 2>/dev/null; then
-                        docker run --rm -v $WORKSPACE:/var/www -w /var/www php:8.2-fpm php artisan key:generate --force
-                    fi
-
+                    # Jika APP_KEY belum terisi, build image dulu agar artisan dan dependensi tersedia
                     docker build \
                         -t $APP_NAME:$BUILD_NUMBER \
                         -t $APP_NAME:latest \
                         -f Dockerfile .
+
+                    if ! grep -q '^APP_KEY=.' $WORKSPACE/.env 2>/dev/null; then
+                        docker run --rm -v $WORKSPACE:/var/www -w /var/www $APP_NAME:$BUILD_NUMBER php artisan key:generate --force
+                        # Build ulang image agar APP_KEY yang baru ada masuk ke image
+                        docker build \
+                            -t $APP_NAME:$BUILD_NUMBER \
+                            -t $APP_NAME:latest \
+                            -f Dockerfile .
+                    fi
                 '''
                 echo '✅ Build selesai'
             }
