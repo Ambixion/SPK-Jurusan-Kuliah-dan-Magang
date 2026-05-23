@@ -52,6 +52,30 @@ pipeline {
                     docker network inspect spk_network >/dev/null 2>&1 || \
                         docker network create spk_network
 
+                    # Pastikan .env ada di host workspace dan APP_KEY tersedia
+                    if [ ! -f ${WORKSPACE}/.env ]; then
+                        echo ".env tidak ditemukan di workspace — membuat dari .env.example"
+                        cp ${WORKSPACE}/.env.example ${WORKSPACE}/.env || true
+                        sed -i 's/^DB_CONNECTION=.*/DB_CONNECTION=mysql/' ${WORKSPACE}/.env || true
+                        sed -i 's/^# *DB_HOST=.*/DB_HOST=db/' ${WORKSPACE}/.env || true
+                        sed -i 's/^DB_HOST=.*/DB_HOST=db/' ${WORKSPACE}/.env || true
+                        sed -i 's/^# *DB_PORT=.*/DB_PORT=3306/' ${WORKSPACE}/.env || true
+                        sed -i 's/^DB_PORT=.*/DB_PORT=3306/' ${WORKSPACE}/.env || true
+                        sed -i 's/^# *DB_DATABASE=.*/DB_DATABASE=spk_smkn/' ${WORKSPACE}/.env || true
+                        sed -i 's/^DB_DATABASE=.*/DB_DATABASE=spk_smkn/' ${WORKSPACE}/.env || true
+                        sed -i 's/^# *DB_USERNAME=.*/DB_USERNAME=root/' ${WORKSPACE}/.env || true
+                        sed -i 's/^DB_USERNAME=.*/DB_USERNAME=root/' ${WORKSPACE}/.env || true
+                        sed -i 's/^# *DB_PASSWORD=.*/DB_PASSWORD=rootpassword123/' ${WORKSPACE}/.env || true
+                        sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD=rootpassword123/' ${WORKSPACE}/.env || true
+                    fi
+
+                    # Jika APP_KEY kosong atau tidak ada, generate key menggunakan image yang sudah dibuild
+                    APPKEY=$(grep '^APP_KEY=' ${WORKSPACE}/.env | cut -d'=' -f2- || true)
+                    if [ -z "$APPKEY" ]; then
+                        echo "APP_KEY kosong — generate menggunakan image ${APP_NAME}:${BUILD_NUMBER}"
+                        docker run --rm -v ${WORKSPACE}:/var/www -w /var/www ${APP_NAME}:${BUILD_NUMBER} php artisan key:generate --force || true
+                    fi
+
                     docker compose -p spk up -d --build
                 """
                 echo '✅ Deploy selesai'
