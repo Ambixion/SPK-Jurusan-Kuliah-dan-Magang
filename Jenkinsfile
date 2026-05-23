@@ -48,7 +48,7 @@ pipeline {
                     sed -i 's/^# *DB_PASSWORD=.*/DB_PASSWORD=rootpassword123/' $WORKSPACE/.env || true
                     sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD=rootpassword123/' $WORKSPACE/.env || true
 
-                    if ! grep -q '^APP_KEY=.\+' $WORKSPACE/.env 2>/dev/null; then
+                    if ! grep -q '^APP_KEY=base64:' $WORKSPACE/.env 2>/dev/null; then
                         echo '🔐 Generating APP_KEY before image build'
                         APP_KEY=$(docker run --rm php:8.2-cli php -r "echo 'base64:'.base64_encode(random_bytes(32));")
                         if [ -z "$APP_KEY" ]; then
