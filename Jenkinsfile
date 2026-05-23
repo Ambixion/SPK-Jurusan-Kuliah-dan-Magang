@@ -48,21 +48,15 @@ pipeline {
                     sed -i 's/^# *DB_PASSWORD=.*/DB_PASSWORD=rootpassword123/' $WORKSPACE/.env || true
                     sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD=rootpassword123/' $WORKSPACE/.env || true
 
-                    # Build pertama kali untuk membuat image yang dapat menjalankan artisan
+                    # Jika APP_KEY belum terisi, generate di host workspace sebelum build image
+                    if ! grep -q '^APP_KEY=.\+' $WORKSPACE/.env 2>/dev/null; then
+                        docker run --rm -v $WORKSPACE:/var/www -w /var/www php:8.2-fpm php artisan key:generate --force
+                    fi
+
                     docker build \
                         -t $APP_NAME:$BUILD_NUMBER \
                         -t $APP_NAME:latest \
                         -f Dockerfile .
-
-                    # Jika APP_KEY belum terisi, generate menggunakan image hasil build pertama
-                    if ! grep -q '^APP_KEY=.' $WORKSPACE/.env 2>/dev/null; then
-                        docker run --rm -v $WORKSPACE:/var/www -w /var/www $APP_NAME:$BUILD_NUMBER php artisan key:generate --force || true
-                        # Build ulang image agar .env dengan APP_KEY ikut ter-copy
-                        docker build \
-                            -t $APP_NAME:$BUILD_NUMBER \
-                            -t $APP_NAME:latest \
-                            -f Dockerfile .
-                    fi
                 '''
                 echo '✅ Build selesai'
             }
@@ -118,7 +112,6 @@ pipeline {
                         sed -n '1,240p' .env
                     "
 
-                    docker compose -p spk exec -T app sh -c "cd /var/www && php artisan key:generate --force" || true
                     docker compose -p spk exec -T app sh -c "cd /var/www && php artisan config:clear"
                     docker compose -p spk exec -T app sh -c "cd /var/www && php artisan cache:clear" || true
                     docker compose -p spk exec -T app sh -c "cd /var/www && php artisan route:clear"
