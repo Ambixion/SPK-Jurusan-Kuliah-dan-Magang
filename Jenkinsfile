@@ -96,10 +96,20 @@ pipeline {
                     docker compose -p spk exec -T app sh -c "cd /var/www && php artisan cache:clear" || true
                     docker compose -p spk exec -T app sh -c "cd /var/www && php artisan route:clear"
                     docker compose -p spk exec -T app sh -c "cd /var/www && php artisan view:clear"
+
+                    # Enter maintenance mode before running migrations to avoid inconsistent state
+                    docker compose -p spk exec -T app sh -c "cd /var/www && php artisan down --message='Maintenance for deploy #${BUILD_NUMBER}' || true"
+
+                    # Run migrations and seeds while in maintenance mode
                     docker compose -p spk exec -T app sh -c "cd /var/www && php artisan migrate --force"
                     docker compose -p spk exec -T app sh -c "cd /var/www && php artisan db:seed --force" || true
+
+                    # Clear and cache configs/routes after migrations
                     docker compose -p spk exec -T app sh -c "cd /var/www && php artisan config:cache"
                     docker compose -p spk exec -T app sh -c "cd /var/www && php artisan route:cache"
+
+                    # Exit maintenance mode when setup finished
+                    docker compose -p spk exec -T app sh -c "cd /var/www && php artisan up" || true
 
                     echo "✅ Laravel setup selesai"
                 '''
@@ -141,10 +151,13 @@ pipeline {
             sh '''
                 docker compose -p spk logs app --tail=50 || true
                 docker compose -p spk ps || true
+                # Ensure app keluar dari maintenance mode if possible
+                docker compose -p spk exec -T app sh -c "cd /var/www && php artisan up" || true
             '''
         }
         always {
             sh 'docker compose -p spk ps || true'
+            sh 'docker compose -p spk exec -T app sh -c "cd /var/www && php artisan up" || true'
         }
     }
 }
