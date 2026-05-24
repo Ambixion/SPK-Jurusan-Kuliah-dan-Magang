@@ -19,8 +19,8 @@ class SiswaController extends Controller
     $siswas = Siswa::with([
         'user',
         'jurusanSmk',
-        'hasilJurusan',
-        'hasilMagang',
+        'hasilJurusan.jurusan',
+        'hasilMagang.tempatMagang',
         'nilaiSiswa',
     ])
     ->latest()

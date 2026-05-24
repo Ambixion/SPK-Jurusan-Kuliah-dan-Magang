@@ -98,7 +98,22 @@
                                 $nilaiRata = $siswa->nilaiSiswa->first()->nilai ?? '-';
                                 $noTelp = $siswa->no_telp ?? '-';
                                 $alamat = $siswa->alamat ?? '-';
-                                $sudahMengisi = $siswa->hasilJurusan->count() > 0 || $siswa->hasilMagang->count() > 0;
+
+                                $hasilProdiTerbaik = $siswa->hasilJurusan->sortBy('rank')->first();
+                                $hasilMagangTerbaik = $siswa->hasilMagang->sortBy('rank')->first();
+
+                                $sudahAdaHasilProdi = !is_null($hasilProdiTerbaik);
+                                $sudahAdaHasilMagang = !is_null($hasilMagangTerbaik);
+
+                                $namaProdi =
+                                    $hasilProdiTerbaik && $hasilProdiTerbaik->jurusan
+                                        ? $hasilProdiTerbaik->jurusan->nama
+                                        : 'Belum menentukan';
+
+                                $namaMagang =
+                                    $hasilMagangTerbaik && $hasilMagangTerbaik->tempatMagang
+                                        ? $hasilMagangTerbaik->tempatMagang->nama
+                                        : 'Belum menentukan';
                             @endphp
 
                             <tr data-nama="{{ strtolower($namaSiswa) }}" data-nisn="{{ strtolower($nisnSiswa) }}"
@@ -121,17 +136,30 @@
                                 </td>
 
                                 <td>
-                                    @if ($sudahMengisi)
-                                        <span class="badge-success">
-                                            Sudah Mengisi
-                                        </span>
-                                    @else
-                                        <span class="badge-warning">
-                                            Belum Mengisi
-                                        </span>
-                                    @endif
-                                </td>
+                                    <div style="display:flex; flex-direction:column; gap:6px; align-items:center;">
 
+                                        @if ($sudahAdaHasilProdi)
+                                            <span class="badge-success">
+                                                Prodi: {{ $namaProdi }}
+                                            </span>
+                                        @else
+                                            <span class="badge-warning">
+                                                Prodi: Belum Ada Hasil
+                                            </span>
+                                        @endif
+
+                                        @if ($sudahAdaHasilMagang)
+                                            <span class="badge-success">
+                                                Magang: {{ $namaMagang }}
+                                            </span>
+                                        @else
+                                            <span class="badge-warning">
+                                                Magang: Belum Ada Hasil
+                                            </span>
+                                        @endif
+
+                                    </div>
+                                </td>
                                 <td>
                                     <div class="action-group">
 
@@ -142,7 +170,8 @@
                                             data-semester="{{ $semesterSiswa }}" data-jurusan="{{ $jurusanSiswa }}"
                                             data-no-telp="{{ $noTelp }}" data-alamat="{{ $alamat }}"
                                             data-nilai="{{ $nilaiRata }}"
-                                            data-status="{{ $sudahMengisi ? 'Sudah Mengisi' : 'Belum Mengisi' }}">
+                                            data-status-prodi="{{ $sudahAdaHasilProdi ? $namaProdi : 'Belum Ada Hasil' }}"
+                                            data-status-magang="{{ $sudahAdaHasilMagang ? $namaMagang : 'Belum Ada Hasil' }}">
                                             Show
                                         </button>
 
@@ -249,8 +278,13 @@
                 </div>
 
                 <div class="detail-item">
-                    <span>Status SPK</span>
-                    <strong id="showStatus">-</strong>
+                    <span>Hasil SPK Prodi</span>
+                    <strong id="showStatusProdi">-</strong>
+                </div>
+
+                <div class="detail-item">
+                    <span>Hasil SPK Magang</span>
+                    <strong id="showStatusMagang">-</strong>
                 </div>
 
                 <div class="detail-item full">

@@ -29,7 +29,7 @@ class DashboardController extends Controller
         $hasilSpk = Siswa::with([
             'user',
             'jurusanSmk',
-            'hasilJurusan',
+            'hasilJurusan.jurusan',
             'hasilMagang.tempatMagang',
         ])
         ->latest()
