@@ -392,7 +392,7 @@ body {
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="hover:underline hover:text-yellow-300 transition">
+                        <a href="https://lms.smkn5jember.sch.id/" class="hover:underline hover:text-yellow-300 transition">
                             › E-Learning
                         </a>
                     </li>
