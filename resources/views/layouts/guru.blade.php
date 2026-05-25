@@ -1131,8 +1131,8 @@
 
     <script>
         /* =========================================================
-                   SIDEBAR MOBILE
-                ========================================================= */
+                                   SIDEBAR MOBILE
+                                ========================================================= */
         function toggleSidebar() {
             const sidebar = document.querySelector('.sidebar');
             sidebar.classList.toggle('show');
@@ -1295,7 +1295,8 @@
         const showSemester = document.getElementById('showSemester');
         const showJurusan = document.getElementById('showJurusan');
         const showNilai = document.getElementById('showNilai');
-        const showStatus = document.getElementById('showStatus');
+        const showStatusProdi = document.getElementById('showStatusProdi');
+        const showStatusMagang = document.getElementById('showStatusMagang');
         const showAlamat = document.getElementById('showAlamat');
 
         document.querySelectorAll('.open-show-modal').forEach(button => {
@@ -1309,7 +1310,13 @@
                     .semester : '-';
                 showJurusan.textContent = this.dataset.jurusan || '-';
                 showNilai.textContent = this.dataset.nilai || '-';
-                showStatus.textContent = this.dataset.status || '-';
+                if (showStatusProdi) {
+                    showStatusProdi.textContent = this.dataset.statusProdi || '-';
+                }
+
+                if (showStatusMagang) {
+                    showStatusMagang.textContent = this.dataset.statusMagang || '-';
+                }
                 showAlamat.textContent = this.dataset.alamat || '-';
 
                 showModal.classList.add('show');
