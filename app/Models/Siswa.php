@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Skill;
 
 class Siswa extends Model
 {
+    use Hasfactory;
     protected $table = 'siswa';
 
     protected $fillable = [
