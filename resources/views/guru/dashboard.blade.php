@@ -111,7 +111,7 @@
 
                             $hasilMagangTerbaik = $siswa->hasilMagang->sortBy('rank')->first();
 
-                            $namaProdi = $hasilProdiTerbaik->jurusanKuliah->nama ?? 'Belum menentukan';
+                            $namaProdi = $hasilProdiTerbaik->jurusan->nama ?? 'Belum menentukan';
 
                             $namaMagang = $hasilMagangTerbaik->tempatMagang->nama ?? 'Belum menentukan';
 
