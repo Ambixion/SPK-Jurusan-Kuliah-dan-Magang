@@ -23,7 +23,11 @@ class SiswaFactory extends Factory
             'semester'          => fake()->randomElement([1, 2, 3, 4, 5, 6]),
             'no_telp'           => fake()->phoneNumber(),
             'alamat'            => fake()->address(),
-            'preferensi_lokasi' => null,
+            'preferensi_lokasi' => fake()->randomElement([
+                'dalam_kota',
+                'luar_kota',
+                'bebas',
+            ]),
         ];
     }
 }

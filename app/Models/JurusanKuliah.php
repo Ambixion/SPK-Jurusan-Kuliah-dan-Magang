@@ -2,10 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class JurusanKuliah extends Model
 {
+
+use HasFactory;
+
     protected $table = 'jurusan_kuliah';
     protected $fillable = ['nama', 'deskripsi', 'bidang_studi'];
 
