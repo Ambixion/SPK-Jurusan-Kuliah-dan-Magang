@@ -9,7 +9,7 @@ class TempatMagangFactory extends Factory
     public function definition(): array
     {
         return [
-            'nama' => fake()->company(),
+            'nama' => fake()->company() . ' ' . fake()->unique()->numberBetween(1, 999),
             'deskripsi' => fake()->sentence(),
             'latitude' => fake()->latitude(-8.5, -7.5),
             'longitude' => fake()->longitude(113.0, 114.5),

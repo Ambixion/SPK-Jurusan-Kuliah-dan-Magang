@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class JurusanKuliah extends Model
 {
 
-use HasFactory;
+    use HasFactory;
 
     protected $table = 'jurusan_kuliah';
     protected $fillable = ['nama', 'deskripsi', 'bidang_studi'];
@@ -27,7 +27,7 @@ use HasFactory;
     public function bidangs()
     {
         return $this->belongsToMany(Bidang::class, 'jurusan_kuliah_bidang', 'jurusan_kuliah_id', 'bidang_id')
-                    ->withTimestamps();
+            ->withTimestamps();
     }
 
     // Kuisoner khusus jurusan ini

@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class KuisonerOpsi extends Model
 {
+    use HasFactory;
     protected $table = 'kuisoner_opsi';
 
     protected $fillable = ['kuisoner_id', 'jawaban', 'nilai'];
