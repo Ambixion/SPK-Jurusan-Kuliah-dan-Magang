@@ -6,7 +6,11 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Login — Kaliber School</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-    @vite('resources/css/Auth.css')
+    @if (file_exists(public_path('build/manifest.json')))
+        @vite('resources/css/Auth.css')
+    @else
+        <link rel="stylesheet" href="{{ asset('/css/Auth.css') }}">
+    @endif
 </head>
 <body>
 
