@@ -332,6 +332,34 @@ body {
     display: block;
 }
 
+/* ── PASSWORD HELP ────────────────────────────── */
+.password-help-section {
+    margin-top: 26px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.password-help-section .help-text {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.password-help-section .whatsapp-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--cyan);
+    font-weight: 700;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.password-help-section .whatsapp-link:hover {
+    color: #ffffff;
+}
+
 /* ── DIVIDER / REGISTER ──────────────────────── */
 .register-row {
     margin-top: 22px;
