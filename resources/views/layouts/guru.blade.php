@@ -647,6 +647,23 @@
             pointer-events: none;
         }
 
+        .modal-alert-container {
+            position: static;
+            width: 100%;
+            margin-bottom: 20px;
+            pointer-events: auto;
+        }
+
+        .modal-card .modal-alert {
+            width: 100%;
+            padding: 16px 20px;
+            border-radius: 14px;
+            margin-bottom: 1rem;
+            background: rgba(239, 68, 68, .12);
+            border: 1px solid rgba(239, 68, 68, .22);
+            color: #fca5a5;
+        }
+
         .alert-spk {
             width: 100%;
             padding: 16px 20px;
@@ -1153,7 +1170,7 @@
 
     <script>
         setTimeout(() => {
-            const alerts = document.querySelectorAll('.alert-spk');
+            const alerts = document.querySelectorAll('.alert-spk:not(.modal-alert)');
 
             alerts.forEach(alert => {
                 alert.style.opacity = '0';
@@ -1267,6 +1284,10 @@
         openCreateModal.addEventListener('click', showCreateModal);
         closeCreateModal.addEventListener('click', hideCreateModal);
         cancelCreateModal.addEventListener('click', hideCreateModal);
+
+        @if (old('form_type') === 'create')
+            showCreateModal();
+        @endif
 
         createModal.addEventListener('click', function(e) {
             if (e.target === createModal) hideCreateModal();
