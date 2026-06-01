@@ -111,7 +111,7 @@
                 {{-- Password Help Info --}}
                 <div class="password-help-section">
                     <p class="help-text">Lupa password atau ingin ganti password?</p>
-                    <a href="https://wa.me/{{ config('app.admin_whatsapp', '6281939642588') }}?text=Halo%20Admin%2C%20saya%20ingin%20mengubah%20password%20akun%20saya"
+                    <a href="https://wa.me/{{ config('app.admin_whatsapp', '6281939642588') }}?text=Halo%20Admin%2C%20saya%20ingin%20mengubah%20password%20akun%20saya.%20Nama%20%3A%20%5Bisi%20nama%5D%20%0AKelas%20%3A%20%5Bisi%20kelas%5D%20%0AJurusan%20%3A%20%5Bisi%20jurusan%5D%20%0AGuru%20%3A%20%5Bisi%20nama%20guru%5D"
                        target="_blank"
                        class="whatsapp-link"
                        title="Hubungi Admin via WhatsApp">
