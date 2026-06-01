@@ -350,7 +350,7 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    color: var(--cyan);
+    color: var(--white);
     font-weight: 700;
     text-decoration: none;
     transition: color 0.2s;
