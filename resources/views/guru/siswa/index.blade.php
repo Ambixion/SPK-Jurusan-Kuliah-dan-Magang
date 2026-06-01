@@ -323,6 +323,13 @@
 
             <form action="{{ route('guru.siswa.store') }}" method="POST">
                 @csrf
+                <input type="hidden" name="form_type" value="create">
+
+                @if ($errors->any() && old('form_type') === 'create')
+                    <div class="alert-container modal-alert-container">
+                        <div class="alert-spk alert-error modal-alert">{{ $errors->first() }}</div>
+                    </div>
+                @endif
 
                 <div class="modal-form-grid">
 
@@ -342,14 +349,14 @@
                         <label>NISN</label>
                         <input type="text" name="nisn" value="{{ old('nisn') }}"
                             placeholder="Masukkan NISN siswa" inputmode="numeric" pattern="[0-9]*"
-                            oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                            minlength="10" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                     </div>
 
                     <div class="form-group">
                         <label>No. Telepon</label>
                         <input type="text" name="no_telp" value="{{ old('no_telp') }}"
                             placeholder="Contoh: 085712345678" inputmode="numeric" pattern="[0-9]*"
-                            oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                            minlength="10" maxlength="12" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                     </div>
 
                     <div class="form-group">
@@ -447,6 +454,7 @@
             <form id="editForm" method="POST">
                 @csrf
                 @method('PUT')
+                <input type="hidden" name="form_type" value="edit">
 
                 <div class="modal-form-grid">
 

@@ -381,6 +381,43 @@
             color: #fdba74;
         }
 
+
+        /* =========================================================
+   DASHBOARD FILTER
+========================================================= */
+        .dashboard-filter-box {
+            display: grid;
+            grid-template-columns: minmax(260px, 1fr) 240px;
+            gap: 14px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .dashboard-filter-box .search-box {
+            position: relative;
+        }
+
+        .dashboard-filter-box .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 13px;
+            color: rgba(255, 255, 255, .55);
+            pointer-events: none;
+        }
+
+        .dashboard-filter-box .search-input {
+            padding-left: 46px;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-filter-box {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+        }
+
         /* =========================================================
            TOOLBAR
         ========================================================= */
@@ -608,6 +645,23 @@
             width: calc(100% - var(--sidebar-w) - 40px);
             z-index: 99999;
             pointer-events: none;
+        }
+
+        .modal-alert-container {
+            position: static;
+            width: 100%;
+            margin-bottom: 20px;
+            pointer-events: auto;
+        }
+
+        .modal-card .modal-alert {
+            width: 100%;
+            padding: 16px 20px;
+            border-radius: 14px;
+            margin-bottom: 1rem;
+            background: rgba(239, 68, 68, .12);
+            border: 1px solid rgba(239, 68, 68, .22);
+            color: #fca5a5;
         }
 
         .alert-spk {
@@ -1116,7 +1170,7 @@
 
     <script>
         setTimeout(() => {
-            const alerts = document.querySelectorAll('.alert-spk');
+            const alerts = document.querySelectorAll('.alert-spk:not(.modal-alert)');
 
             alerts.forEach(alert => {
                 alert.style.opacity = '0';
@@ -1131,8 +1185,8 @@
 
     <script>
         /* =========================================================
-                                   SIDEBAR MOBILE
-                                ========================================================= */
+                                           SIDEBAR MOBILE
+                                        ========================================================= */
         function toggleSidebar() {
             const sidebar = document.querySelector('.sidebar');
             sidebar.classList.toggle('show');
@@ -1230,6 +1284,10 @@
         openCreateModal.addEventListener('click', showCreateModal);
         closeCreateModal.addEventListener('click', hideCreateModal);
         cancelCreateModal.addEventListener('click', hideCreateModal);
+
+        @if (old('form_type') === 'create')
+            showCreateModal();
+        @endif
 
         createModal.addEventListener('click', function(e) {
             if (e.target === createModal) hideCreateModal();
@@ -1334,6 +1392,38 @@
             if (e.target === showModal) closeShowModalBox();
         });
     </script>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchDashboard = document.getElementById('dashboardSearchNama');
+            const filterDashboard = document.getElementById('dashboardFilterJurusan');
+            const tableDashboard = document.getElementById('dashboardSpkTable');
+
+            if (!searchDashboard || !filterDashboard || !tableDashboard) return;
+
+            const rows = tableDashboard.querySelectorAll('tbody tr.dashboard-spk-row');
+
+            function filterDashboardTable() {
+                const keyword = searchDashboard.value.toLowerCase().trim();
+                const jurusan = filterDashboard.value.toLowerCase().trim();
+
+                rows.forEach(row => {
+                    const namaSiswa = row.dataset.nama || '';
+                    const jurusanSiswa = row.dataset.jurusan || '';
+
+                    const cocokNama = namaSiswa.includes(keyword);
+                    const cocokJurusan = jurusan === '' || jurusanSiswa === jurusan;
+
+                    row.style.display = cocokNama && cocokJurusan ? '' : 'none';
+                });
+            }
+
+            searchDashboard.addEventListener('input', filterDashboardTable);
+            filterDashboard.addEventListener('change', filterDashboardTable);
+        });
+    </script>
+
 
     @stack('scripts')
 

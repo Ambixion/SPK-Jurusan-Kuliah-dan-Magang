@@ -39,17 +39,27 @@ class SiswaController extends Controller
  public function store(Request $request)
 {
     $request->validate([
-        'nama' => 'required|string|max:255',
+        'nama' => 'required|string|max:255|unique:users,nama',
         'email' => 'required|email|unique:users,email',
-        'nisn' => 'nullable|string|max:20|unique:siswa,nisn',
+        'nisn' => 'nullable|digits:10|unique:siswa,nisn',
         'kelas' => 'required|in:10,11,12',
         'semester' => 'required|integer|in:1,2,3,4,5,6',
         'jurusan_smk_id' => 'required|exists:jurusan_smk,id',
-         'no_telp' => 'nullable|string|max:20',
+        'no_telp' => 'nullable|string|min:10|max:12',
         'alamat' => 'nullable|string|max:500',
         'nilai_rata_rata' => 'required|numeric|min:0|max:100',
-    ]);
+        ], [], [
+            'nama' => 'name',
+            'nisn' => 'nisn',
+            'email' => 'email',
+            'kelas' => 'kelas',
+            'semester' => 'semester',
+            'no_telp' => 'no_telp',
+            'alamat' => 'alamat',
+            'nilai_rata_rata' => 'nilai_rata_rata',
+        ]);
 
+    // create user and siswa records
     $user = User::create([
         'nama' => $request->nama,
         'email' => $request->email,
@@ -112,15 +122,24 @@ class SiswaController extends Controller
     $siswa = Siswa::with('user')->findOrFail($id);
 
     $request->validate([
-        'nama' => 'required|string|max:255',
+        'nama' => 'required|string|max:255|unique:users,nama,' . $siswa->users_id,
         'email' => 'required|email|unique:users,email,' . $siswa->users_id,
-        'nisn' => 'nullable|string|max:20|unique:siswa,nisn,' . $siswa->id,
+        'nisn' => 'nullable|digits:10|unique:siswa,nisn,' . $siswa->id,
         'kelas' => 'required|in:10,11,12',
         'semester' => 'required|integer|in:1,2,3,4,5,6',
         'jurusan_smk_id' => 'required|exists:jurusan_smk,id',
-        'no_telp' => 'nullable|string|max:20',
+        'no_telp' => 'nullable|string|min:10|max:12',
         'alamat' => 'nullable|string|max:500',
          'nilai_rata_rata' => 'required|numeric|min:0|max:100',
+    ], [], [
+        'nama' => 'name',
+        'nisn' => 'nisn',
+        'email' => 'email',
+        'kelas' => 'kelas',
+        'semester' => 'semester',
+        'no_telp' => 'no_telp',
+        'alamat' => 'alamat',
+        'nilai_rata_rata' => 'nilai_rata_rata',
     ]);
 
     $siswa->user->update([

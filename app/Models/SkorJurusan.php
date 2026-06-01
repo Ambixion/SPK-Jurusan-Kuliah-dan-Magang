@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class SkorJurusan extends Model
 {
+    use HasFactory;
     protected $table = 'skor_jurusan';
 
     protected $fillable = ['jurusan_kuliah_id', 'kriteria_id', 'score'];

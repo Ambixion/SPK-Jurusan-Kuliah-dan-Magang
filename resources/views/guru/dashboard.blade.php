@@ -82,9 +82,35 @@
             Hasil SPK Siswa
         </div>
 
+        <div class="dashboard-filter-box">
+
+    <div class="search-box">
+        <span class="search-icon">🔍</span>
+
+        <input
+            type="text"
+            id="dashboardSearchNama"
+            class="search-input"
+            placeholder="Cari nama siswa..."
+        >
+    </div>
+
+    <select id="dashboardFilterJurusan" class="filter-select">
+        <option value="">Semua Jurusan SMK</option>
+
+        @foreach ($hasilSpk->pluck('jurusanSmk.nama_jurusan')->filter()->unique()->sort() as $jurusan)
+            <option value="{{ strtolower($jurusan) }}">
+                {{ $jurusan }}
+            </option>
+        @endforeach
+    </select>
+
+</div>
+
+
         <div class="table-scroll-dashboard">
 
-            <table class="student-table">
+            <table class="student-table" id="dashboardSpkTable">
 
                 <thead>
 
@@ -120,7 +146,11 @@
                             $sudahAdaHasilMagang = !is_null($hasilMagangTerbaik);
                         @endphp
 
-                        <tr>
+                        <tr
+    class="dashboard-spk-row"
+    data-nama="{{ strtolower($namaSiswa) }}"
+    data-jurusan="{{ strtolower($jurusanSiswa) }}"
+>
 
                             <td>
                                 {{ $loop->iteration }}
