@@ -123,4 +123,15 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Admin Contact Information
+    |--------------------------------------------------------------------------
+    |
+    | WhatsApp number for admin contact (used in login page for password reset)
+    | Format: country code + number without + sign (e.g., 6281939642588)
+    |
+    */
+    'admin_whatsapp' => env('ADMIN_WHATSAPP', '6281939642588'),
+
 ];
