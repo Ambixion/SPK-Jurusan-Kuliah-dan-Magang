@@ -1,455 +1,370 @@
-/* ══════════════════════════════════════════════════════════════ */
-/* Auth Page Styling */
-/* ══════════════════════════════════════════════════════════════ */
-
-:root {
-    --primary-color: #4f46e5;
-    --primary-dark: #4338ca;
-    --success-color: #10b981;
-    --error-color: #ef4444;
-    --warning-color: #f59e0b;
-    --text-primary: #1f2937;
-    --text-secondary: #6b7280;
-    --border-color: #e5e7eb;
-    --bg-light: #f9fafb;
-}
-
-* {
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
 }
 
+:root {
+    --cyan: #00e5ff;
+    --cyan-dim: #00b8cc;
+    --purple-1: #3a1c8a;
+    --purple-2: #6a11cb;
+    --purple-3: #9b25e0;
+    --purple-4: #b44cf0;
+    --white: #ffffff;
+    --input-bg: rgba(255, 255, 255, 0.08);
+    --input-border: rgba(255, 255, 255, 0.35);
+    --input-focus: rgba(255, 255, 255, 0.7);
+    --error: #ff6b8a;
+}
+
+html,
 body {
-    font-family: 'Outfit', sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
+    height: 100%;
+    font-family: "Outfit", sans-serif;
+    background: #0b0b2a;
+    overflow: hidden;
+}
+
+/* ── LAYOUT ────────────────────────────────── */
+.wrapper {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-primary);
+    height: 100vh;
+    width: 100vw;
 }
 
 .background-svg {
     position: fixed;
-    top: 0;
-    left: 0;
+    inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
     z-index: 0;
+    opacity: 0.95;
+    pointer-events: none;
 }
 
-.wrapper {
-    display: flex;
-    width: 100%;
-    height: 100vh;
-    position: relative;
-    z-index: 1;
-}
-
+/* ── LEFT PANEL ─────────────────────────────── */
 .left {
-    flex: 1;
+    flex: 0 0 50%;
+    position: relative;
+    background: transparent;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 40px;
+    overflow: hidden;
+}
+
+/* Grid lines */
+/* .left::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(var(--cyan-dim) 1px, transparent 1px),
+        linear-gradient(90deg, var(--cyan-dim) 1px, transparent 1px);
+    background-size: 60px 60px;
+    opacity: 0.35;
+} */
+
+/* Radial glow behind logo */
+.left::after {
+    content: none;
 }
 
 .logo-wrapper {
-    text-align: center;
-    animation: fadeInDown 0.6s ease-out;
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    animation: floatUp 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .logo-circle {
-    width: 120px;
-    height: 120px;
-    background: white;
+    width: 220px;
+    height: 220px;
     border-radius: 50%;
+    border: 5px solid #1b6a25;
+    background: #f0e000;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 30px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    box-shadow:
+        0 0 40px rgba(0, 229, 255, 0.25),
+        0 20px 60px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
 }
 
+.logo-circle img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* SVG placeholder logo (shown when no image available) */
 .logo-svg {
-    width: 100px;
-    height: 100px;
-    object-fit: contain;
+    width: 190px;
+    height: 190px;
 }
 
 .school-name {
-    font-size: 28px;
-    font-weight: 700;
-    color: white;
-    letter-spacing: 1px;
+    color: var(--white);
+    font-size: 1.15rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-align: center;
+    text-shadow: 0 2px 12px rgba(0, 229, 255, 0.4);
+    opacity: 0.9;
 }
 
+/* ── RIGHT PANEL ─────────────────────────────── */
 .right {
-    flex: 1;
+    flex: 0 0 50%;
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 40px;
+    background: transparent;
+    overflow: hidden;
 }
 
+/* Subtle mesh noise */
+.right::before {
+    content: none;
+}
+
+/* Grid overlay on right */
+.right::after {
+    content: none;
+}
+
+/* ── CARD ────────────────────────────────────── */
 .card {
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-    padding: 50px;
-    width: 100%;
-    max-width: 420px;
-    animation: fadeInUp 0.6s ease-out;
+    position: relative;
+    z-index: 2;
+    width: 420px;
+    padding: 52px 44px 48px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 24px;
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    box-shadow: 0 32px 80px rgba(0, 0, 0, 0.35);
+    animation: slideIn 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .card-title {
-    font-size: 32px;
-    font-weight: 700;
-    margin-bottom: 30px;
-    color: var(--text-primary);
+    color: var(--white);
+    font-size: 2.2rem;
+    font-weight: 800;
     text-align: center;
+    margin-bottom: 36px;
+    letter-spacing: -0.01em;
 }
 
-/* ──────────────────────────────────────────────────────────── */
-/* Form Styling */
-/* ──────────────────────────────────────────────────────────── */
-
-form {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+/* ── ALERTS ──────────────────────────────────── */
+.alert {
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+.alert-error {
+    background: rgba(255, 107, 138, 0.15);
+    border: 1px solid rgba(255, 107, 138, 0.4);
+    color: #ff9db2;
+}
+.alert-success {
+    background: rgba(0, 229, 150, 0.15);
+    border: 1px solid rgba(0, 229, 150, 0.4);
+    color: #70f0c0;
 }
 
+/* ── FORM ────────────────────────────────────── */
 .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+    margin-bottom: 20px;
 }
 
 .input-wrapper {
     position: relative;
-    display: flex;
-    align-items: center;
 }
 
-input[type="text"],
-input[type="password"] {
+.input-wrapper input {
     width: 100%;
-    padding: 12px 16px 12px 45px;
-    border: 2px solid var(--border-color);
-    border-radius: 8px;
-    font-size: 14px;
-    font-family: inherit;
-    transition: all 0.3s ease;
-    background: var(--bg-light);
-}
-
-input[type="text"]:focus,
-input[type="password"]:focus {
+    height: 58px;
+    padding: 0 54px 0 20px;
+    background: var(--input-bg);
+    border: 1.5px solid var(--input-border);
+    border-radius: 50px;
+    color: var(--white);
+    font-family: "Outfit", sans-serif;
+    font-size: 0.95rem;
+    font-weight: 400;
     outline: none;
-    border-color: var(--primary-color);
-    background: white;
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    transition:
+        border-color 0.25s,
+        background 0.25s,
+        box-shadow 0.25s;
 }
 
-input[type="text"].is-invalid,
-input[type="password"].is-invalid {
-    border-color: var(--error-color);
-    background: #fef2f2;
+.input-wrapper input::placeholder {
+    color: rgba(255, 255, 255, 0.45);
 }
 
-input[type="text"].is-invalid:focus,
-input[type="password"].is-invalid:focus {
-    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+.input-wrapper input:focus {
+    border-color: var(--input-focus);
+    background: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08);
+}
+
+.input-wrapper input.is-invalid {
+    border-color: var(--error);
+    box-shadow: 0 0 0 3px rgba(255, 107, 138, 0.15);
 }
 
 .input-icon {
     position: absolute;
-    left: 14px;
-    color: var(--text-secondary);
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 0.5);
+    pointer-events: none;
     display: flex;
-    align-items: center;
 }
 
 .toggle-password {
     position: absolute;
-    right: 12px;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 0.5);
     background: none;
     border: none;
-    color: var(--text-secondary);
     cursor: pointer;
-    padding: 4px;
+    padding: 0;
     display: flex;
-    align-items: center;
     transition: color 0.2s;
 }
-
 .toggle-password:hover {
-    color: var(--primary-color);
+    color: var(--white);
 }
 
 .field-error {
-    font-size: 13px;
-    color: var(--error-color);
-    margin-top: 4px;
+    color: var(--error);
+    font-size: 0.78rem;
+    margin-top: 6px;
+    padding-left: 20px;
 }
 
-.alert {
-    padding: 12px 16px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    font-size: 14px;
-    animation: slideIn 0.3s ease-out;
+/* ── FORGOT ──────────────────────────────────── */
+.forgot-row {
+    text-align: right;
+    margin-bottom: 28px;
 }
 
-.alert-success {
-    background: #ecfdf5;
-    color: #065f46;
-    border-left: 4px solid var(--success-color);
+.forgot-row a {
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+.forgot-row a:hover {
+    color: var(--white);
 }
 
-.alert-error {
-    background: #fef2f2;
-    color: #991b1b;
-    border-left: 4px solid var(--error-color);
-}
-
-/* ──────────────────────────────────────────────────────────── */
-/* Button Styling */
-/* ──────────────────────────────────────────────────────────── */
-
+/* ── BUTTON ──────────────────────────────────── */
 .btn-login {
-    padding: 12px 24px;
-    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-    color: white;
+    width: 100%;
+    height: 58px;
+    background: var(--white);
+    color: #3a1c8a;
     border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 600;
+    border-radius: 50px;
+    font-family: "Outfit", sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition:
+        transform 0.2s,
+        box-shadow 0.2s,
+        background 0.2s;
     position: relative;
     overflow: hidden;
-    margin-top: 10px;
 }
 
 .btn-login:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
 }
 
 .btn-login:active {
     transform: translateY(0);
 }
 
-.btn-login.loading {
-    pointer-events: none;
+.btn-login:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
 }
 
+/* Spinner inside button */
 .spinner {
-    position: absolute;
-    width: 18px;
-    height: 18px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-top-color: white;
+    display: none;
+    width: 20px;
+    height: 20px;
+    border: 2.5px solid rgba(58, 28, 138, 0.3);
+    border-top-color: #3a1c8a;
     border-radius: 50%;
-    right: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    animation: spin 1s linear infinite;
-    opacity: 0;
-}
-
-.btn-login.loading .spinner {
-    opacity: 1;
+    animation: spin 0.7s linear infinite;
+    margin: 0 auto;
 }
 
 .btn-login.loading .btn-text {
-    opacity: 0;
+    display: none;
+}
+.btn-login.loading .spinner {
+    display: block;
 }
 
-/* ──────────────────────────────────────────────────────────── */
-/* Password Help Section */
-/* ──────────────────────────────────────────────────────────── */
-
-.password-help-section {
-    margin-top: 40px;
-    padding: 22px;
-    background: linear-gradient(135deg, #f0f9ff 0%, #f3e8ff 100%);
-    border-radius: 10px;
-    border: 1px solid #dbeafe;
-    text-align: center;
-    animation: fadeIn 0.5s ease-out 0.3s both;
-}
-
-.help-text {
-    font-size: 14px;
-    color: #374151;
-    margin-bottom: 20px;
-    font-weight: 500;
-}
-
-.password-help-section a,
-.password-help-section .whatsapp-link {
-    color: #ffffff;
-}
-
-.whatsapp-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 18px;
-    background: linear-gradient(135deg, #25D366 0%, #20BA5A 100%);
-    color: #ffffff;
-    text-decoration: none;
-    border-radius: 8px;
-    font-weight: 700;
-    font-size: 15px;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
-}
-
-.whatsapp-link:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(37, 211, 102, 0.4);
-}
-
-.whatsapp-link:active {
-    transform: translateY(0);
-}
-
-.whatsapp-link svg {
-    width: 18px;
-    height: 18px;
-}
-
-/* ──────────────────────────────────────────────────────────── */
-/* Forgot Password Row */
-/* ──────────────────────────────────────────────────────────── */
-
-.forgot-row {
-    text-align: right;
-    margin-bottom: 10px;
-}
-
-.forgot-row a {
-    font-size: 13px;
-    color: var(--primary-color);
-    text-decoration: none;
-    transition: color 0.3s;
-}
-
-.forgot-row a:hover {
-    color: var(--primary-dark);
-    text-decoration: underline;
-}
-
+/* ── DIVIDER / REGISTER ──────────────────────── */
 .register-row {
+    margin-top: 22px;
     text-align: center;
-    margin-top: 20px;
-    font-size: 14px;
-    color: var(--text-secondary);
+    color: rgba(255, 255, 255, 0.45);
+    font-size: 0.875rem;
 }
-
 .register-row a {
-    color: var(--primary-color);
-    text-decoration: none;
+    color: rgba(255, 255, 255, 0.85);
     font-weight: 600;
-    transition: color 0.3s;
-}
-
-.register-row a:hover {
-    color: var(--primary-dark);
-}
-
-/* ──────────────────────────────────────────────────────────── */
-/* Animations */
-/* ──────────────────────────────────────────────────────────── */
-
-@keyframes fadeInDown {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* ── PASSWORD HELP SECTION ───────────────────── */
-.password-help-section {
-    margin-top: 28px;
-    padding: 20px;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 12px;
-    text-align: center;
-    animation: fadeIn 0.5s ease-out 0.3s both;
-}
-
-.help-text {
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.7);
-    margin-bottom: 16px;
-    font-weight: 500;
-}
-
-.whatsapp-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 11px 18px;
-    background: linear-gradient(135deg, #25D366 0%, #20BA5A 100%);
-    color: #ffffff;
     text-decoration: none;
-    border-radius: 8px;
-    font-weight: 700;
-    font-size: 14px;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+    transition: color 0.2s;
+}
+.register-row a:hover {
+    color: var(--white);
 }
 
-.whatsapp-link:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(37, 211, 102, 0.4);
-}
-
-.whatsapp-link:active {
-    transform: translateY(0);
-}
-
-.whatsapp-link svg {
-    width: 18px;
-    height: 18px;
-}
-
-@keyframes fadeInUp {
+/* ── ANIMATIONS ──────────────────────────────── */
+@keyframes floatUp {
     from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(30px);
     }
     to {
         opacity: 1;
         transform: translateY(0);
-    }
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
     }
 }
 
 @keyframes slideIn {
     from {
         opacity: 0;
-        transform: translateX(-10px);
+        transform: translateX(40px);
     }
     to {
         opacity: 1;
@@ -459,59 +374,49 @@ input[type="password"].is-invalid:focus {
 
 @keyframes spin {
     to {
-        transform: translateY(-50%) rotate(360deg);
+        transform: rotate(360deg);
     }
 }
 
-/* ──────────────────────────────────────────────────────────── */
-/* Responsive */
-/* ──────────────────────────────────────────────────────────── */
-
-@media (max-width: 1024px) {
+/* ── RESPONSIVE ──────────────────────────────── */
+@media (max-width: 768px) {
+    body {
+        overflow-y: hidden;
+    }
     .wrapper {
         flex-direction: column;
+        overflow-y: auto;
+        min-height: 100vh;
     }
-
-    .left,
-    .right {
-        flex: auto;
+    .left {
+        /* flex: 0 0 45vh; */
+        display: none;
     }
-}
-
-@media (max-width: 640px) {
-    .card {
-        padding: 30px 20px;
-        max-width: 100%;
-        margin: 0 20px;
-    }
-
-    .card-title {
-        font-size: 24px;
-        margin-bottom: 20px;
-    }
-
     .logo-circle {
-        width: 90px;
-        height: 90px;
+        width: 180px;
+        height: 180px;
+        display: none;
     }
-
     .logo-svg {
-        width: 75px;
-        height: 75px;
+        width: 160px;
+        height: 160px;
+        display: none;
     }
-
     .school-name {
-        font-size: 20px;
+        font-size: 1rem;
+        display: none;
     }
-
-    .password-help-section {
-        padding: 15px;
-        margin-top: 20px;
+    .right {
+        flex: 1;
+        padding: 32px 20px;
     }
-
-    .whatsapp-link {
+    .card {
         width: 100%;
-        justify-content: center;
-        padding: 12px;
+        max-width: 420px;
+        padding: 36px 28px;
+    }
+    html,
+    body {
+        overflow: auto;
     }
 }
