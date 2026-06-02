@@ -472,6 +472,7 @@
                         <label>NISN</label>
                         <input type="text" name="nisn" id="editNisn" placeholder="Masukkan NISN siswa"
                             inputmode="numeric" pattern="[0-9]*"
+                            minlength="10" maxlength="10"
                             oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                     </div>
 
@@ -479,6 +480,7 @@
                         <label>No. Telepon</label>
                         <input type="text" name="no_telp" id="editNoTelp" placeholder="Contoh: 085712345678"
                             inputmode="numeric" pattern="[0-9]*"
+                            minlength="10" maxlength="12"
                             oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                     </div>
 
