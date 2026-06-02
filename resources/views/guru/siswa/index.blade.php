@@ -342,7 +342,10 @@
                     <div class="form-group">
                         <label>Email</label>
                         <input type="email" name="email" value="{{ old('email') }}"
-                            placeholder="Masukkan email siswa" required>
+    placeholder="Contoh: siswa@gmail.com"
+    pattern="^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$"
+    title="Masukkan email dengan format yang benar, contoh: siswa@gmail.com"
+    required>
                     </div>
 
                     <div class="form-group">
@@ -465,7 +468,11 @@
 
                     <div class="form-group">
                         <label>Email</label>
-                        <input type="email" name="email" id="editEmail" placeholder="Masukkan email siswa" required>
+                        <input type="email" name="email" id="editEmail"
+    placeholder="Contoh: siswa@gmail.com"
+    pattern="^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$"
+    title="Masukkan email dengan format yang benar, contoh: siswa@gmail.com"
+    required>
                     </div>
 
                     <div class="form-group">
